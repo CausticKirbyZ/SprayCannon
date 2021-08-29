@@ -138,13 +138,13 @@ For Arch based linux distros
 sudo pacman -S crystal shards 
 ````
 
-**Debian/RedHat** based linux distros
+**Debian/RedHat** based linux distros(Kali too)
 ```
 curl -fsSL https://crystal-lang.org/install.sh | sudo bash
 ```
 
 **Windows** (Crystal not fully supported on windows *yet*) there are several options:
-* There is prerelease crystal compiler for windows that is available. 
+* There is prerelease crystal compiler for windows available. 
 * Use wsl
 * use a linux vm 
 
