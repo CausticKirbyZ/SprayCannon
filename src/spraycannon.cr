@@ -66,7 +66,7 @@ parser = OptionParser.new() do |opts|
 
     
     opts.separator("Global options:")
-    opts.on("-s", "--spray-type=[spraytype]", "Set spray type. (o365, ExchageEAS, vpn_sonicwall_virtualoffice, vpn_sonicwall_digest, vpn_fortinet)") do |type|
+    opts.on("-s", "--spray-type=[spraytype]", "Set spray type. (msol(o365), ExchageEAS, vpn_sonicwall_virtualoffice, vpn_sonicwall_digest, vpn_fortinet)") do |type|
         options["spraytype"] = type
     end
 
@@ -112,7 +112,7 @@ parser = OptionParser.new() do |opts|
         exit(0)
     end
 
-    opts.on("-v","--verbose","Print verbose information") do 
+    opts.on("-v","--verbose","Print verbose information") do
         options["verbose"] = true 
     end
 
@@ -126,6 +126,9 @@ parser = OptionParser.new() do |opts|
     end 
     opts.on("--webhook=[url]","Will send a teams webhook if valid credential is found!!") do |webhook|
         options["webhook"] = webhook
+    end 
+    opts.on("--list-spraytypes","List the available spraytypes.") do 
+        puts %"msol "
     end 
 
 
