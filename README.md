@@ -52,11 +52,9 @@ or
 ### Compile yourself 
 either use the make file 
 ```
-make all 
-```
-or 
-```
-make spraycannon 
+make
+or
+make spraycannon
 make spdb
 ```
 ### compile the manual way 
@@ -64,11 +62,11 @@ make spdb
 crystal build -p src/spraycannon.cr 
 crystal build -p src/spdb.cr 
 ```
-you can also use 
+you can also use
 ```
-crystal build -p --no-debug --release  
+crystal build -p --no-debug --release
 ```
-which will take longer but will be more optimized (not that you need it) it also wont give you help if something breaks.... your choice 
+which will take longer but will be more optimized (not that you need it) it also wont give you help if something breaks.... your choice
 
 ### **Examples:**
 ```

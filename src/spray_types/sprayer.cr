@@ -200,9 +200,9 @@ class Sprayer
         # start queuing things to be sprayed
         # if uap do that
         if @uap
-            puts "Generating user:user list"
+            # puts "Generating user:user list"
             uap_list = generate_uap_list()
-            puts "Sending to queue_channel"
+            # puts "Sending to queue_channel"
             uap_list.each do |item|
                 if @lockout
                     STDERR.puts "Lockout detected!!!".colorize(:red)
@@ -223,9 +223,9 @@ class Sprayer
             end
         else 
             @passwords.each do |pass|
-                STDERR.puts "Generating user:user list"
+                # STDERR.puts "Generating user:user list"
                 combo_list = generate_combo_list(pass)
-                STDERR.puts "Sending to queue_channel"
+                # STDERR.puts "Sending to queue_channel"
                 combo_list.each do |item|
                     if @lockout && !cont
                         STDERR.puts "Lockout detected!!!".colorize(:red)
@@ -249,8 +249,9 @@ class Sprayer
         end 
 
         # sleep until queued count finishes 
-        while queued_count > 1 
-            print "\rItems in queue to be sprayed: #{queued_count} \r" 
+        while queued_count > 0 
+            print "\rItems in queue to be sprayed: #{queued_count}" 
+            sleep 1 
         end
 
 
@@ -478,13 +479,13 @@ class Sprayer
 
     protected def jitter()
         if @jitter < 1000
-            print "Jitter: #{@jitter / 1000}"
+            STDERR.print "Jitter: #{@jitter / 1000}"
             sleep ( @jitter / 1000 )
-            print "\r                        \r"
+            STDERR.print "\r                        \r"
             return 
         end
         @jitter.times do |t|
-            print "\rJitter: #{@jitter - t} "
+            STDERR.print "\rJitter: #{@jitter - t} "
             sleep 0.001
         end 
         print "\r                        \r"
@@ -505,14 +506,14 @@ class Sprayer
 
     protected def delay()
         @delay.times do |t|
-            print "\rSleeping: #{@delay - t} "
+            STDERR.print "\rSleeping: #{@delay - t} "
             sleep 1
         end
-        print "\n"
+        STDERR.print "\n"
     end
 
 
-
+    # teams webhook. more can be implemented if necessary 
     protected def web_hook(username, password, mfa)
         mfa_str = "No"
         mfa_str = "Yes" if mfa

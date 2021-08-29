@@ -118,7 +118,7 @@ parser = OptionParser.new() do |opts|
 
     opts.separator("Additional Options:")
     
-    opts.on("--threads=[count]","Will send a teams webhook if valid credential is found!!") do |tcount|
+    opts.on("--threads=[count]","Use worker threads to drasticly speed things up!(default is 1)") do |tcount|
         options["threads"] = tcount.to_i
     end  
 
@@ -229,8 +229,8 @@ if options["user-as-password"]
 end
 
 # puts "rand: #{max(rand())}"
-STDERR.puts "Starting spraying at: #{Time.local.to_s("%Y-%m-%dT%H:%M:%S")}"
-STDERR.puts "Spraying...".colorize(:yellow)
+STDERR.puts "Starting spraying at: " + "#{Time.local.to_s("%Y-%m-%d %H:%M:%S")}".colorize(:yellow).to_s
+# STDERR.puts "Spraying...".colorize(:yellow)
 STDERR.puts "Username, Password, Valid, Lockout, MFA"
 
 if options["db"].as(Bool)
@@ -240,4 +240,4 @@ else
 end
 
 STDERR.puts "Done spraying now!!!".colorize(:green)
-STDERR.puts "Completed at: #{Time.local.to_s("%Y-%m-%dT%H:%M:%S")}"
+STDERR.puts "Completed at: #{Time.local.to_s("%Y-%m-%d %H:%M:%S")}"
