@@ -72,7 +72,7 @@ class Sprayer
     # super method as placeholder. this is for the single logon attempt code per "module"
     # below is just for testing purposes  
     # should return an array of [username, password, valid, lockout, mfa]
-    def spray(username : String, password : String) 
+    def spray(username : String, password : String) : Array(String | Bool)
         puts "DEFAULT METHOD!!! YOUR SPRAY IS NOT ACTUALLY WORKING!!!!".colorize(:red)
 
         # the below is just a simulation for testing purposes
@@ -101,9 +101,10 @@ class Sprayer
     # starts the sprayer with a jitter of 1 and a delay of 30 
     def start(thread_count = 1, db = nil)
         @lockout = false
-        cont = false 
+        cont = false
         already_sprayed = [] of String
         valid_accounts = [] of String
+        queued_count = 0 # int to keep track of ammount still queued 
 
         # create list of already sprayed user:passwords 
         if db
@@ -111,95 +112,231 @@ class Sprayer
             valid_accounts = get_dbvalid(db).as(Array(String))
         end  
 
-        # queue_channel = Channel(Array(S))
+        # create channels for spraying 
+        queue_channel = Channel( Array(String) | Nil ).new
+        results_channel = Channel( Array(String|Bool) | Nil ).new
 
-        
+        # spawn worker threads 
+        STDERR.puts "Spawning threads"
 
+        thread_count.times do |i|
+            spawn do 
+                loop do 
+                    f = queue_channel.receive()
+                    break if f.nil? # close the fiber if nil is received # signalling the completion of the spray and can close the fibers 
+                    uname = f[0].as(String)
+                    pass = f[1].as(String)
+                    if already_sprayed.includes? "#{uname}:#{pass}" || valid_accounts.includes? uname
+                        STDERR.puts "Skipping #{uname}:#{pass} becasue its already sprayed!!".colorize(:yellow).to_s
+                        queued_count -= 1 # remove the count for already being sprayed
+                        next
+                    end
+                    # lock the fiber if lockout is detected(this will still spray on some fibers until they rotate into this. once released all fibers will start again)
+                    if !cont && @lockout
+                        while !cont # while locked pause until continue
+                            sleep 0.1
+                        end
+                    end
 
+                    # do the spray 
+                    res = spray(uname, pass)
+                    
+                    #update lockout
+                    @lockout = res.as(Array(String|Bool))[3].as(Bool)
+                    
+                    
+                    # do db operations if db is used 
+                    if db
+                        insert_db_sprayed(db, uname, pass) unless res.as(Array(String|Bool))[3].as(Bool) # add to sprayed unless it was locked
+                        insert_db_valid(db, uname, pass) if res.as(Array(String|Bool))[2].as(Bool) # add to valid db if valid
+                    end
 
+                    # if valid send and user specified a webhook send one 
+                    if res.as(Array(String|Bool))[2].as(Bool) && @webhook_url != ""
+                        web_hook(uname, pass, res.as(Array(String|Bool))[4].as(Bool)) # webhook(user,pass,mfabool)
+                    end
 
-        # if user as password just spray once
-        if @uap
-            usernames.each do |uname|
-                if already_sprayed.includes? "#{uname}:#{uname}" || valid_accounts.includes? uname
-                    STDERR.puts "Skipping #{uname}:#{uname} becasue its already sprayed!!".colorize(:yellow).to_s
-                    next
+                    # finally send the result to the results channel so it can be printed to the user
+                    results_channel.send res
+
+                    # wait the jitter time # god i hope sleep is working in threads...... 
+                    # t_jitter()
                 end
-                attempt = spray(uname, uname)
-                next if attempt.nil?
-                @lockout = attempt[3].as(Bool|Nil)
-                if @lockout && cont == false
+            end
+        end
+
+        # spawn printer thread
+        spawn do 
+            loop do 
+                res = results_channel.receive()
+                break if res.nil?
+                queued_count -= 1
+                puts "\r#{res[0].as(String)}, #{res[1].as(String)},#{"Valid".colorize(:green).to_s if res[2].as(Bool)},#{"locked".colorize(:red) if res[3].as(Bool)}, #{"mfa".colorize(:yellow) if res[4].as(Bool)}"
+            end
+        end
+
+        # create a thread for handling the locked issue
+        # spawn do 
+        #     loop do
+        #         # puts "Lockout: #{@lockout} cont: #{cont}"
+        #         break if cont 
+        #         # if @lockout
+        #         STDERR.puts "Lockout detected!!!".colorize(:red)
+        #         STDERR.puts "Continue? (y/N)".colorize(:yellow)
+        #         x = gets
+        #         exit 1 if x.nil? || x == "\r"
+        #         if (x.downcase =~ /ye?s?/)
+        #             cont = true
+        #         else 
+        #             STDERR.puts "Quiting spraying attack!!!".colorize(:yellow)
+        #             exit 1
+        #         end
+        #     end
+        # end
+
+
+
+
+        # start queuing things to be sprayed
+        # if uap do that
+        if @uap
+            puts "Generating user:user list"
+            uap_list = generate_uap_list()
+            puts "Sending to queue_channel"
+            uap_list.each do |item|
+                if @lockout
                     STDERR.puts "Lockout detected!!!".colorize(:red)
                     STDERR.puts "Continue? (y/N)".colorize(:yellow)
                     x = gets
-                    return if x.nil? || x == "\r"
+                    exit 1 if x.nil? || x == "\r"
                     if (x.downcase =~ /ye?s?/)
                         cont = true
                     else 
                         STDERR.puts "Quiting spraying attack!!!".colorize(:yellow)
-                        return
+                        exit 1
                     end
                 end
+                # print "\rItems in queue to be sprayed: #{queued_count} " 
+                queue_channel.send item 
+                queued_count += 1 
+                jitter() unless item[0] == @usernames.last || valid_accounts.includes? item[0] || already_sprayed.includes? "#{item[0]}:#{item[1]}"
+            end
+        else 
+            @passwords.each do |pass|
+                STDERR.puts "Generating user:user list"
+                combo_list = generate_combo_list(pass)
+                STDERR.puts "Sending to queue_channel"
+                combo_list.each do |item|
+                    if @lockout && !cont
+                        STDERR.puts "Lockout detected!!!".colorize(:red)
+                        STDERR.puts "Continue? (y/N)".colorize(:yellow)
+                        x = gets
+                        exit 1 if x.nil? || x == "\r"
+                        if (x.downcase =~ /ye?s?/)
+                            cont = true
+                        else 
+                            STDERR.puts "Quiting spraying attack!!!".colorize(:yellow)
+                            exit 1
+                        end
+                    end
+                    # print "\rItems in queue to be sprayed: #{queued_count} " 
+                    queue_channel.send item 
+                    queued_count += 1 
+                    jitter() unless item[0] == @usernames.last || valid_accounts.includes? item[0] || already_sprayed.includes? "#{item[0]}:#{item[1]}"
+                end
+                delay() unless pass == passwords.last
+            end
+        end 
+
+        # sleep until queued count finishes 
+        while queued_count > 1 
+            print "\rItems in queue to be sprayed: #{queued_count} \r" 
+        end
+
+
+
+        # # if user as password just spray once
+        # if @uap
+        #     usernames.each do |uname|
+        #         if already_sprayed.includes? "#{uname}:#{uname}" || valid_accounts.includes? uname
+        #             STDERR.puts "Skipping #{uname}:#{uname} becasue its already sprayed!!".colorize(:yellow).to_s
+        #             next
+        #         end
+        #         attempt = spray(uname, uname)
+        #         next if attempt.nil?
+        #         @lockout = attempt[3].as(Bool|Nil)
+        #         if @lockout && cont == false
+        #             STDERR.puts "Lockout detected!!!".colorize(:red)
+        #             STDERR.puts "Continue? (y/N)".colorize(:yellow)
+        #             x = gets
+        #             return if x.nil? || x == "\r"
+        #             if (x.downcase =~ /ye?s?/)
+        #                 cont = true
+        #             else 
+        #                 STDERR.puts "Quiting spraying attack!!!".colorize(:yellow)
+        #                 return
+        #             end
+        #         end
                 
                
 
-                if db
-                    insert_db_sprayed(db, uname, uname) unless attempt[3] # add to sprayed unless it was locked
-                    insert_db_valid(db, uname, uname) if attempt[2] # ie valid
-                end
+        #         if db
+        #             insert_db_sprayed(db, uname, uname) unless attempt[3] # add to sprayed unless it was locked
+        #             insert_db_valid(db, uname, uname) if attempt[2] # ie valid
+        #         end
 
 
-                puts "#{attempt[0].as(String)}, #{attempt[1].as(String)},#{" Valid".colorize(:green).to_s if attempt[2]},#{" locked" if attempt[3]}, #{" mfa" if attempt[4]}"
-                jitter() unless uname == usernames.last
-            end
-            return 
-        end
-        # all other user/pass combos
-        passwords.each do |pass|
-            puts "Spraying password: ".colorize(:yellow).to_s + pass
-            usernames.each do |uname|
-                if already_sprayed.includes? "#{uname}:#{pass}" || valid_accounts.includes? uname
-                    STDERR.puts "Skipping #{uname}:#{pass} becasue its already sprayed!!".colorize(:yellow).to_s
-                    next 
-                end
-                attempt = spray(uname, pass)
-                next if attempt.nil?
-                @lockout = attempt[3].as(Bool|Nil)
+        #         puts "#{attempt[0].as(String)}, #{attempt[1].as(String)},#{" Valid".colorize(:green).to_s if attempt[2]},#{" locked" if attempt[3]}, #{" mfa" if attempt[4]}"
+        #         jitter() unless uname == usernames.last
+        #     end
+        #     return 
+        # end
+        # # all other user/pass combos
+        # passwords.each do |pass|
+        #     puts "Spraying password: ".colorize(:yellow).to_s + pass
+        #     usernames.each do |uname|
+        #         if already_sprayed.includes? "#{uname}:#{pass}" || valid_accounts.includes? uname
+        #             STDERR.puts "Skipping #{uname}:#{pass} becasue its already sprayed!!".colorize(:yellow).to_s
+        #             next 
+        #         end
+        #         attempt = spray(uname, pass)
+        #         next if attempt.nil?
+        #         @lockout = attempt[3].as(Bool|Nil)
 
-                if @lockout && cont == false
-                    STDERR.puts "Lockout detected!!!".colorize(:red)
-                    STDERR.puts "Continue? (y/N)".colorize(:yellow)
-                    x = gets
-                    return if x.nil?
-                    if (x.downcase =~ /[yes]+/)
-                        cont = true
-                    else 
-                        STDERR.puts "Quiting spraying attack!!!".colorize(:yellow)
-                        return
-                    end
-                end
-
-
-
-                if db
-                    insert_db_sprayed(db, uname, pass)
-                    insert_db_valid(db, uname, pass) if attempt[2]
-                end
+        #         if @lockout && cont == false
+        #             STDERR.puts "Lockout detected!!!".colorize(:red)
+        #             STDERR.puts "Continue? (y/N)".colorize(:yellow)
+        #             x = gets
+        #             return if x.nil?
+        #             if (x.downcase =~ /[yes]+/)
+        #                 cont = true
+        #             else 
+        #                 STDERR.puts "Quiting spraying attack!!!".colorize(:yellow)
+        #                 return
+        #             end
+        #         end
 
 
-                # puts "#{uname}, #{pass}, #{(attempt[2]) ? "valid" : "invalid".colorize(:red).to_s }, #{ (attempt[3]) ? "locked".colorize(:red).to_s : "notlocked"  }"
-                puts "#{attempt[0].as(String)}, #{attempt[1].as(String)},#{" valid".colorize(:green).to_s if attempt[2]},#{" locked".colorize(:red).to_s if attempt[3]}, #{" mfa".colorize(:yellow).to_s if attempt[4]}"
-                # if valid and webhook not "" send webhook 
-                if attempt[2] && @webhook_url != ""
-                    web_hook(attempt[0].as(String), attempt[1].as(String), attempt[4])
-                end
-                jitter() unless uname == usernames.last || valid_accounts.includes? uname || already_sprayed.includes? "#{uname}:#{pass}"
-            end
 
-            puts "Sleeping for #{@delay} Seconds!!".colorize(:yellow).to_s
-            # sleep @delay unless pass == passwords.last
-            delay() unless pass == passwords.last
-        end
+        #         if db
+        #             insert_db_sprayed(db, uname, pass)
+        #             insert_db_valid(db, uname, pass) if attempt[2]
+        #         end
+
+
+        #         # puts "#{uname}, #{pass}, #{(attempt[2]) ? "valid" : "invalid".colorize(:red).to_s }, #{ (attempt[3]) ? "locked".colorize(:red).to_s : "notlocked"  }"
+        #         puts "#{attempt[0].as(String)}, #{attempt[1].as(String)},#{" valid".colorize(:green).to_s if attempt[2]},#{" locked".colorize(:red).to_s if attempt[3]}, #{" mfa".colorize(:yellow).to_s if attempt[4]}"
+        #         # if valid and webhook not "" send webhook 
+        #         if attempt[2] && @webhook_url != ""
+        #             web_hook(attempt[0].as(String), attempt[1].as(String), attempt[4])
+        #         end
+        #         jitter() unless uname == usernames.last || valid_accounts.includes? uname || already_sprayed.includes? "#{uname}:#{pass}"
+        #     end
+
+        #     puts "Sleeping for #{@delay} Seconds!!".colorize(:yellow).to_s
+        #     # sleep @delay unless pass == passwords.last
+        #     delay() unless pass == passwords.last
+        # end
 
     end
 
@@ -322,6 +459,21 @@ class Sprayer
         return valid_accounts
     end
 
+    protected def generate_uap_list() 
+        ar = [] of Array(String)
+        @usernames.each do |uname|
+            ar << [uname, uname]
+        end 
+        return ar 
+    end
+
+    protected def generate_combo_list(password)
+        ar = [] of Array(String)
+        @usernames.each do |uname|
+            ar << [uname, password]
+        end 
+        return ar 
+    end
 
 
     protected def jitter()
@@ -336,6 +488,19 @@ class Sprayer
             sleep 0.001
         end 
         print "\r                        \r"
+    end
+    protected def t_jitter() # threaded jitter
+        if @jitter < 1000
+            # print "Jitter: #{@jitter / 1000}"
+            sleep ( @jitter / 1000 )
+            #print "\r                        \r"
+            return 
+        end
+        @jitter.times do |t|
+            #print "\rJitter: #{@jitter - t} "
+            sleep 0.001
+        end 
+        #print "\r                        \r"
     end
 
     protected def delay()
