@@ -1,0 +1,13 @@
+name: SprayCannon
+version: 0.1.0
+
+authors:
+  - CausticKirbyZ (Mike Hedlund)
+
+description: |
+  SprayCannon is a CLI tool for password spraying. Featuring Lockout/MFA detection, Webhooks, jitter, delays, and more.  
+
+license: GPL3
+dependencies:
+  sqlite3:
+    github: crystal-lang/crystal-sqlite3
