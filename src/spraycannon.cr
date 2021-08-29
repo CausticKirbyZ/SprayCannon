@@ -117,6 +117,10 @@ parser = OptionParser.new() do |opts|
     end
 
     opts.separator("Additional Options:")
+    
+    opts.on("--threads=[count]","Will send a teams webhook if valid credential is found!!") do |tcount|
+        options["threads"] = tcount.to_i
+    end  
 
     opts.on("--nodb","does not use the database") do
         options["db"] = false
@@ -128,7 +132,8 @@ parser = OptionParser.new() do |opts|
         options["webhook"] = webhook
     end 
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        puts %"msol "
+        ["msol (o365)","ExchageEAS","vpn_sonicwall_virtualoffice","vpn_sonicwall_digest","vpn_fortinet"].each {|t| puts t}
+        exit 0
     end 
 
 
