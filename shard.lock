@@ -4,10 +4,6 @@ shards:
     git: https://github.com/crystal-lang/crystal-db.git
     version: 0.10.1
 
-  fiberpool:
-    git: https://github.com/akitaonrails/fiberpool.git
-    version: 0.1.0+git.commit.cdecd02c308a2b04aa7845df2d02bf2b460be648
-
   sqlite3:
     git: https://github.com/crystal-lang/crystal-sqlite3.git
     version: 0.18.0
