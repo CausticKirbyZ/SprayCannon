@@ -1,5 +1,5 @@
 # Why
-I got sick and tired of having to spray a password every 30-60 min for my userlist. I also would add to a userlist as an engagement went. While i added users they would not have all the old password guesses that the old users did. So i created....
+I got sick and tired of having to manually spray a password every 30-60 min for my userlist and managing a larget list with what passwords for what was the worst. Also adding to a userlist as an engagement went. While i added users they would not have all the old password guesses that the old users did. So i created....
 
 <br>
 <img src="./mdassets/spraycannon_art.png"> 
@@ -17,10 +17,12 @@ A fast password spray tool designed to simplify and automate many password spray
 * Teams webhook support
 
 ## Current supported spray types 
+fully implemented means that the module works as designed. some protocols may not support mfa detection. others i have not had a chance to compare the "valid" check for one with MFA enabled ( ex. sonicall virtualoffice )
 |Type|MFA support| lockout detection | fully implemented |
 |----|-----------|-------------------|-------------------|
 ExchangeEAS|no  |  no               | yes
 SonicwallVirtualOffice|no  |  no    | yes (no mfa though) 
+Sonicwall(the digest one) | no | no | yes
 O365|YES|YES|yes
 VPN Cisco|no|no|no
 VPN Fortinet|no|no|kinda(use at own risk)
@@ -44,6 +46,20 @@ Additional Options:
 ```
 
 
+## TODO
+* multithread things
+* add a spraygroup feature - so that you can spray multiple back to back but then delay. this may be usefull for some lockout policies. 
+* go public
+* 
+
+
+
+## Contributing
+* Fork the project and submit a request with your feature/fix 
+* Submit a feature request through github(look at the wiki/todo list first your idea might already be there or answered)
+* If you have a new spray type you want submit a feature request or give me the web request sequence (burp files are nice). NOTE if its not public/you cant prove you own something i wont test password spraying unless i can spin it up in my lab 
+
+
 
 
 
@@ -64,9 +80,9 @@ interactive commands:
 
 
 
-# On the backs of Giants 
+# On the shoulders of Giants 
 ### None of the above would have been possible if not for the previous work done by: 
 * @dafthack - [mailsniper](https://github.com/dafthack/MailSniper)/[MSOLSpray](https://github.com/dafthack/MSOLSpray)
-* @byt3bl33d3r - [CrackMapExec](https://github.com/byt3bl33d3r/CrackMapExec) (inspiration for spdb)
+* @byt3bl33d3r - [CrackMapExec](https://github.com/byt3bl33d3r/CrackMapExec)'s cmedb (inspiration for spdb)
 
-## Thank you all for your inspiration and contributions to the community
+# Thank you all for your inspiration and contributions to the community!!!
