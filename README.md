@@ -6,16 +6,16 @@ I got sick and tired of having to manually spray a password every 30-60 min for 
 
 
 # **SprayCannon**
-A fast password spray tool designed to simplify and automate many password spraying problems i faced. 
+A fast password spray tool designed to simplify and automate many password spraying problems i faced.
 ## **Features**
 * Database to keep track of what has been sprayed/valid finds (Sqlite3)
 * Supports username,password (as single inputs and files )
-* Jitter between individual authenticaion requests 
-* Delay between passwords 
+* Jitter between individual authenticaion requests
+* Delay between passwords
 * MFA detection ( on a per module basis )
 * Lockout detection (on a per module basis )
 * Teams webhook support
-* Multithreaded 
+* Multithreaded
 
 ## **Current supported spray types**
 fully implemented means that the module works as designed. some protocols may not support mfa detection. others i have not had a chance to compare the "valid" check for one with MFA enabled ( ex. sonicall virtualoffice )

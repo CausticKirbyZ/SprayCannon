@@ -55,7 +55,8 @@ options = {
     "webhook" => nil,
     "domain" => "WORKGROUP",
     "db" => true,
-    "threads" => 1
+    "threads" => 1,
+    "user-as-password" => false
 }
 
 
@@ -68,7 +69,7 @@ parser = OptionParser.new() do |opts|
 
     
     opts.separator("Global options:")
-    opts.on("-s", "--spray-type=[spraytype]", "Set spray type. (msol(o365), ExchageEAS, vpn_sonicwall_virtualoffice, vpn_sonicwall_digest, vpn_fortinet(_simple))") do |type|
+    opts.on("-s", "--spray-type=[spraytype]", "Set spray type. use --list-spraytypes to get current list") do |type|
         options["spraytype"] = type
     end
 
@@ -130,11 +131,22 @@ parser = OptionParser.new() do |opts|
     opts.on("--user-as-password","Sets the user and password to the same string") do
         options["user-as-password"] = true
     end 
+    opts.on("--user-and-password","Sets the user and password to the same index for each item. or use with --user-pass-format-file") do
+        options["user-password"] = true
+    end 
+    opts.on("--user-pass-format-file=[filename]","For use with --user-password. supplied file in 'user:password' format") do |upffile|
+        if File.exists?(upffile) 
+            File.each_line(upffile) do |line|
+                options["usernames"].as(Array(String)) << line.strip().split(":")[0]
+                options["passwords"].as(Array(String)) << line.strip().split(":")[1]
+            end
+        end
+    end 
     opts.on("--webhook=[url]","Will send a teams webhook if valid credential is found!!") do |webhook|
         options["webhook"] = webhook
     end 
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        ["msol (o365)","ExchageEAS","vpn_sonicwall_virtualoffice","vpn_sonicwall_digest","vpn_fortinet"].each {|t| puts t}
+        ["msol (o365)","ExchageEAS","vpn_sonicwall_virtualoffice","vpn_sonicwall_digest","vpn_fortinet","spiceworks"].each {|t| puts t}
         exit 0
     end 
 
@@ -233,6 +245,10 @@ s.webhook_url = options["webhook"].as(String) unless options["webhook"].nil?
 if options["user-as-password"]
     # options["passwords"] = options["usernames"]
    s.uap = true
+end
+if options["user-password"]
+    # options["passwords"] = options["usernames"]
+   s.upf = true
 end
 
 # puts "rand: #{max(rand())}"

