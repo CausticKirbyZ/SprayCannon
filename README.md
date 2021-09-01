@@ -1,4 +1,4 @@
-# Why
+# **Why**
 I got sick and tired of having to manually spray a password every 30-60 min for my userlist and managing a larget list with what passwords for what was the worst. Also adding to a userlist as an engagement went. While i added users they would not have all the old password guesses that the old users did. So i created....
 
 <br>
@@ -15,6 +15,7 @@ A fast password spray tool designed to simplify and automate many password spray
 * MFA detection ( on a per module basis )
 * Lockout detection (on a per module basis )
 * Teams webhook support
+* Multithreaded 
 
 ## **Current supported spray types**
 fully implemented means that the module works as designed. some protocols may not support mfa detection. others i have not had a chance to compare the "valid" check for one with MFA enabled ( ex. sonicall virtualoffice )
@@ -78,7 +79,7 @@ which will take longer but will be more optimized (not that you need it) it also
 
 
 ## TODO
-* multithread things ( templates started )
+* ~~multithread things ( templates started )~~
 * add a spraygroup feature - so that you can spray multiple back to back but then delay. this may be usefull for some lockout policies. 
 * go public
 * add wiki

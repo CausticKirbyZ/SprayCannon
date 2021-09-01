@@ -11,3 +11,5 @@ license: GPL3
 dependencies:
   sqlite3:
     github: crystal-lang/crystal-sqlite3
+  crystagiri:
+    github: madeindjs/crystagiri
