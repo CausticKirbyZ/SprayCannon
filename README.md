@@ -22,12 +22,12 @@ fully implemented means that the module works as designed. some protocols may no
 |Type|MFA support| lockout detection | fully implemented |
 |----|-----------|-------------------|-------------------|
 ExchangeEAS|no  |  no               | yes
-SonicwallVirtualOffice|no  |  no    | yes (no mfa though) 
-Sonicwall(the digest one) | no | no | yes
+SonicwallVirtualOffice|no  |  no    | yes (no mfa though) (validation not confirmed)
+Sonicwall(the digest one) | no | no | yes(validation not confirmed)
 O365|YES|YES|yes
 VPN Cisco|no|no|no
-VPN Fortinet|no|no|kinda(use at own risk)
-Spiceworks|no|no|yes(no mfa/lockout though)
+VPN Fortinet|no|no|kinda(use at own risk)(validataion not confirmed)
+Spiceworks|no|no|no(no mfa/lockout though)(validataion not confirmed)
 
 
 ```

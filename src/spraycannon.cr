@@ -10,6 +10,7 @@ require "./spray_types/sonicwall_digest"
 require "./spray_types/ExchangeEAS"
 require "./spray_types/fortigate_login"
 require "./spray_types/spiceworks"
+require "./spray_types/infinatecampus"
 
 
 # require "./sprayer/smbsprayer"
@@ -39,7 +40,7 @@ art = "
 ╚════".colorize(:green).to_s + "██".colorize(:blue).to_s + "║".colorize(:green).to_s + "██".colorize(:blue).to_s + "╔═══╝".colorize(:green).to_s + " ██".colorize(:blue).to_s + "╔══".colorize(:green).to_s + "██".colorize(:blue).to_s + "╗".colorize(:green).to_s + "██".colorize(:blue).to_s + "╔══".colorize(:green).to_s + "██".colorize(:blue).to_s + "║  ╚".colorize(:green).to_s + "██".colorize(:blue).to_s + "╔╝  ".colorize(:green).to_s + "██".colorize(:blue).to_s + "║".colorize(:green).to_s + "     ██".colorize(:blue).to_s + "╔══".colorize(:green).to_s + "██".colorize(:blue).to_s + "║".colorize(:green).to_s + "██".colorize(:blue).to_s + "║╚".colorize(:green).to_s + "██".colorize(:blue).to_s + "╗".colorize(:green).to_s + "██".colorize(:blue).to_s + "║".colorize(:green).to_s + "██".colorize(:blue).to_s + "║╚".colorize(:green).to_s + "██".colorize(:blue).to_s + "╗".colorize(:green).to_s + "██".colorize(:blue).to_s + "║".colorize(:green).to_s + "██".colorize(:blue).to_s + "║".colorize(:green).to_s + "   ██".colorize(:blue).to_s + "║".colorize(:green).to_s + "██".colorize(:blue).to_s + "║╚".colorize(:green).to_s + "██".colorize(:blue).to_s + "╗".colorize(:green).to_s + "██".colorize(:blue).to_s + "║".colorize(:green).to_s + "
 ███████".colorize(:blue).to_s + "║".colorize(:green).to_s + "██".colorize(:blue).to_s + "║".colorize(:green).to_s + "     ██".colorize(:blue).to_s + "║".colorize(:green).to_s + "  ██".colorize(:blue).to_s + "║".colorize(:green).to_s + "██".colorize(:blue).to_s + "║".colorize(:green).to_s + "  ██".colorize(:blue).to_s + "║".colorize(:green).to_s + "   ██".colorize(:blue).to_s + "║   ╚".colorize(:green).to_s + "██████".colorize(:blue).to_s + "╗".colorize(:green).to_s + "██".colorize(:blue).to_s + "║ ".colorize(:green).to_s + " ██".colorize(:blue).to_s + "║".colorize(:green).to_s + "██".colorize(:blue).to_s + "║ ╚".colorize(:green).to_s + "████".colorize(:blue).to_s + "║".colorize(:green).to_s + "██".colorize(:blue).to_s + "║ ╚".colorize(:green).to_s + "████".colorize(:blue).to_s + "║╚".colorize(:green).to_s + "██████".colorize(:blue).to_s + "╔╝".colorize(:green).to_s + "██".colorize(:blue).to_s + "║ ╚".colorize(:green).to_s + "████".colorize(:blue).to_s + "║".colorize(:green).to_s + "
 ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═══╝".colorize(:green).to_s + "
-Built by: CausticKibyZ (https://github.com/CausticKirbyZ/SprayCannon)
+Built by: CausticKirbyZ (https://github.com/CausticKirbyZ/SprayCannon)
 "
 
 
@@ -56,7 +57,8 @@ options = {
     "domain" => "WORKGROUP",
     "db" => true,
     "threads" => 1,
-    "user-as-password" => false
+    "user-as-password" => false,
+    "user-password" => false
 }
 
 
@@ -134,7 +136,7 @@ parser = OptionParser.new() do |opts|
     opts.on("--user-and-password","Sets the user and password to the same index for each item. or use with --user-pass-format-file") do
         options["user-password"] = true
     end 
-    opts.on("--user-pass-format-file=[filename]","For use with --user-password. supplied file in 'user:password' format") do |upffile|
+    opts.on("--user-and-password-file=[filename]","For use with --user-password. supplied file in 'user:password' format") do |upffile|
         if File.exists?(upffile) 
             File.each_line(upffile) do |line|
                 options["usernames"].as(Array(String)) << line.strip().split(":")[0]
@@ -146,7 +148,7 @@ parser = OptionParser.new() do |opts|
         options["webhook"] = webhook
     end 
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        ["msol (o365)","ExchageEAS","vpn_sonicwall_virtualoffice","vpn_sonicwall_digest","vpn_fortinet","spiceworks"].each {|t| puts t}
+        ["msol (o365)","ExchageEAS","vpn_sonicwall_virtualoffice","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus"].each {|t| puts t}
         exit 0
     end 
 
@@ -230,6 +232,8 @@ when "exchangeeas"
     s.domain = options["domain"].as(String)
 when "spiceworks"
     s = Spiceworks.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+when "infinatecampus"
+    s = InfinateCampus.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 else 
     STDERR.puts "Not a valit sprayer type!!".colorize(:red)
     exit 1

@@ -211,7 +211,7 @@ class Sprayer
         # start queuing things to be sprayed
         # if user:password format
         if @upf # user password format ie:    uername:password for 1:1 username password combos 
-            puts "made it to upf"
+            STDERR.puts "Spraying as user:password format"
             upflist = generate_upf_list()
             # puts "Sending to queue_channel"
             upflist.each do |item|
@@ -236,6 +236,7 @@ class Sprayer
         elsif @uap # user as password
             # puts "Generating user:user list"
             uap_list = generate_uap_list()
+            STDERR.puts "Spraying as user:user format"
             # puts "Sending to queue_channel"
             uap_list.each do |item|
                 if @lockout
@@ -257,7 +258,7 @@ class Sprayer
             end
         else 
             @passwords.each do |pass|
-                # STDERR.puts "Generating user:user list"
+                STDERR.puts "Spraying as user:password format"
                 combo_list = generate_combo_list(pass)
                 # STDERR.puts "Sending to queue_channel"
                 combo_list.each do |item|
@@ -505,7 +506,7 @@ class Sprayer
     protected def generate_upf_list()
         ar = [] of Array(String)
         @usernames.each_index do |i|
-            puts "#{@usernames[i]}:#{@passwords[i]}"
+            # puts "#{@usernames[i]}:#{@passwords[i]}"
             ar << [@usernames[i] , @passwords[i]]
         end 
         return ar 
