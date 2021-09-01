@@ -141,7 +141,7 @@ class Sprayer
                     begin # handle any errors with a spray 
                         # do the spray 
                         res = spray(uname, pass)
-                    rescue e 
+                    rescue
                         puts "Error: ".colorize(:yellow).to_s + "#{uname}:#{pass}".colorize(:red).to_s + " crached durring a spray. user will not be logged to the db".colorize(:yellow).to_s
                         queued_count -= 1 # make sure the count is decremented so it wont hang 
                         next

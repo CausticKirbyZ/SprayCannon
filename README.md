@@ -98,6 +98,8 @@ which will take longer but will be more optimized (not that you need it) it also
 * Fork the project and submit a request with your feature/fix 
 * Submit a feature request through github(look at the wiki/todo list first your idea might already be there or answered)
 * If you have a new spray type you want submit a feature request or give me the web request sequence (burp files are nice). NOTE if its not public/you cant prove you own something i wont test password spraying unless i can spin it up in my lab 
+* for new spraytypes there is a template.cr that should be easy/convienient to use to implement new auth types
+
 
 
 
@@ -121,7 +123,7 @@ interactive commands:
 
 
 # **On the shoulders of Giants**
-### None of the above would have been possible if not for the previous work done by: 
+### Some of the available spraytypes/options would not have been possible if not for the previous work done by: 
 * @dafthack - [mailsniper](https://github.com/dafthack/MailSniper)/[MSOLSpray](https://github.com/dafthack/MSOLSpray)
 * @byt3bl33d3r - [CrackMapExec](https://github.com/byt3bl33d3r/CrackMapExec)'s cmedb (inspiration for spdb)
 * ustayready - [fireprox](https://github.com/ustayready/fireprox)
