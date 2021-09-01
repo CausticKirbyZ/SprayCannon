@@ -27,6 +27,8 @@ Sonicwall(the digest one) | no | no | yes
 O365|YES|YES|yes
 VPN Cisco|no|no|no
 VPN Fortinet|no|no|kinda(use at own risk)
+Spiceworks|no|no|yes(no mfa/lockout though)
+
 
 ```
 Global options:
