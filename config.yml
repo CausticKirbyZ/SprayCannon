@@ -1,0 +1,8 @@
+webhooks:
+  Teams: 
+    - "put webhook url here"
+  Slack: 
+    - "put slack hook here"
+  Discord: 
+    - "not sure why you use this but sure put'r here"
+
