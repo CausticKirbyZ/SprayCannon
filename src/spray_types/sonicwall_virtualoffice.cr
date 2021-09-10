@@ -27,7 +27,7 @@ class Sonicwall_VirtualOffice < Sprayer
         #     url = @target
         # end
         url = URI.parse(@target)
-        puts "url: #{url}" 
+        # puts "url: #{url}" 
     
         # context = OpenSSL::SSL::Context::Client.insecure
         context = OpenSSL::SSL::Context::Client.new

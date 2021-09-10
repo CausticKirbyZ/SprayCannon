@@ -13,3 +13,5 @@ dependencies:
     github: crystal-lang/crystal-sqlite3
   crystagiri:
     github: madeindjs/crystagiri
+  lexbor:
+    github: kostya/lexbor

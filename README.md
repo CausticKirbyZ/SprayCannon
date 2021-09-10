@@ -22,6 +22,7 @@ fully implemented means that the module works as designed. some protocols may no
 |Type|MFA support| lockout detection | fully implemented |
 |----|-----------|-------------------|-------------------|
 ExchangeEAS|no  |  no               | yes
+ExchangeOWA|no  |  no               | yes (could be a little more refined but fully working)
 SonicwallVirtualOffice|no  |  no    | yes (no mfa though) (validation not confirmed)
 Sonicwall(the digest one) | no | no | yes(validation not confirmed)
 O365|YES|YES|yes
@@ -32,7 +33,7 @@ Spiceworks|no|no|no(no mfa/lockout though)(validataion not confirmed)
 
 ```
 Global options:
-    -spray-type=[spraytype]     Set spray type. (o365, ExchageEAS, vpn_sonicwall_virtualoffice, vpn_sonicwall_digest, vpn_fortinet)
+    -s, --spray-type=[spraytype]     Set spray type. use --list-spraytypes to get current list
     -t, --target=[ip/hostname]       Target to spray
     -u, --username=[name]            Username or user txt file to spray from
     -p, --password=[password]        Target to spray
@@ -42,9 +43,15 @@ Global options:
     -h, --help                       Print Help menu
     -v, --verbose                    Print verbose information
 Additional Options:
+    --threads=[count]                Use worker threads to drasticly speed things up!(default is 1)
     --nodb                           does not use the database
     --user-as-password               Sets the user and password to the same string
+    --user-and-password              Sets the user and password to the same index for each item. or use with --user-pass-format-file
+    --user-and-password-file=[filename]
+                                     For use with --user-password. supplied file in 'user:password' format
     --webhook=[url]                  Will send a teams webhook if valid credential is found!!
+    --list-spraytypes                List the available spraytypes.
+mike@ArchDev ~/D/SprayCannon (main) [1]>
 
 ```
 

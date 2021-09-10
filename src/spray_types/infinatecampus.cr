@@ -61,9 +61,11 @@ class InfinateCampus < Sprayer
         
         # here is the basic 
         page = client.post("/campus/verify.jsp", headers: header, form: form)
-
-        if page.status_code != 302 
+        # puts page.headers["Location"]
+        if !page.headers["Location"].includes? "status=password-error"
             valid = true 
+        # elsif page.status_code != 302
+        #     STDERR.puts "Something went wrong.... not a 302"
         end
 
 

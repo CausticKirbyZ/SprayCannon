@@ -8,6 +8,7 @@ require "./spray_types/fortigate"
 require "./spray_types/sonicwall_virtualoffice"
 require "./spray_types/sonicwall_digest"
 require "./spray_types/ExchangeEAS"
+require "./spray_types/ExchangeOWA"
 require "./spray_types/fortigate_login"
 require "./spray_types/spiceworks"
 require "./spray_types/infinatecampus"
@@ -229,6 +230,9 @@ when "vpn_sonicwall_virtualoffice"
 #     s = SMBsprayer.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 when "exchangeeas"
     s = ExchageEAS.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+    s.domain = options["domain"].as(String)
+when "exchangeowa"
+    s = ExchangeOWA.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     s.domain = options["domain"].as(String)
 when "spiceworks"
     s = Spiceworks.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
