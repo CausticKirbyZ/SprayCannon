@@ -51,8 +51,6 @@ Additional Options:
                                      For use with --user-password. supplied file in 'user:password' format
     --webhook=[url]                  Will send a teams webhook if valid credential is found!!
     --list-spraytypes                List the available spraytypes.
-mike@ArchDev ~/D/SprayCannon (main) [1]>
-
 ```
 
 
