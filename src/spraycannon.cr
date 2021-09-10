@@ -149,7 +149,7 @@ parser = OptionParser.new() do |opts|
         options["webhook"] = webhook
     end 
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        ["msol (o365)","ExchageEAS","vpn_sonicwall_virtualoffice","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus"].each {|t| puts t}
+        ["msol (o365)","ExchageEAS","ExchageOWA","vpn_sonicwall_virtualoffice","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus"].each {|t| puts t}
         exit 0
     end 
 
