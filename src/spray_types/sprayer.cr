@@ -308,6 +308,8 @@ class Sprayer
             while queued_count > 0 
                 print "\rItems in queue to be sprayed: #{queued_count} " 
                 sleep 1 
+               
+
             end
 
             # end
@@ -614,9 +616,18 @@ class Sprayer
     end
 
     protected def delay()
+        x = false 
         @delay.times do |t|
-            STDERR.print "\rSleeping: #{@delay - t} "
-            sleep 1
+            break if x 
+            STDERR.print "\rSleeping: #{@delay - t}  (press enter to skip delay)  "
+            begin 
+                STDIN.read_timeout = 1 # 
+                STDIN.gets 
+                x = true 
+            rescue 
+                next
+            end
+            puts "continuing "
         end
         STDERR.print "\n"
     end
