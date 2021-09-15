@@ -1,4 +1,5 @@
 all:
+	shards install
 	crystal build -p src/spdb.cr 
 	crystal build -p src/spraycannon.cr 
 

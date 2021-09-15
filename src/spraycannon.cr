@@ -250,10 +250,15 @@ s.jitter = options["jitter"].as(Int32)
 s.webhook_url = options["webhook"].as(String) unless options["webhook"].nil?
 
 
+if  options["user-as-password"] && options["user-password"]
+    STDERR.puts "you cant set both user-password and user-as-password at the same time. Pick ONE!"
+end
+
 if options["user-as-password"]
     # options["passwords"] = options["usernames"]
    s.uap = true
 end
+
 if options["user-password"]
     # options["passwords"] = options["usernames"]
    s.upf = true

@@ -15,8 +15,8 @@ class Sprayer
     # property rate : Int32
 
     def initialize(username : String, password : String)
-        @usernames = [] of String 
-        @passwords = [] of String 
+        @usernames = [] of String
+        @passwords = [] of String
         @usernames << username
         @passwords << password
         @delay = 30
@@ -77,7 +77,7 @@ class Sprayer
     # below is just for testing purposes  
     # should return an array of [username, password, valid, lockout, mfa]
     def spray(username : String, password : String) : Array(String | Bool)
-        puts "DEFAULT METHOD!!! YOUR SPRAY IS NOT ACTUALLY WORKING!!!!".colorize(:red)
+        puts "\rDEFAULT METHOD!!! YOUR SPRAY IS NOT ACTUALLY WORKING!!!!".colorize(:red)
 
         # the below is just a simulation for testing purposes
 
@@ -217,7 +217,8 @@ class Sprayer
                 upflist = generate_upf_list()
                 # puts "Sending to queue_channel"
                 upflist.each do |item|
-                    if @lockout
+
+                    if @lockout && !cont 
                         STDERR.puts "Lockout detected!!!".colorize(:red)
                         STDERR.puts "Continue? (y/N)".colorize(:yellow)
                         x = gets
@@ -228,6 +229,12 @@ class Sprayer
                             STDERR.puts "Quiting spraying attack!!!".colorize(:yellow)
                             exit 1
                         end
+                    end
+
+                    if already_sprayed.includes? "#{item[0]}:#{item[1]}" || valid_accounts.includes? item[0]
+                        STDERR.puts "Skipping #{item[0]}:#{item[1]} becasue its already sprayed!!".colorize(:yellow).to_s
+                        # queued_count -= 1 # remove the count for already being sprayed
+                        next
                     end
                 
                     # print "\rItems in queue to be sprayed: #{queued_count} " 
@@ -241,7 +248,7 @@ class Sprayer
                 STDERR.puts "Spraying as user:user format"
                 # puts "Sending to queue_channel"
                 uap_list.each do |item|
-                    if @lockout
+                    if @lockout && !cont 
                         STDERR.puts "Lockout detected!!!".colorize(:red)
                         STDERR.puts "Continue? (y/N)".colorize(:yellow)
                         x = gets
@@ -252,6 +259,12 @@ class Sprayer
                             STDERR.puts "Quiting spraying attack!!!".colorize(:yellow)
                             exit 1
                         end
+                    end
+
+                    if already_sprayed.includes? "#{item[0]}:#{item[1]}" || valid_accounts.includes? item[0]
+                        STDERR.puts "Skipping #{item[0]}:#{item[1]} becasue its already sprayed!!".colorize(:yellow).to_s
+                        # queued_count -= 1 # remove the count for already being sprayed
+                        next
                     end
                     # print "\rItems in queue to be sprayed: #{queued_count} " 
                     queue_channel.send item 
@@ -272,9 +285,15 @@ class Sprayer
                             if (x.downcase =~ /ye?s?/)
                                 cont = true
                             else 
-                                STDERR.puts "Quiting spraying attack!!!".colorize(:yellow)
+                                STDERR.puts "\nQuiting spraying attack!!!".colorize(:yellow)
                                 exit 1
                             end
+                        end
+
+                        if already_sprayed.includes? "#{item[0]}:#{item[1]}" || valid_accounts.includes? item[0]
+                            STDERR.puts "\rSkipping #{item[0]}:#{item[1]} becasue its already sprayed!!".colorize(:yellow).to_s
+                            # queued_count -= 1 # remove the count for already being sprayed
+                            next
                         end
                         # print "\rItems in queue to be sprayed: #{queued_count} " 
                         queue_channel.send item 
@@ -287,7 +306,7 @@ class Sprayer
 
             # sleep until queued count finishes 
             while queued_count > 0 
-                print "\rItems in queue to be sprayed: #{queued_count}" 
+                print "\rItems in queue to be sprayed: #{queued_count} " 
                 sleep 1 
             end
 
@@ -296,7 +315,49 @@ class Sprayer
 
         if thread_count < 2
         # # if user as password just spray once
-            if @uap
+                        # start queuing things to be sprayed
+            # if user:password format
+            if @upf # user password format ie:    uername:password for 1:1 username password combos 
+                STDERR.puts "Spraying as user:password format"
+                upflist = generate_upf_list()
+                # puts "Sending to queue_channel"
+                upflist.each do |item|
+                    
+                    if already_sprayed.includes? "#{item[0]}:#{item[1]}" || valid_accounts.includes? item[0]
+                        STDERR.puts "Skipping #{item[0]}:#{item[1]} becasue its already sprayed!!".colorize(:yellow).to_s
+                        # queued_count -= 1 # remove the count for already being sprayed
+                        next
+                    end
+
+                    attempt = spray(item[0],item[1])
+                    next if attempt.nil?
+                    @lockout = attempt[3].as(Bool|Nil)
+
+                    if @lockout && cont == false
+                        STDERR.puts "Lockout detected!!!".colorize(:red)
+                        STDERR.puts "Continue? (y/N)".colorize(:yellow)
+                        x = gets
+                        return if x.nil? || x == "\r"
+                        if (x.downcase =~ /ye?s?/)
+                            cont = true
+                        else 
+                            STDERR.puts "Quiting spraying attack!!!".colorize(:yellow)
+                            return
+                        end
+                    end
+
+                    if db
+                        insert_db_sprayed(db, item[0],item[1]) unless attempt[3] # add to sprayed unless it was locked
+                        insert_db_valid(db, item[0],item[1]) if attempt[2] # ie valid
+                    end
+
+
+                    puts "#{attempt[0].as(String)}, #{attempt[1].as(String)},#{" Valid".colorize(:green).to_s if attempt[2]},#{" locked".colorize(:red).to_s if attempt[3]}, #{" mfa".colorize(:yellow).to_s if attempt[4]}"
+                    
+                    jitter() unless item[0] == @usernames.last || valid_accounts.includes? item[0] || already_sprayed.includes? "#{item[0]}:#{item[1]}"
+                end
+                return 
+            elsif @uap # user as password
                 usernames.each do |uname|
                     if already_sprayed.includes? "#{uname}:#{uname}" || valid_accounts.includes? uname
                         STDERR.puts "Skipping #{uname}:#{uname} becasue its already sprayed!!".colorize(:yellow).to_s
@@ -317,7 +378,6 @@ class Sprayer
                             return
                         end
                     end
-                    
                 
 
                     if db
@@ -326,7 +386,7 @@ class Sprayer
                     end
 
 
-                    puts "#{attempt[0].as(String)}, #{attempt[1].as(String)},#{" Valid".colorize(:green).to_s if attempt[2]},#{" locked" if attempt[3]}, #{" mfa" if attempt[4]}"
+                    puts "#{attempt[0].as(String)}, #{attempt[1].as(String)},#{" Valid".colorize(:green).to_s if attempt[2]},#{" locked".colorize(:red).to_s if attempt[3]}, #{" mfa".colorize(:yellow).to_s if attempt[4]}"
                     jitter() unless uname == usernames.last
                 end
                 return 
@@ -507,7 +567,7 @@ class Sprayer
         return ar 
     end
 
-    protected def generate_upf_list()
+    protected def generate_upf_list() : Array(Array(String))
         ar = [] of Array(String)
         @usernames.each_index do |i|
             # puts "#{@usernames[i]}:#{@passwords[i]}"
@@ -521,7 +581,7 @@ class Sprayer
         @usernames.each do |uname|
             ar << [uname, password]
         end 
-        return ar 
+        return ar
     end
 
 
@@ -538,6 +598,7 @@ class Sprayer
         end 
         print "\r                        \r"
     end
+
     protected def t_jitter() # threaded jitter
         if @jitter < 1000
             # print "Jitter: #{@jitter / 1000}"
