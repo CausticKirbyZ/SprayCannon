@@ -6,6 +6,7 @@ require "./spray_types/sprayer"
 require "./spray_types/o365"
 require "./spray_types/fortigate"
 require "./spray_types/sonicwall_virtualoffice"
+require "./spray_types/sonicwall_virtualoffice_5.x"
 require "./spray_types/sonicwall_digest"
 require "./spray_types/ExchangeEAS"
 require "./spray_types/ExchangeOWA"
@@ -22,6 +23,7 @@ require "./spray_types/infinatecampus"
 # TODO LOG
 ############
 
+version = "0.1.6"
 
 # Feature requests 
 # - timstamp the login, start, end - done!
@@ -47,11 +49,13 @@ Built by: CausticKirbyZ (https://github.com/CausticKirbyZ/SprayCannon)
 
 
 options = {
+    "spraytype" => nil,
     "user-as-password" => false,
     "verbose" => false,
     "target" => "",
     "usernames" => [] of String,
     "passwords" => [] of String,
+    "useragents" => [] of String,
     "delay" => 30,
     "jitter" => 1,
     "webhook" => nil,
@@ -117,6 +121,10 @@ parser = OptionParser.new() do |opts|
         puts opts
         exit(0)
     end
+    opts.on("--version","Print current version") do
+        puts version
+        exit(0)
+    end
 
     opts.on("-v","--verbose","Print verbose information") do
         options["verbose"] = true 
@@ -131,13 +139,17 @@ parser = OptionParser.new() do |opts|
     opts.on("--nodb","does not use the database") do
         options["db"] = false
     end 
+    
     opts.on("--user-as-password","Sets the user and password to the same string") do
         options["user-as-password"] = true
     end 
-    opts.on("--user-and-password","Sets the user and password to the same index for each item. or use with --user-pass-format-file") do
-        options["user-password"] = true
-    end 
+    
+    # opts.on("--user-and-password","Sets the user and password to the same index for each item. or use with --user-pass-format-file") do
+    #     options["user-password"] = true
+    # end 
+    
     opts.on("--user-and-password-file=[filename]","For use with --user-password. supplied file in 'user:password' format") do |upffile|
+        options["user-password"] = true
         if File.exists?(upffile) 
             File.each_line(upffile) do |line|
                 options["usernames"].as(Array(String)) << line.strip().split(":")[0]
@@ -145,9 +157,22 @@ parser = OptionParser.new() do |opts|
             end
         end
     end 
+    
     opts.on("--webhook=[url]","Will send a teams webhook if valid credential is found!!") do |webhook|
         options["webhook"] = webhook
     end 
+    
+    opts.on("--useragent=[agentstring]","Use a custom useragent string, or a file containing useragents(will chose randomly from them).") do |useragent|
+        if useragent.nil? 
+            puts "user did not supply agent!"
+        end
+        if File.exists?(useragent) 
+            File.each_line(useragent) do |line|
+                options["useragents"].as(Array(String)) << line.strip()
+            end
+        end
+    end 
+    
     opts.on("--list-spraytypes","List the available spraytypes.") do 
         ["msol (o365)","ExchageEAS","ExchageOWA","vpn_sonicwall_virtualoffice","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus"].each {|t| puts t}
         exit 0
@@ -160,13 +185,45 @@ parser = OptionParser.new() do |opts|
         STDERR.puts opts
         exit(1)
     end
+
+    # opts.missing_option do |flag| 
+    #     puts "Missing argument for: #{flag }"
+    #     exit 1 
+    # end
 end
 
 if ARGV.size < 1 
     parser.parse(["--help"])
 else 
-    parser.parse
+    begin 
+        parser.parse
+    rescue ex : OptionParser::MissingOption 
+        if ex.message && ex.message.as(String).includes? "--useragent"
+            STDERR.puts "using random useragents"
+            options["useragents"] = [
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0"
+                ]
+        end
+        # exit 1 
+    # rescue KeyError
+    #     puts "You didnt supply an argument....."
+    #     exit 1
+    # rescue ex
+    #     puts ex.message 
+    #     exit 1 
+    end
 end
+
+
+if options["spraytype"].nil? 
+    puts "You need to enter a spraytype....".colorize(:red)
+    exit 1 
+end
+
+
 
 if options["verbose"].as(Bool)
     STDERR.puts options
@@ -215,7 +272,7 @@ when "fortigate_login"
 when "o365","office365"
     STDERR.puts "Currently in Beta. may not be 100% reliable!!!".colorize(:yellow)
     s = O365.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
-    s.target = "login.microsoft.com"
+    s.target = "https://login.microsoft.com"
     # exit 0 
 when "vpncisco" # need to go find a vpn to check it on and port the ruby file  (and find the ruby file )
     STDERR.puts "Not implemented yet"
@@ -226,6 +283,9 @@ when "vpn_sonicwall_digest"
     
 when "vpn_sonicwall_virtualoffice"
     s = Sonicwall_VirtualOffice.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+    
+when "vpn_sonicwall_virtualoffice_5.x"
+    s = Sonicwall_VirtualOffice_5x.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 # when "smb"
 #     s = SMBsprayer.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 when "exchangeeas"

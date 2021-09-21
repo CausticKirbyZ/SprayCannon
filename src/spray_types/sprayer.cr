@@ -12,6 +12,7 @@ end
 class Sprayer
     property usernames : Array(String), passwords : Array(String), delay : Int32 , jitter : Int32  , target : String, uap : Bool, upf : Bool, webhook_url : String 
     property valid : Array(String)
+    property useragent : Array(String) = ["Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/90.0"]
     # property rate : Int32
 
     def initialize(username : String, password : String)
@@ -221,6 +222,7 @@ class Sprayer
                     if @lockout && !cont 
                         STDERR.puts "Lockout detected!!!".colorize(:red)
                         STDERR.puts "Continue? (y/N)".colorize(:yellow)
+                        # STDIN.read_timeout = 600
                         x = gets
                         exit 1 if x.nil? || x == "\r"
                         if (x.downcase =~ /ye?s?/)
@@ -251,6 +253,7 @@ class Sprayer
                     if @lockout && !cont 
                         STDERR.puts "Lockout detected!!!".colorize(:red)
                         STDERR.puts "Continue? (y/N)".colorize(:yellow)
+                        # STDIN.read_timeout = 600
                         x = gets
                         exit 1 if x.nil? || x == "\r"
                         if (x.downcase =~ /ye?s?/)
@@ -280,6 +283,7 @@ class Sprayer
                         if @lockout && !cont
                             STDERR.puts "Lockout detected!!!".colorize(:red)
                             STDERR.puts "Continue? (y/N)".colorize(:yellow)
+                            # STDIN.read_timeout = 600
                             x = gets
                             exit 1 if x.nil? || x == "\r"
                             if (x.downcase =~ /ye?s?/)
@@ -311,6 +315,7 @@ class Sprayer
                
 
             end
+            return 
 
             # end
         end
@@ -338,6 +343,7 @@ class Sprayer
                     if @lockout && cont == false
                         STDERR.puts "Lockout detected!!!".colorize(:red)
                         STDERR.puts "Continue? (y/N)".colorize(:yellow)
+                        # STDIN.read_timeout = 600
                         x = gets
                         return if x.nil? || x == "\r"
                         if (x.downcase =~ /ye?s?/)
@@ -371,6 +377,7 @@ class Sprayer
                     if @lockout && cont == false
                         STDERR.puts "Lockout detected!!!".colorize(:red)
                         STDERR.puts "Continue? (y/N)".colorize(:yellow)
+                        # STDIN.read_timeout = 600
                         x = gets
                         return if x.nil? || x == "\r"
                         if (x.downcase =~ /ye?s?/)
@@ -408,6 +415,7 @@ class Sprayer
                     if @lockout && cont == false
                         STDERR.puts "Lockout detected!!!".colorize(:red)
                         STDERR.puts "Continue? (y/N)".colorize(:yellow)
+                        # STDIN.read_timeout = 600 # 
                         x = gets
                         return if x.nil?
                         if (x.downcase =~ /[yes]+/)
@@ -622,10 +630,14 @@ class Sprayer
             STDERR.print "\rSleeping: #{@delay - t}  (press enter to skip delay)  "
             begin 
                 STDIN.read_timeout = 1 # 
-                STDIN.gets 
+                STDIN.gets # get a key responce but time out after 1 second.... if get key press break loop
                 x = true 
+                STDIN.read_timeout = nil
             rescue 
                 next
+                STDIN.read_timeout = nil
+            ensure 
+                STDIN.read_timeout = nil
             end
             puts "continuing "
         end
