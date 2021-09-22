@@ -52,7 +52,8 @@ options = {
     "spraytype" => nil,
     "user-as-password" => false,
     "verbose" => false,
-    "target" => "",
+    # "target" => "",
+    "target" => [] of String,
     "usernames" => [] of String,
     "passwords" => [] of String,
     "useragents" => [] of String,
@@ -80,8 +81,15 @@ parser = OptionParser.new() do |opts|
         options["spraytype"] = type
     end
 
-    opts.on("-t","--target=[ip/hostname]","Target to spray") do |target|
-        options["target"] = target.strip
+    opts.on("-t","--target=[ip/hostname]","Target to spray ( could also be a fireprox address )") do |target|
+        # options["target"] = target.strip
+        if File.exists?(target) 
+            File.each_line(target) do |line|
+                options["target"].as(Array(String)) << line.strip()
+            end
+        else 
+            options["target"].as(Array(String)) << target.strip() # unless password.starts_with?("#")
+        end
     end 
     
     opts.on("-u","--username=[name]", "Username or user txt file to spray from") do |uname|
@@ -142,18 +150,14 @@ parser = OptionParser.new() do |opts|
     
     opts.on("--user-as-password","Sets the user and password to the same string") do
         options["user-as-password"] = true
-    end 
+    end
     
-    # opts.on("--user-and-password","Sets the user and password to the same index for each item. or use with --user-pass-format-file") do
-    #     options["user-password"] = true
-    # end 
-    
-    opts.on("--user-and-password-file=[filename]","For use with --user-password. supplied file in 'user:password' format") do |upffile|
+    opts.on("--user-pass-format=[filename]","Supplied file in 'user:password' format") do |upffile|
         options["user-password"] = true
         if File.exists?(upffile) 
             File.each_line(upffile) do |line|
                 options["usernames"].as(Array(String)) << line.strip().split(":")[0]
-                options["passwords"].as(Array(String)) << line.strip().split(":")[1]
+                options["passwords"].as(Array(String)) << line.strip().split(":")[1..].join(':') # make sure if theres a password with : in it to add it back
             end
         end
     end 
@@ -163,18 +167,17 @@ parser = OptionParser.new() do |opts|
     end 
     
     opts.on("--useragent=[agentstring]","Use a custom useragent string, or a file containing useragents(will chose randomly from them).") do |useragent|
-        if useragent.nil? 
-            puts "user did not supply agent!"
-        end
         if File.exists?(useragent) 
             File.each_line(useragent) do |line|
                 options["useragents"].as(Array(String)) << line.strip()
             end
+        else 
+            options["useragents"].as(Array(String)) << useragent.strip()
         end
     end 
     
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        ["msol (o365)","ExchageEAS","ExchageOWA","vpn_sonicwall_virtualoffice","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus"].each {|t| puts t}
+        ["msol (o365)","ExchageEAS","ExchageOWA","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus"].each {|t| puts t}
         exit 0
     end 
 
@@ -218,9 +221,9 @@ else
 end
 
 
-if options["spraytype"].nil? 
+if options["spraytype"].nil?
     puts "You need to enter a spraytype....".colorize(:red)
-    exit 1 
+    exit 1
 end
 
 
@@ -305,9 +308,18 @@ end
 
 exit if s.nil?
 s.delay = options["delay"].as(Int32)
-s.target = options["target"].as(String) unless options["target"] == ""  # unless options["spraytype"].as(String).downcase == "o365"
+# s.target = options["target"].as(String) unless options["target"] == ""  # unless options["spraytype"].as(String).downcase == "o365"
 s.jitter = options["jitter"].as(Int32)
 s.webhook_url = options["webhook"].as(String) unless options["webhook"].nil?
+
+
+# handle if theres multiple targets/multiple proxy endpoints
+if options["target"].as( Array(String) ).size > 1 
+    s.target = options["target"].as(Array(String))[0]
+    s.targets = options["target"].as(Array(String))
+else 
+    s.target = options["target"].as(Array(String))[0]
+end
 
 
 if  options["user-as-password"] && options["user-password"]
@@ -325,6 +337,7 @@ if options["user-password"]
 end
 
 # puts "rand: #{max(rand())}"
+start_time = Time.local.to_s("%Y-%m-%d %H:%M:%S")
 STDERR.puts "Starting spraying at: " + "#{Time.local.to_s("%Y-%m-%d %H:%M:%S")}".colorize(:yellow).to_s
 # STDERR.puts "Spraying...".colorize(:yellow)
 STDERR.puts "Username, Password, Valid, Lockout, MFA"
@@ -336,4 +349,5 @@ else
 end
 
 STDERR.puts "Done spraying now!!!".colorize(:green)
+STDERR.puts "Started at:   #{start_time}"
 STDERR.puts "Completed at: #{Time.local.to_s("%Y-%m-%d %H:%M:%S")}"

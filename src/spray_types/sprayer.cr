@@ -13,6 +13,7 @@ class Sprayer
     property usernames : Array(String), passwords : Array(String), delay : Int32 , jitter : Int32  , target : String, uap : Bool, upf : Bool, webhook_url : String 
     property valid : Array(String)
     property useragent : Array(String) = ["Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/90.0"]
+    property targets : Array(String) = [""]
     # property rate : Int32
 
     def initialize(username : String, password : String)
@@ -27,6 +28,7 @@ class Sprayer
         @upf = false
         @valid = [] of String
         @webhook_url = ""
+        @targets_index = 0
         # @channel : Channel(Array(String|Bool|Nil) | Nil)
         # @rate = 1 
     end
@@ -43,6 +45,7 @@ class Sprayer
         @upf = false
         @valid = [] of String
         @webhook_url = ""
+        @targets_index = 0
     end
 
     def initialize(usernamear : Array(String))
@@ -57,6 +60,7 @@ class Sprayer
         @uap = false
         @upf = false
         @webhook_url = ""
+        @targets_index = 0
     end
 
     def initialize(usernamear : Array(String), passwordar : Array(String))
@@ -71,6 +75,7 @@ class Sprayer
         @uap = false
         @upf = false
         @webhook_url = ""
+        @targets_index = 0
     end
 
 
@@ -128,6 +133,8 @@ class Sprayer
             thread_count.times do |i|
                 spawn do 
                     loop do 
+                        puts @target
+
                         f = queue_channel.receive()
                         break if f.nil? # close the fiber if nil is received # signalling the completion of the spray and can close the fibers 
                         uname = f[0].as(String)
@@ -169,6 +176,9 @@ class Sprayer
                         if res.as(Array(String|Bool))[2].as(Bool) && @webhook_url != ""
                             web_hook(uname, pass, res.as(Array(String|Bool))[4].as(Bool)) # webhook(user,pass,mfabool)
                         end
+
+                        # rotate to the next target if more than one exists 
+                        next_target()
 
                         # finally send the result to the results channel so it can be printed to the user
                         results_channel.send res
@@ -329,6 +339,7 @@ class Sprayer
                 upflist = generate_upf_list()
                 # puts "Sending to queue_channel"
                 upflist.each do |item|
+                    puts @target
                     
                     if already_sprayed.includes? "#{item[0]}:#{item[1]}" || valid_accounts.includes? item[0]
                         STDERR.puts "Skipping #{item[0]}:#{item[1]} becasue its already sprayed!!".colorize(:yellow).to_s
@@ -337,6 +348,7 @@ class Sprayer
                     end
 
                     attempt = spray(item[0],item[1])
+                    next_target()
                     next if attempt.nil?
                     @lockout = attempt[3].as(Bool|Nil)
 
@@ -372,6 +384,7 @@ class Sprayer
                         next
                     end
                     attempt = spray(uname, uname)
+                    next_target()
                     next if attempt.nil?
                     @lockout = attempt[3].as(Bool|Nil)
                     if @lockout && cont == false
@@ -409,6 +422,7 @@ class Sprayer
                         next 
                     end
                     attempt = spray(uname, pass)
+                    next_target()
                     next if attempt.nil?
                     @lockout = attempt[3].as(Bool|Nil)
 
@@ -448,6 +462,12 @@ class Sprayer
                 delay() unless pass == passwords.last
             end
         end
+    end
+
+    protected def next_target()
+        return if @targets.size < 2 
+        @targets_index = ( @targets_index + 1 ) % @targets.size
+        @target = @targets[@targets_index] if @targets.size > 1
     end
 
     protected def insert_db_sprayed(db,username,password)
@@ -597,7 +617,7 @@ class Sprayer
 
     protected def jitter()
         if @jitter < 1000
-            STDERR.print "Jitter: #{@jitter / 1000}"
+            STDERR.print "Jitter: #{@jitter / 1000} \r"
             sleep ( @jitter / 1000 )
             STDERR.print "\r                        \r"
             return 
