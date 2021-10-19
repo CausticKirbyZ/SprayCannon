@@ -14,6 +14,7 @@ require "./spray_types/adfs_forms"
 require "./spray_types/fortigate_login"
 require "./spray_types/spiceworks"
 require "./spray_types/infinatecampus"
+require "./spray_types/cisco_vpn"
 
 
 # require "./sprayer/smbsprayer"
@@ -24,7 +25,7 @@ require "./spray_types/infinatecampus"
 # TODO LOG
 ############
 
-version = "0.1.7"
+version = "0.1.8"
 
 # Feature requests 
 # - timstamp the login, start, end - done!
@@ -178,7 +179,7 @@ parser = OptionParser.new() do |opts|
     end 
     
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        ["msol (o365)","ExchageEAS","ExchageOWA","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus"].each {|t| puts t}
+        ["msol (o365)","ExchageEAS","ExchageOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus"].each {|t| puts t}
         exit 0
     end 
 
@@ -278,10 +279,10 @@ when "o365","office365","msol"
     s = O365.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     options["target"].as( Array(String) )  << "https://login.microsoft.com" 
     # exit 0 
-when "vpncisco" # need to go find a vpn to check it on and port the ruby file  (and find the ruby file )
-    STDERR.puts "Not implemented yet"
-    # s = VPNCisco.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
-    exit 0 
+when "cisco_vpn" # need to go find a vpn to check it on and port the ruby file  (and find the ruby file )
+    # STDERR.puts "Not implemented yet"
+    s = Cisco_VPN.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+    # exit 0 
 when "vpn_sonicwall_digest"
     s = Sonicwall_Digest.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     
@@ -298,7 +299,7 @@ when "exchangeeas"
 when "exchangeowa"
     s = ExchangeOWA.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     s.domain = options["domain"].as(String)
-when "adfs_fomrs"
+when "adfs_forms"
     s = ADFS_forms.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     if options["domain"].as(String) == "WORKGROUP"
         STDERR.puts "you need a Domain that isnt WORKGROUP..."
@@ -325,7 +326,11 @@ s.webhook_url = options["webhook"].as(String) unless options["webhook"].nil?
 if options["target"].as( Array(String) ).size > 1 
     s.target = options["target"].as(Array(String))[0]
     s.targets = options["target"].as(Array(String))
-else 
+else
+    if  options["target"].as(Array(String)).size < 1 
+        STDERR.puts "Please supply a target to spray against"
+    end
+
     s.target = options["target"].as(Array(String))[0]
 end
 
