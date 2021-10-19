@@ -133,7 +133,7 @@ class Sprayer
             thread_count.times do |i|
                 spawn do 
                     loop do 
-                        puts @target
+                        # puts @target
 
                         f = queue_channel.receive()
                         break if f.nil? # close the fiber if nil is received # signalling the completion of the spray and can close the fibers 
@@ -339,7 +339,7 @@ class Sprayer
                 upflist = generate_upf_list()
                 # puts "Sending to queue_channel"
                 upflist.each do |item|
-                    puts @target
+                    # puts @target
                     
                     if already_sprayed.includes? "#{item[0]}:#{item[1]}" || valid_accounts.includes? item[0]
                         STDERR.puts "Skipping #{item[0]}:#{item[1]} becasue its already sprayed!!".colorize(:yellow).to_s

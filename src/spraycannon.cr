@@ -10,6 +10,7 @@ require "./spray_types/sonicwall_virtualoffice_5.x"
 require "./spray_types/sonicwall_digest"
 require "./spray_types/ExchangeEAS"
 require "./spray_types/ExchangeOWA"
+require "./spray_types/adfs_basic"
 require "./spray_types/fortigate_login"
 require "./spray_types/spiceworks"
 require "./spray_types/infinatecampus"
@@ -23,7 +24,7 @@ require "./spray_types/infinatecampus"
 # TODO LOG
 ############
 
-version = "0.1.6"
+version = "0.1.7"
 
 # Feature requests 
 # - timstamp the login, start, end - done!
@@ -177,7 +178,7 @@ parser = OptionParser.new() do |opts|
     end 
     
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        ["msol (o365)","ExchageEAS","ExchageOWA","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus"].each {|t| puts t}
+        ["msol (o365)","ExchageEAS","ExchageOWA","ADFS_basic","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus"].each {|t| puts t}
         exit 0
     end 
 
@@ -272,10 +273,10 @@ when "vpnfortigate"
 when "fortigate_login"
     STDERR.puts "not confirmed to work"
     s = Fortigate_Login.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
-when "o365","office365"
+when "o365","office365","msol"
     STDERR.puts "Currently in Beta. may not be 100% reliable!!!".colorize(:yellow)
     s = O365.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
-    s.target = "https://login.microsoft.com"
+    options["target"].as( Array(String) )  << "https://login.microsoft.com" 
     # exit 0 
 when "vpncisco" # need to go find a vpn to check it on and port the ruby file  (and find the ruby file )
     STDERR.puts "Not implemented yet"
@@ -296,6 +297,13 @@ when "exchangeeas"
     s.domain = options["domain"].as(String)
 when "exchangeowa"
     s = ExchangeOWA.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+    s.domain = options["domain"].as(String)
+when "adfs_basic"
+    s = ADFS_basic.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+    if options["domain"].as(String) == "WORKGROUP"
+        STDERR.puts "you need a Domain that isnt WORKGROUP..."
+        exit 1
+    end
     s.domain = options["domain"].as(String)
 when "spiceworks"
     s = Spiceworks.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))

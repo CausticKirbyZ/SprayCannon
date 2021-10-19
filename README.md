@@ -21,7 +21,7 @@ A fast password spray tool designed to simplify and automate many password spray
 fully implemented means that the module works as designed. some protocols may not support mfa detection. others i have not had a chance to compare the "valid" check for one with MFA enabled ( ex. sonicall virtualoffice )
 |Type|MFA support| lockout detection | fully implemented |
 |----|-----------|-------------------|-------------------|
-ExchangeEAS|no  |  no               | yes
+ExchangeEAS|no  |  no               | yes                
 ExchangeOWA|no  |  no               | yes (could be a little more refined but fully working)
 SonicwallVirtualOffice|no  |  no    | yes (no mfa though) (validation not confirmed)
 Sonicwall(the digest one) | no | no | yes(validation not confirmed)
@@ -57,7 +57,7 @@ Additional Options:
 ## **Use**
 ### Download from [releases](https://github.com/CausticKirbyZ/SprayCannon/releases). 
 or 
-### Compile yourself 
+## Compile yourself 
 either use the make file 
 ```
 make
