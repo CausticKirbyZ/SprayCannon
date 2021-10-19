@@ -10,7 +10,7 @@ require "./spray_types/sonicwall_virtualoffice_5.x"
 require "./spray_types/sonicwall_digest"
 require "./spray_types/ExchangeEAS"
 require "./spray_types/ExchangeOWA"
-require "./spray_types/adfs_basic"
+require "./spray_types/adfs_forms"
 require "./spray_types/fortigate_login"
 require "./spray_types/spiceworks"
 require "./spray_types/infinatecampus"
@@ -178,7 +178,7 @@ parser = OptionParser.new() do |opts|
     end 
     
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        ["msol (o365)","ExchageEAS","ExchageOWA","ADFS_basic","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus"].each {|t| puts t}
+        ["msol (o365)","ExchageEAS","ExchageOWA","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus"].each {|t| puts t}
         exit 0
     end 
 
@@ -298,8 +298,8 @@ when "exchangeeas"
 when "exchangeowa"
     s = ExchangeOWA.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     s.domain = options["domain"].as(String)
-when "adfs_basic"
-    s = ADFS_basic.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+when "adfs_fomrs"
+    s = ADFS_forms.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     if options["domain"].as(String) == "WORKGROUP"
         STDERR.puts "you need a Domain that isnt WORKGROUP..."
         exit 1
