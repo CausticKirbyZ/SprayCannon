@@ -62,23 +62,24 @@ Additional Options:
 
 
 ## **Use**
-### Download from [releases](https://github.com/CausticKirbyZ/SprayCannon/releases). 
+
+### Download from [releases](https://github.com/CausticKirbyZ/SprayCannon/releases).
 or 
+
 ## Compile yourself 
 either use the make file 
-```
-make
-or
-make spraycannon
-make spdb
+```bash
+make init       # downloads dependant libs to the local directory 
+make            # compiles spraycannon and spdb 
+make install    # installs the tools
 ```
 ### compile the manual way 
-```
+```bash
 crystal build -p src/spraycannon.cr 
 crystal build -p src/spdb.cr 
 ```
 you can also use
-```
+```bash
 crystal build -p --no-debug --release
 ```
 which will take longer but will be more optimized (not that you need it) it also wont give you help if something breaks.... your choice
