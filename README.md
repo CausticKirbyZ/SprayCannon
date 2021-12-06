@@ -1,12 +1,12 @@
 # **Why**
-I got sick and tired of having to remember and manually spray a password every 30-60 min for a userlist and managing a large list with what passwords for what user was the worst. Also adding to a userlist added additional problems with either starting over or leaving out missed passwords for new accounts. Additionally many spraying tools only existed for certain endpoints ie just an o365 spray tool or just an exchange spray tool. I wanted a standard framework that could do any sprying i needed. So i created....
+I got sick and tired of having to remember and manually spray a password every 30-60 min for a userlist and managing a large list with what passwords had been sprayed for what user was the worst. Also adding to a userlist added additional problems with either starting over or leaving out missed passwords for new accounts. Additionally many spraying tools only existed for certain endpoints ie just an o365 spray tool or just an exchange spray tool. I wanted a standard framework that could do any spraying i needed with all the features i wanted. So i created....
 
 <br>
 <img src="./mdassets/spraycannon_art.png"> 
 
 
 # **SprayCannon**
-A fast password spray tool designed to simplify and automate many password spraying problems i faced.
+A fast multithreaded password spray tool designed to simplify and automate many password spraying problems i faced.
 ## **Features**
 * Database to keep track of what has been sprayed/valid finds (Sqlite3)
 * Supports username,password (as single inputs and files )
@@ -99,20 +99,21 @@ which will take longer but will be more optimized (not that you need it) it also
 * add wiki
 * maybe update the way some of the modules are called (thinking ./spraycannon \<type\> [arguments] ex. spraycannon vpncisco -u users.txt -p "Password123" )
 * docker file? 
-* make install feature 
+* ~~make install feature~~
 * pipeline something so that i can build/release on multiple platforms at a time
-* add webhooks. ~~teams~~, slack, google chat? ( need feature requests here for what people use )
-* email support? like webhooks but email? could be usefull for sending emails to phone numbers for sms notifications 
+* add various webhooks support. ~~teams~~, slack, google chat? ( need feature requests here for what people use )
+* email support? like webhooks but email? could be usefull for sending emails to phone numbers for sms notifications.... probably a dumb idea
 * implement a yml file for configuration defaults. that might be easiest for things like webhooks, target substitutions... etc that way no cluttered cli 
-* add better support for fireprox or other web proxies like that 
+* add better support for fireprox or other web proxies like that - currently fireprox can be used as the target and does work 
+* update spdb to include tab completion and better dialog menus
 
 
 
 ## **Contributing**
 * Fork the project and submit a request with your feature/fix 
 * Submit a feature request through github(look at the wiki/todo list first your idea might already be there or answered)
-* If you have a new spray type you want submit a feature request or give me the web request sequence (burp files are nice). NOTE if its not public/you cant prove you own something i wont test password spraying unless i can spin it up in my lab 
-* for new spraytypes there is a template.cr that should be easy/convienient to use to implement new auth types
+* If you have a new spray type you want submit a feature request or give me the web request sequence (burp files are super nice). NOTE if its not public/you cant prove you own something i wont test password spraying unless i can spin it up in my lab. If you send me a burp sample.... please consider OPSEC.  
+* For new spraytypes there is a template.cr file in src/spray_tyes that should be easy/convienient to use to implement new auth types
 
 
 
@@ -120,13 +121,14 @@ which will take longer but will be more optimized (not that you need it) it also
 
 
 # **spdb**
-spdb is a simple applicaion to interact with the backend db for SprayCannon. 
+spdb is a simple applicaion to interact with the backend db for SprayCannon. there is now a timestamp for each password spray item. so it is possible to go back and see exactly what time a specific user attempt was sprayed.
 
 interactive commands: 
 * usernames - show usernames in the database
 * passwords - show what passwords have been sprayed 
 * sprayed - shows all username/password combination that have been sprayed
 * vaid - shows all username/password combinations that are valid
+* export \<tablename\> - exports the specified tablename to a csv file in the local directory 
 
 
 
@@ -147,22 +149,24 @@ interactive commands:
 
 
 
-### **Crystal Install help** 
+# **Crystal Install help** 
+Spraycannon is written in [crystal-lang]("https://crystal-lang.org"). A language similar to ruby in syntax but produces a  compiled binary, is extremely fast, and is easy to work with. Installing can be done as below. if you dont trust these commands... go here: https://crystal-lang.org/install/
+
 ---
-For Arch based linux distros  
+**Arch** based linux distros  
 ````
 sudo pacman -S crystal shards 
 ````
 
-**Debian/RedHat** based linux distros(Kali too)
+**Debian/RedHat** based linux distros(**Kali** too)
 ```
 curl -fsSL https://crystal-lang.org/install.sh | sudo bash
 ```
 
 **Windows** (Crystal not fully supported on windows *yet*) there are several options:
 * There is prerelease crystal compiler for windows available. 
-* Use wsl
-* use a linux vm 
+* Use wsl (this is what i use 80% of the time and it works really well)
+* use a linux vm
 
 \* **Note:** Crystal doesnt have an official windows compiler release yet. If a bug is found please create a bug report and i will try to address it. 
 
