@@ -1,3 +1,37 @@
+
+
+
+
+
+#
+#
+#
+#
+#
+#
+# this is expiramental and does not work at all!!! i will most likely move this to a seperate library!! 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+
+
+
+
+
+
+
+
+
+
+
 require "socket"
 require "bit_array"
 

@@ -28,7 +28,8 @@ class InfinateCampus < Sprayer
         client = HTTP::Client.new(url, tls: context)
         # and some basic header options
         header = HTTP::Headers{ # headers for post request 
-            "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0",
+            # "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0",
+            "User-Agent" => @useragents[rand(0..@useragents.size)],
             "Accept" => "*/*",
             "Accept-Language" => "en-US,en;q=0.5",
             "Accept-Encoding" => "gzip, deflate",

@@ -23,33 +23,40 @@ fully implemented means that the module works as designed. some protocols may no
 |----|-----------|-------------------|-------------------|
 ExchangeEAS|no  |  no               | yes                
 ExchangeOWA|no  |  no               | yes (could be a little more refined but fully working)
+adfs_forms |no  |  no               | yes
 SonicwallVirtualOffice|no  |  no    | yes (no mfa though) (validation not confirmed)
 Sonicwall(the digest one) | no | no | yes(validation not confirmed)
 O365|YES|YES|yes
-VPN Cisco|no|no|no
+SSLVPN Cisco|no|no|no ( i stole the code from a previous spraying scrip i wrote that worked. but havent had a chance to test this one) 
 VPN Fortinet|no|no|kinda(use at own risk)(validataion not confirmed)
 Spiceworks|no|no|no(no mfa/lockout though)(validataion not confirmed)
 
 
 ```
+Examples:
+./spraycannon -s msol -u myemail@domain.com -p password123
+./spraycannon -s adfs_forms -u usernames.txt -p passwords.txt
+./spraycannon -s msol --user-pass-format upffile.txt
+./spraycannon -s ExchageOWA -u myemail@domain.com --user-as-password --target "https://adfs.mydomain.com"
+
 Global options:
     -s, --spray-type=[spraytype]     Set spray type. use --list-spraytypes to get current list
-    -t, --target=[ip/hostname]       Target to spray
+    -t, --target=[ip/hostname]       Target to spray ( could also be a fireprox address )
     -u, --username=[name]            Username or user txt file to spray from
     -p, --password=[password]        Target to spray
     -d, --delay=[time]               time in seconds to delay between password attempts
     -j, --jitter=[time]              time in milliseconds to delay between individual account attempts. default is 1000.
     --domain=[domain]                Sets the domain for options that require domain specification.
     -h, --help                       Print Help menu
+    --version                        Print current version
     -v, --verbose                    Print verbose information
 Additional Options:
     --threads=[count]                Use worker threads to drasticly speed things up!(default is 1)
     --nodb                           does not use the database
     --user-as-password               Sets the user and password to the same string
-    --user-and-password              Sets the user and password to the same index for each item. or use with --user-pass-format-file
-    --user-and-password-file=[filename]
-                                     For use with --user-password. supplied file in 'user:password' format
+    --user-pass-format=[filename]    Supplied file in 'user:password' format
     --webhook=[url]                  Will send a teams webhook if valid credential is found!!
+    --useragent=[agentstring]        Use a custom useragent string, or a file containing useragents(will chose randomly from them).
     --list-spraytypes                List the available spraytypes.
 ```
 

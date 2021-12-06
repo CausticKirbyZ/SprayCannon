@@ -1,7 +1,7 @@
 require "http/client"
 
 class ADFS_forms < Sprayer
-    property domain : String
+    property domain : String | Nil
     ## only uncomment if needed
     def initialize(usernames : Array(String), password : Array(String) )
         # init any special or default variables here
@@ -30,14 +30,17 @@ class ADFS_forms < Sprayer
         client = HTTP::Client.new(url, tls: context)
         # and some basic header options
         header = HTTP::Headers{ # headers for post request 
-            "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0",
+            "User-Agent" => @useragents[rand(0..@useragents.size)], 
             "Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
             "Accept-Language" => "en-US,en;q=0.5",
             "Accept-Encoding" => "gzip, deflate",
             "Content-Type" => "application/x-www-form-urlencoded",
         }
-        form = "UserName=#{URI.encode_www_form(@domain)}%5C#{URI.encode_www_form(username)}&Password=#{ URI.encode_www_form(password) }&AuthMethod=FormsAuthentication"
-        
+        if @domain.nil?
+            form = "UserName=#{URI.encode_www_form(username)}&Password=#{ URI.encode_www_form(password) }&AuthMethod=FormsAuthentication" 
+        else 
+            form = "UserName=#{URI.encode_www_form(@domain.not_nil!)}%5C#{URI.encode_www_form(username)}&Password=#{ URI.encode_www_form(password) }&AuthMethod=FormsAuthentication"
+        end
         # here is the basic 
         page = client.post(path, headers: header, form: form)
 

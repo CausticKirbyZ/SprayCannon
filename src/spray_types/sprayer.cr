@@ -12,7 +12,9 @@ end
 class Sprayer
     property usernames : Array(String), passwords : Array(String), delay : Int32 , jitter : Int32  , target : String, uap : Bool, upf : Bool, webhook_url : String 
     property valid : Array(String)
-    property useragent : Array(String) = ["Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/90.0"]
+    # property useragents : Array(String) = ["Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/90.0"]
+    property useragents : Array(String) = ["SprayCannon user agent. Password Spraying tool. Check your logs"]
+    # property user_agent : String = "SprayCannon user agent. Password Spraying tool. Check your logs"
     property targets : Array(String) = [""]
     # property rate : Int32
 
@@ -120,7 +122,7 @@ class Sprayer
         if db
             already_sprayed = get_dbsprayed(db).as(Array(String))
             valid_accounts = get_dbvalid(db).as(Array(String))
-        end  
+        end
 
         if thread_count > 1
             # create channels for spraying 
@@ -131,7 +133,7 @@ class Sprayer
             STDERR.puts "Spawning threads"
 
             thread_count.times do |i|
-                spawn do 
+                spawn do
                     loop do 
                         # puts @target
 
@@ -321,9 +323,7 @@ class Sprayer
             # sleep until queued count finishes 
             while queued_count > 0 
                 print "\rItems in queue to be sprayed: #{queued_count} " 
-                sleep 1 
-               
-
+                sleep 1
             end
             return 
 

@@ -1,3 +1,29 @@
+
+
+
+#
+#
+#
+#
+#
+# example idea for smb. currently writing a smb lib for auth.... will update when done until then... spraycannon only supports web traffic
+#
+#
+#
+#
+#
+#
+#
+#
+
+
+
+
+
+
+
+
+
 require "./smblib"
 
 class SMBsprayer < Sprayer

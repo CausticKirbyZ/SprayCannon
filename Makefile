@@ -1,7 +1,6 @@
 .SILENT:
+
 all:
-	echo "Fetching libs..."
-	shards install
 	echo "Building tools...."
 	crystal build -p src/spdb.cr 
 	crystal build -p src/spraycannon.cr 
@@ -10,6 +9,10 @@ all:
 	if [ -f spraycannon.1.gz ]; then rm spraycannon.1.gz; fi 
 	gzip spraycannon.1
 	echo "DONE BUILDING (to install run 'make install' )"
+
+init: 
+	echo "Fetching libs..."
+	shards install
 
 
 

@@ -1,0 +1,3 @@
+https://target1.com/
+https://target2.com/
+http://target3.com/

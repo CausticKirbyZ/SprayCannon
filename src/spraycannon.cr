@@ -75,7 +75,7 @@ options = {
 parser = OptionParser.new() do |opts|
     opts.banner = "\nCLI tool for sprayer crystal lib\n" + 
     "Sprays the target with options for lockout, mfa, jitter, delay.\n" + 
-    "    " + "*".colorize(:yellow).to_s + "Not all services can have lockout/mfa detection and it is up to each module to implement it.\n"
+    "    " + "*".colorize(:yellow).to_s + "Not all services can have lockout/mfa detection and it is up to each module to implement it.\n\nExamples:\n./spraycannon -s msol -u myemail@domain.com -p password123\n./spraycannon -s adfs_forms -u usernames.txt -p passwords.txt\n./spraycannon -s msol --user-as-password --user-pass-format upffile.txt\n./spraycannon -s msol -u myemail@domain.com --user-as-password\n"
 
     
     opts.separator("Global options:")
@@ -306,6 +306,9 @@ when "adfs_forms"
         exit 1
     end
     s.domain = options["domain"].as(String)
+    if options["domain"].as(String) == "AS_EMAIL"
+        s.domain = nil
+    end
 when "spiceworks"
     s = Spiceworks.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 when "infinatecampus"
@@ -323,15 +326,21 @@ s.webhook_url = options["webhook"].as(String) unless options["webhook"].nil?
 
 
 # handle if theres multiple targets/multiple proxy endpoints
-if options["target"].as( Array(String) ).size > 1 
-    s.target = options["target"].as(Array(String))[0]
-    s.targets = options["target"].as(Array(String))
-else
-    if  options["target"].as(Array(String)).size < 1 
-        STDERR.puts "Please supply a target to spray against"
-    end
+begin 
+    if options["target"].as( Array(String) ).size > 1 
+        s.target = options["target"].as(Array(String))[0]
+        s.targets = options["target"].as(Array(String))
+    else
+        if  options["target"].as(Array(String)).size < 1 
+            STDERR.puts "You must have a target for this type of scan!!"
+            exit 1 
+        end
 
-    s.target = options["target"].as(Array(String))[0]
+        s.target = options["target"].as(Array(String))[0]
+    end
+rescue 
+    STDERR.puts "You must have a target for this type of scan!!"
+    exit 1
 end
 
 
