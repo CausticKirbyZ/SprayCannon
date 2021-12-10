@@ -154,7 +154,7 @@ parser = OptionParser.new() do |opts|
         options["user-as-password"] = true
     end
     
-    opts.on("--user-pass-format=[filename]","Supplied file in 'user:password' format") do |upffile|
+    opts.on("--user-pass-format=[filename]","Supplied file in 'user:password' format. If a password has a : in it, it wont break. everything after the first : is used as the password") do |upffile|
         options["user-password"] = true
         if File.exists?(upffile) 
             File.each_line(upffile) do |line|
@@ -371,5 +371,6 @@ else
 end
 
 STDERR.puts "Done spraying now!!!".colorize(:green)
+# STDERR.puts "Valid: #{s.numbervalid}" # not yet implemented. prob will pull from db 
 STDERR.puts "Started at:   #{start_time}"
 STDERR.puts "Completed at: #{Time.local.to_s("%Y-%m-%d %H:%M:%S")}"

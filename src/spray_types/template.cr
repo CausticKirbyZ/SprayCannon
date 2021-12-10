@@ -27,7 +27,6 @@ class Template < Sprayer
         client = HTTP::Client.new(url, tls: context)
         # and some basic header options
         header = HTTP::Headers{ # basic template for headers for post/get request 
-            # "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0",
             "User-Agent" => @useragents[rand(0..@useragents.size)], # uses a random header theres only 1 by default 
             "Accept" => "*/*",
             "Accept-Language" => "en-US,en;q=0.5",
@@ -35,14 +34,25 @@ class Template < Sprayer
             "Content-Type" => "application/x-www-form-urlencoded",
             "Origin" => "https://#{url.host}",
             "Referer" => "https://#{url.host}#{url.path}"
-        }
-        form = "username=#{username}&password=#{password}"
+        } 
+
+        form = "username=#{username}&password=#{password}" # request form params here
         
-        # here is the basic 
-        page = client.post(url.path, headers: header, form: form)
+        # here is the basic request 
+        page = client.post(url.path, headers: header, form: form) # client supporst all http verbs as client.verb -> client.get, client.delete..etc 
 
+        #
+        # logic for if valid login goes here replace whats here. it only serves as a guide for quick editing 
+        # 
+        # 
+        # these are EXAMPLES of how to do checks 
+        if page.status_code == 200 # if ok 
+            valid = true 
+        end
 
-
+        if page.body.includes? "redircting to mfa"
+            mfa = true 
+        end
 
         #
         # end of your CODE make sure you set valid lockedout and mfa 
