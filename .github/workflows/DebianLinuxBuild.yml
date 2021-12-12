@@ -3,7 +3,8 @@ name: DebianLinuxBuild
 on:
   push:
     branches: [ main ]
-    
+
+jobs:
   build-debian-based:
     runs-on: ubuntu-latest
     steps:

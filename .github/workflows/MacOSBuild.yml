@@ -3,7 +3,8 @@ name: MacOSBuild
 on:
   push:
     branches: [ main ]
-    
+
+jobs:
   build-debian-based:
     runs-on: macos-latest
     steps:
