@@ -1,4 +1,4 @@
-name: LinuxBuild
+name: Release
 
 on:
   release: 

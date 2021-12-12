@@ -1,0 +1,32 @@
+name: ArchLinuxBuild
+
+on:
+  push:
+    branches: [ main ]
+
+    
+jobs:
+  build-arch:
+    runs-on: ubuntu-latest
+    container: 
+      image: archlinux
+
+    steps:
+      - name: update docker
+        run: pacman -Syu --noconfirm
+      
+      - name: install dependancies 
+        run: pacman -S base-devel gcc make cmake openssl crystal shards --noconfirm
+      
+      - uses: actions/checkout@v2
+
+      - name: Install shard dependencies
+        run: shards install
+        env:
+          SHARDS_OPTS: --ignore-crystal-version
+
+      - name: Build spraycannon
+        run: crystal build src/spraycannon.cr --release
+
+      - name: Build spdb
+        run: crystal build src/spdb.cr --release
