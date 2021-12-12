@@ -97,4 +97,44 @@ jobs:
           asset_content_type: binary/octet-stream
 
 
+  build-macos-based:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: latest
+
+      - uses: actions/checkout@v2
+
+      - name: Install shard dependencies
+        run: shards install
+        env:
+          SHARDS_OPTS: --ignore-crystal-version
+
+      - name: Build Project
+        run: crystal build src/spraycannon.cr --release
+
+      - name: Bulid Project 2
+        run: crystal build src/spdb.cr --release
+
+      - name: Upload release asset - macos
+        uses: actions/upload-release-asset@v1
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./spraycannon
+          asset_name: spraycannon-macos-x64
+          asset_content_type: binary/octet-stream
+
+      - name: Upload release asset - macos
+        uses: actions/upload-release-asset@v1
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./spdb
+          asset_name: spdb-macos-x64
+          asset_content_type: binary/octet-stream
 
