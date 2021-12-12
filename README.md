@@ -1,3 +1,7 @@
+![Arch Linux Build](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/LinuxBuild.yml/badge.svg)
+![Debain(based) Linux Build](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/LinuxBuild.yml/badge.svg)
+![Mac OS Build](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/MacOSBuild.yml/badge.svg)
+
 # **Why**
 I got sick and tired of having to remember and manually spray a password every 30-60 min for a userlist and managing a large list with what passwords had been sprayed for what user was the worst. Also adding to a userlist added additional problems with either starting over or leaving out missed passwords for new accounts. Additionally many spraying tools only existed for certain endpoints ie just an o365 spray tool or just an exchange spray tool. I wanted a standard framework that could do any spraying i needed with all the features i wanted. So i created....
 
