@@ -1,5 +1,5 @@
-![Arch Linux Build](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/LinuxBuild.yml/badge.svg)
-![Debain(based) Linux Build](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/LinuxBuild.yml/badge.svg)
+![Arch Linux Build](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/ArchLinuxBuild.yml/badge.svg) 
+![Debain(based) Linux Build](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/DebianLinuxBuild.yml/badge.svg)
 ![Mac OS Build](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/MacOSBuild.yml/badge.svg)
 
 # **Why**
