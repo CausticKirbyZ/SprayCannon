@@ -1,0 +1,100 @@
+name: LinuxBuild
+
+on:
+  release: 
+    types: 
+      - created
+
+
+jobs:
+  build-arch:
+    runs-on: ubuntu-latest
+    container: 
+      image: archlinux
+
+    steps:
+      - name: update docker
+        run: pacman -Syu --noconfirm
+      
+      - name: install dependancies 
+        run: pacman -S base-devel gcc make cmake openssl crystal shards --noconfirm
+      
+      - uses: actions/checkout@v2
+
+      - name: Install shard dependencies
+        run: shards install
+        env:
+          SHARDS_OPTS: --ignore-crystal-version
+
+      - name: Build Project
+        run: crystal build src/spraycannon.cr --release
+
+      - name: Bulid Project 2
+        run: crystal build src/spdb.cr --release
+
+      - name: Upload spraycannon release asset - arch 
+        uses: actions/upload-release-asset@v1
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./spraycannon
+          asset_name: spraycannon-arch-linux-x64
+          asset_content_type: binary/octet-stream
+
+      - name: Upload spdb release asset - arch 
+        uses: actions/upload-release-asset@v1
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./spdb
+          asset_name: spdb-arch-linux-x64
+          asset_content_type: binary/octet-stream
+ 
+
+  build-debian-based:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: latest
+
+      - uses: actions/checkout@v2
+
+      - name: Install shard dependencies
+        run: shards install
+        env:
+          SHARDS_OPTS: --ignore-crystal-version
+
+      - name: Build Project
+        run: crystal build src/spraycannon.cr --release
+
+      - name: Bulid Project 2
+        run: crystal build src/spdb.cr --release
+
+      - name: Upload release asset - debian
+        uses: actions/upload-release-asset@v1
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # upload_url: ${{ steps.release.outputs.upload_url }}
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./spraycannon
+          asset_name: spraycannon-debian-based-linux-x64
+          asset_content_type: binary/octet-stream
+
+      - name: Upload release asset - debian
+        uses: actions/upload-release-asset@v1
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # upload_url: ${{ steps.release.outputs.upload_url }}
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./spdb
+          asset_name: spdb-debian-based-linux-x64
+          asset_content_type: binary/octet-stream
+
+
+
