@@ -117,7 +117,7 @@ class Sprayer
         already_sprayed = [] of String
         valid_accounts = [] of String
         queued_count = 0 # int to keep track of ammount still queued 
-
+        
         # create list of already sprayed user:passwords 
         if db
             already_sprayed = get_dbsprayed(db).as(Array(String))
@@ -322,7 +322,7 @@ class Sprayer
 
             # sleep until queued count finishes 
             while queued_count > 0 
-                print "\rItems in queue to be sprayed: #{queued_count} " 
+                print "\rItems in queue to be sprayed: #{queued_count}  " 
                 sleep 1
             end
             return 

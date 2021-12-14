@@ -45,7 +45,7 @@ class ExchangeOWA < Sprayer
         client = HTTP::Client.new(url, tls: context)
         # and some basic header options
         header = HTTP::Headers{ # headers for post request 
-            "User-Agent" => @useragents[rand(0..@useragents.size)],
+            "User-Agent" => @useragents[rand(0..(@useragents.size - 1))],
             "Accept" => "*/*",
             "Accept-Language" => "en-US,en;q=0.5",
             "Accept-Encoding" => "gzip, deflate",

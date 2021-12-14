@@ -27,7 +27,7 @@ class Template < Sprayer
         client = HTTP::Client.new(url, tls: context)
         # and some basic header options
         header = HTTP::Headers{ # basic template for headers for post/get request 
-            "User-Agent" => @useragents[rand(0..@useragents.size)], # uses a random header theres only 1 by default 
+            "User-Agent" => @useragents[rand(0..(@useragents.size - 1))], # uses a random header theres only 1 by default 
             "Accept" => "*/*",
             "Accept-Language" => "en-US,en;q=0.5",
             "Accept-Encoding" => "gzip, deflate",

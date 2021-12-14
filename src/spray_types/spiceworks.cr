@@ -36,7 +36,7 @@ class Spiceworks < Sprayer
 
         header = HTTP::Headers{ # headers for post request 
             # "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0",
-            "User-Agent" => @useragents[rand(0..@useragents.size)], # use a random useragent from the list available
+            "User-Agent" => @useragents[rand(0..(@useragents.size - 1))], # use a random useragent from the list available
             # "Host" => "#{url.host}",
             "Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
             "Accept-Language" => "en-US,en;q=0.5",

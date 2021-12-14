@@ -54,7 +54,6 @@ options = {
     "spraytype" => nil,
     "user-as-password" => false,
     "verbose" => false,
-    # "target" => "",
     "target" => [] of String,
     "usernames" => [] of String,
     "passwords" => [] of String,
@@ -209,7 +208,10 @@ else
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0",
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0",
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0"
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"
                 ]
         end
         # exit 1 
@@ -282,6 +284,7 @@ when "o365","office365","msol"
 when "cisco_vpn" # need to go find a vpn to check it on and port the ruby file  (and find the ruby file )
     # STDERR.puts "Not implemented yet"
     s = Cisco_VPN.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+    s.domain = options["domain"].as(String)
     # exit 0 
 when "vpn_sonicwall_digest"
     s = Sonicwall_Digest.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
@@ -357,6 +360,8 @@ if options["user-password"]
     # options["passwords"] = options["usernames"]
    s.upf = true
 end
+
+s.useragents = options["useragents"].as(Array(String)) if options["useragents"].as(Array(String)).size > 0
 
 # puts "rand: #{max(rand())}"
 start_time = Time.local.to_s("%Y-%m-%d %H:%M:%S")

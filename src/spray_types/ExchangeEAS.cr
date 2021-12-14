@@ -46,7 +46,7 @@ class ExchageEAS < Sprayer
         client = HTTP::Client.new(url, tls: context)
         header = HTTP::Headers{
             "Authorization" => "Basic #{ Base64.strict_encode( "#{@domain}\\#{username}:#{password}" ) }",
-            "User-Agent" => @useragents[rand(0..@useragents.size)]
+            "User-Agent" => @useragents[rand(0..(@useragents.size - 1))],
         }
 
         page = nil

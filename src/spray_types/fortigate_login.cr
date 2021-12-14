@@ -27,7 +27,7 @@ class Fortigate_Login < Sprayer
 
         client = HTTP::Client.new(url, tls: context)
         header = HTTP::Headers{
-            "User-Agent" => @useragents[rand(0..@useragents.size)],
+            "User-Agent" => @useragents[rand(0..(@useragents.size - 1))],
             "Accept" => "*/*",
             "Accept-Language" => "en-US,en;q=0.5",
             "Accept-Encoding" => "gzip, deflate",

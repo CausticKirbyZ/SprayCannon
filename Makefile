@@ -15,7 +15,6 @@ init:
 	shards install
 
 
-
 spraycannon: 
 	crystal build -p src/spraycannon.cr 
 
@@ -41,9 +40,9 @@ uninstall:
 
 clean: 
 	rm -rf lib/
-	rm spdb 
-	rm spraycannon 
-	rm spraycannon.1
-	rm spraycannon.1.gz 
-	rm shard.lock 
-
+	if [ -f spdb ]; then rm spdb; fi 
+	if [ -f spray.db ]; then rm spray.db; fi 
+	if [ -f spraycannon ]; then rm spraycannon; fi 
+	if [ -f spraycannon.1 ]; then rm spraycannon.1; fi 
+	if [ -f spraycannon.1.gz ]; then rm spraycannon.1.gz; fi 
+	if [ -f shard.lock ]; then rm shard.lock; fi 
