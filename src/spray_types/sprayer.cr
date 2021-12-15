@@ -697,13 +697,14 @@ class Sprayer
         context.verify_mode = OpenSSL::SSL::VerifyMode::NONE
         begin 
             answer = HTTP::Client.post( URI.parse( @webhook_url ) , body: card, tls: context )
+            if answer.body.to_i  != 1 
+                STDERR.puts "Web Hook Is BROKEN!!!!!!!!!!".colorize(:red)
+            end
         rescue 
             STDERR.puts "Webhook failed to execute... :( | CHECK SPDB!!!"
         end
         
-        if answer.body.to_i  != 1 
-            STDERR.puts "Web Hook Is BROKEN!!!!!!!!!!".colorize(:red)
-        end
+       
 
     end
 
