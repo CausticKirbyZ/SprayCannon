@@ -691,7 +691,16 @@ class Sprayer
             }]
         }
         "
-        answer = HTTP::Client.post( URI.parse( @webhook_url ) , body: card)
+
+        # added this so if going through burp you will be fine 
+        context = OpenSSL::SSL::Context::Client.new
+        context.verify_mode = OpenSSL::SSL::VerifyMode::NONE
+        begin 
+            answer = HTTP::Client.post( URI.parse( @webhook_url ) , body: card, tls: context )
+        rescue 
+            STDERR.puts "Webhook failed to execute... :( | CHECK SPDB!!!"
+        end
+        
         if answer.body.to_i  != 1 
             STDERR.puts "Web Hook Is BROKEN!!!!!!!!!!".colorize(:red)
         end
