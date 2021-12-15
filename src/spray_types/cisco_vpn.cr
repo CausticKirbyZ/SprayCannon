@@ -30,6 +30,7 @@ class Cisco_VPN < Sprayer
         # and some basic header options
         header = HTTP::Headers{ # headers for post request 
             "User-Agent" => @useragents[rand(0..(@useragents.size - 1))],
+            "Cookie" => "webvpnlogin=1;", # added this otherwise it doesnt work... 
             "Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
             "Accept-Language" => "en-US,en;q=0.5",
             "Accept-Encoding" => "gzip, deflate",

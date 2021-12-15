@@ -31,9 +31,11 @@ adfs_forms |no  |  no               | yes
 SonicwallVirtualOffice|no  |  no    | yes (no mfa though) (validation not confirmed)
 Sonicwall(the digest one) | no | no | yes(validation not confirmed)
 O365|YES|YES|yes
-SSLVPN Cisco|no|no|no ( i stole the code from a previous spraying scrip i wrote that worked. but havent had a chance to test this one) 
+SSLVPN Cisco|no|no|yes ~~( i converted some code from a previous spraying ruby script i wrote that worked. but havent had a chance to test this one) ~~ confirmed with group= --domain flag.
 VPN Fortinet|no|no|kinda(use at own risk)(validataion not confirmed)
 Spiceworks|no|no|no(no mfa/lockout though)(validataion not confirmed)
+InfinateCampus|no|no|yes
+
 
 
 ```
@@ -100,12 +102,12 @@ which will take longer but will be more optimized (not that you need it) it also
 ## TODO
 * ~~multithread things ( templates started )~~
 * add a spraygroup feature - so that you can spray multiple back to back but then delay. this may be usefull for some lockout policies. 
-* go public
+* ~~go public~~
 * add wiki
 * maybe update the way some of the modules are called (thinking ./spraycannon \<type\> [arguments] ex. spraycannon vpncisco -u users.txt -p "Password123" )
 * docker file? 
 * ~~make install feature~~
-* pipeline something so that i can build/release on multiple platforms at a time
+* ~~pipeline something so that i can build/release on multiple platforms at a time~~
 * add various webhooks support. ~~teams~~, slack, google chat? ( need feature requests here for what people use )
 * email support? like webhooks but email? could be usefull for sending emails to phone numbers for sms notifications.... probably a dumb idea
 * implement a yml file for configuration defaults. that might be easiest for things like webhooks, target substitutions... etc that way no cluttered cli 
