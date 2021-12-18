@@ -42,7 +42,9 @@ class Cisco_VPN < Sprayer
         page = client.post(path, headers: header, form: form)
         # p page.body
         
-        if page.status_code == 200 && page.body != "<html>\n<head>\n<script>\ndocument.location.replace(\"/+CSCOE+/logon.html?\"+\n\"a0=8\"+\n\"&a1=\"+\n\"&a2=\"+\n\"&a3=1\");\n</script>\n</head>\n</html>\n\n\n"
+        # this was a bad way of doing it and lead to bad 
+        # if page.status_code == 200 && page.body != "<html>\n<head>\n<script>\ndocument.location.replace(\"/+CSCOE+/logon.html?\"+\n\"a0=8\"+\n\"&a1=\"+\n\"&a2=\"+\n\"&a3=1\");\n</script>\n</head>\n</html>\n\n\n"
+        if page.status_code == 200 && !page.body.includes? "/+CSCOE+/logon.html" # this is supplied in the failed login page as the string "document.location.replace("/+CSCOE+/logon.html?"+"
             valid = true 
         end
 
