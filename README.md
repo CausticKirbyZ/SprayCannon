@@ -31,7 +31,7 @@ adfs_forms |no  |  no               | yes
 SonicwallVirtualOffice|no  |  no    | yes (no mfa though) (validation not confirmed)
 Sonicwall(the digest one) | no | no | yes(validation not confirmed)
 O365|YES|YES|yes
-SSLVPN Cisco|no|no|yes ~~( i converted some code from a previous spraying ruby script i wrote that worked. but havent had a chance to test this one) ~~ confirmed with group= --domain flag.
+SSLVPN Cisco|no|no|yes ~~( i converted some code from a previous spraying ruby script i wrote that worked. but havent had a chance to test this one)~~ confirmed with group= --domain flag.
 VPN Fortinet|no|no|kinda(use at own risk)(validataion not confirmed)
 Spiceworks|no|no|no(no mfa/lockout though)(validataion not confirmed)
 InfinateCampus|no|no|yes
