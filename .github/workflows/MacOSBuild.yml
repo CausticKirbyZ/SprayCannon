@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build-debian-based:
+  build-macos-based:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
