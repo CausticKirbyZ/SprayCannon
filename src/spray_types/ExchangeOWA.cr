@@ -66,7 +66,8 @@ class ExchangeOWA < Sprayer
         # its typically through a redirect at /owa to get the full login page
         redirpage = client.get("/owa") #, headers: headerget)
 
-        client = HTTP::Client.new( redirpage.headers["X-FEServer"] , tls: context)
+        # for some reason the ip address may not work...try this ??? its weird on internals 
+        # client = HTTP::Client.new( redirpage.headers["X-FEServer"] , tls: context)
 
         # handle redir 
         full_url = URI.parse( redirpage.headers["Location"] )

@@ -2,19 +2,9 @@ require "option_parser"
 require "colorize"
 require "sqlite3"
 
+
 require "./spray_types/sprayer"
-require "./spray_types/o365"
-require "./spray_types/fortigate"
-require "./spray_types/sonicwall_virtualoffice"
-require "./spray_types/sonicwall_virtualoffice_5.x"
-require "./spray_types/sonicwall_digest"
-require "./spray_types/ExchangeEAS"
-require "./spray_types/ExchangeOWA"
-require "./spray_types/adfs_forms"
-require "./spray_types/fortigate_login"
-require "./spray_types/spiceworks"
-require "./spray_types/infinatecampus"
-require "./spray_types/cisco_vpn"
+require "./spray_types/*"
 
 
 # require "./sprayer/smbsprayer"
@@ -74,7 +64,7 @@ options = {
 parser = OptionParser.new() do |opts|
     opts.banner = "\nCLI tool for sprayer crystal lib\n" + 
     "Sprays the target with options for lockout, mfa, jitter, delay.\n" + 
-    "    " + "*".colorize(:yellow).to_s + "Not all services can have lockout/mfa detection and it is up to each module to implement it.\n\nExamples:\n./spraycannon -s msol -u myemail@domain.com -p password123\n./spraycannon -s adfs_forms -u usernames.txt -p passwords.txt\n./spraycannon -s msol --user-as-password --user-pass-format upffile.txt\n./spraycannon -s msol -u myemail@domain.com --user-as-password\n"
+    "    " + "*".colorize(:yellow).to_s + "Not al services can have lockout/mfa detection and it is up to elach module to implement it.\n\nExamples:\n./spraycannon -s msol -u myemail@domain.com -p password123\n./spraycannon -s adfs_forms -u usernames.txt -p passwords.txt\n./spraycannon -s msol --user-as-password --user-pass-format upffile.txt\n./spraycannon -s msol -u myemail@domain.com --user-as-password\n"
 
     
     opts.separator("Global options:")
@@ -178,7 +168,7 @@ parser = OptionParser.new() do |opts|
     end 
     
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        ["msol (o365)","ExchageEAS","ExchageOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus"].each {|t| puts t}
+        ["msol (o365)","ExchageEAS","ExchageOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus","global_protect"].each {|t| puts t}
         exit 0
     end 
 
@@ -316,6 +306,8 @@ when "spiceworks"
     s = Spiceworks.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 when "infinatecampus"
     s = InfinateCampus.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+when "global_protect"
+    s = GlobalProtect.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 else 
     STDERR.puts "Not a valit sprayer type!!".colorize(:red)
     exit 1
