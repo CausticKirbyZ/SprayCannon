@@ -168,7 +168,7 @@ parser = OptionParser.new() do |opts|
     end 
     
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        ["msol (o365)","ExchageEAS","ExchageOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus","global_protect"].each {|t| puts t}
+        ["msol (o365)","ExchangeEAS","ExchangeOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus","global_protect"].each {|t| puts t}
         exit 0
     end 
 
