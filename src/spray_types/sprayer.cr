@@ -471,7 +471,6 @@ class Sprayer
     end
 
     protected def insert_db_sprayed(db,username,password)
-        
         begin 
             db.exec "insert into username(username) values (\"#{username}\")"
         rescue e 
