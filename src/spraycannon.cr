@@ -168,7 +168,7 @@ parser = OptionParser.new() do |opts|
     end 
     
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        ["msol (o365)","ExchangeEAS","ExchangeOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus","global_protect"].each {|t| puts t}
+        ["msol (o365)","ExchangeEAS","ExchangeOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus","global_protect","ESXI_web"].each {|t| puts t}
         exit 0
     end 
 
@@ -308,6 +308,8 @@ when "infinatecampus"
     s = InfinateCampus.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 when "global_protect"
     s = GlobalProtect.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+when "esxi_web"
+    s = ESXI_web.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 else 
     STDERR.puts "Not a valit sprayer type!!".colorize(:red)
     exit 1

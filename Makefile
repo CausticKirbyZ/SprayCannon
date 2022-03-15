@@ -21,6 +21,10 @@ spraycannon:
 spdb:
 	crystal build -p src/spdb.cr 
 
+debug: 
+	crystal build -p src/spraycannon.cr --debug
+	crystal build -p src/spdb.cr --debug 
+
 
 install:
 	echo "Installing Tools"
