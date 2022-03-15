@@ -36,6 +36,7 @@ VPN Fortinet|no|no|kinda(use at own risk)(validataion not confirmed)
 Spiceworks|no|no|no(no mfa/lockout though)(validataion not confirmed)
 InfinateCampus|no|no|yes
 Global Protect | no|no|not fully tested 
+ESXI (root web) | no | no(default is 10 be carefull) | yes - tested with esxi 7.0
 
 
 
