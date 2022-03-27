@@ -153,7 +153,7 @@ parser = OptionParser.new() do |opts|
         end
     end 
     
-    opts.on("--webhook=[url]","Will send a teams webhook if valid credential is found!!") do |webhook|
+    opts.on("--webhook=[url]","Will send a webhook if valid credential is found!! (autodetects Teams, Discord, Slack, and Google Chat URLS) ") do |webhook|
         options["webhook"] = webhook
     end 
     

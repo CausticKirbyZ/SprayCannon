@@ -18,7 +18,7 @@ A fast multithreaded password spray tool designed to simplify and automate many 
 * Delay between passwords
 * MFA detection ( on a per module basis )
 * Lockout detection (on a per module basis )
-* Teams webhook support
+* Webhook support (autodetects Teams, Discord, Slack, and Google Chat URLS via domain name)
 * Multithreaded
 
 ## **Current supported spray types**
@@ -63,7 +63,7 @@ Additional Options:
     --nodb                           does not use the database
     --user-as-password               Sets the user and password to the same string
     --user-pass-format=[filename]    Supplied file in 'user:password' format
-    --webhook=[url]                  Will send a teams webhook if valid credential is found!!
+    --webhook=[url]                  Will send a webhook if valid credential is found!! (autodetects Teams, Discord, Slack, and Google Chat URLS) 
     --useragent=[agentstring]        Use a custom useragent string, or a file containing useragents(will chose randomly from them).
     --list-spraytypes                List the available spraytypes.
 ```

