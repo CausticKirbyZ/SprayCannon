@@ -20,6 +20,7 @@ A fast multithreaded password spray tool designed to simplify and automate many 
 * Lockout detection (on a per module basis )
 * Webhook support (autodetects Teams, Discord, Slack, and Google Chat URLS via domain name)
 * Multithreaded
+* For full list of changes and features added/removed. see the [ReleaseNotes]
 
 ## **Current supported spray types**
 fully implemented means that the module works as designed. some protocols may not support mfa detection. others i have not had a chance to compare the "valid" check for one with MFA enabled ( ex. sonicall virtualoffice )
@@ -37,7 +38,7 @@ Spiceworks|no|no|no(no mfa/lockout though)(validataion not confirmed)
 InfinateCampus|no|no|yes
 Global Protect | no|no|not fully tested 
 ESXI (root web) | no | no(default is 10 be carefull) | yes - tested with esxi 7.0
-
+VmWare Horizon(Domain Joined Web prompt) | no | no | yes 
 
 
 ```
@@ -107,14 +108,15 @@ which will take longer but will be more optimized (not that you need it) it also
 * ~~go public~~
 * add wiki
 * maybe update the way some of the modules are called (thinking ./spraycannon \<type\> [arguments] ex. spraycannon vpncisco -u users.txt -p "Password123" )
-* docker file? 
+* docker file?
 * ~~make install feature~~
 * ~~pipeline something so that i can build/release on multiple platforms at a time~~
-* add various webhooks support. ~~teams~~, slack, google chat? ( need feature requests here for what people use )
-* email support? like webhooks but email? could be usefull for sending emails to phone numbers for sms notifications.... probably a dumb idea
-* implement a yml file for configuration defaults. that might be easiest for things like webhooks, target substitutions... etc that way no cluttered cli 
-* add better support for fireprox or other web proxies like that - currently fireprox can be used as the target and does work 
-* update spdb to include tab completion and better dialog menus
+* Add various webhooks support. ~~teams~~,~~slack~~, ~~google chat~~( need feature requests here for what people use )
+* Email support? like webhooks but email? could be usefull for sending emails to phone numbers for sms notifications.... probably a dumb idea
+* Implement a yml file for configuration defaults. That might be easiest for things like webhooks, target substitutions... etc that way no cluttered cli 
+* Add better support for fireprox or other web proxies like that - currently fireprox can be used as the target and does work. Proxychains works well so that may be what i stick with. 
+* Update spdb to include tab completion and better dialog menus
+* Make a wiki.... this file it getting a bit big and harder to navigate
 
 
 
@@ -139,7 +141,9 @@ interactive commands:
 * vaid - shows all username/password combinations that are valid
 * export \<tablename\> - exports the specified tablename to a csv file in the local directory 
 
-
+# **spdb2**
+spdb2 is the new updated version of spdb. it now features a tab completsion and help menu scrolling option while naviating. 
+features are expiramental at this point. but should work as advertized. 
 
 
 

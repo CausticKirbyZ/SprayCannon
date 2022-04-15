@@ -21,9 +21,13 @@ spraycannon:
 spdb:
 	crystal build -p src/spdb.cr 
 
+spdb2:
+	crystal build -p src/spdb.cr 
+
 debug: 
 	crystal build -p src/spraycannon.cr --debug
 	crystal build -p src/spdb.cr --debug 
+	crystal build -p src/spdb2.cr --debug 
 
 
 install:

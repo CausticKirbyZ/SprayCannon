@@ -168,7 +168,7 @@ parser = OptionParser.new() do |opts|
     end 
     
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        ["msol (o365)","ExchangeEAS","ExchangeOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus","global_protect","ESXI_web"].each {|t| puts t}
+        ["msol (o365)","ExchangeEAS","ExchangeOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus","global_protect","ESXI_web", "VMWare_Horizon"].each {|t| puts t}
         exit 0
     end 
 
@@ -201,7 +201,13 @@ else
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0",
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0",
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0",
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36",
+                    "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.58 Mobile Safari/537.36",
+                    "Mozilla/5.0 (Linux; Android 10; SM-A205U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.58 Mobile Safari/537.36",
+                    "Mozilla/5.0 (iPad; CPU OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/100.0.4896.56 Mobile/15E148 Safari/604.1"
+
+
                 ]
         end
         # exit 1 
@@ -272,8 +278,14 @@ when "o365","office365","msol"
     options["target"].as( Array(String) )  << "https://login.microsoft.com" 
     # exit 0 
 when "cisco_vpn" # need to go find a vpn to check it on and port the ruby file  (and find the ruby file )
-    # STDERR.puts "Not implemented yet"
     s = Cisco_VPN.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+    s.domain = options["domain"].as(String)
+when "vmware_horizon" # need to go find a vpn to check it on and port the ruby file  (and find the ruby file )
+    if options["domain"].as(String) == "WORKGROUP"
+        STDERR.puts "you need a Domain that isnt WORKGROUP..."
+        exit 1
+    end
+    s = VMWare_Horizon.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     s.domain = options["domain"].as(String)
     # exit 0 
 when "vpn_sonicwall_digest"
