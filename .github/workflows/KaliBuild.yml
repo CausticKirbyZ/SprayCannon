@@ -13,6 +13,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: isntall curl.... why.... why is this not default in kalis docker
+        run: apt update -y && apt install curl 
+
       - name: Install Crystal and Shards using public installer
         run: curl -fsSL https://crystal-lang.org/install.sh | bash
 
