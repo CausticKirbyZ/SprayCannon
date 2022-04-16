@@ -26,7 +26,10 @@ jobs:
           SHARDS_OPTS: --ignore-crystal-version
 
       - name: Build spraycannon
-        run: crystal build src/spraycannon.cr --release
+        run: crystal build src/spraycannon.cr -p --release
 
       - name: Build spdb
-        run: crystal build src/spdb.cr --release
+        run: crystal build src/spdb.cr -p --release
+
+      - name: Build spdb2
+        run: crystal build src/spdb2.cr -p --release
