@@ -15,3 +15,6 @@ dependencies:
     github: madeindjs/crystagiri
   lexbor:
     github: kostya/lexbor
+  cryprompt:
+    github: CausticKirbyZ/cryprompt
+    branch: master
