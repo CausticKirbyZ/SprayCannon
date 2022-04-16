@@ -7,8 +7,6 @@ require "./spray_types/sprayer"
 require "./spray_types/*"
 
 
-# require "./sprayer/smbsprayer"
-
 
 
 ############

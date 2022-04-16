@@ -1,0 +1,30 @@
+name: KaliLinuxBuild
+
+on:
+  push:
+    branches: [ main ]
+    
+jobs:
+  build-arch:
+    runs-on: ubuntu-latest
+    container: 
+      image: kalilinux/kali-rolling
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: latest
+
+      - uses: actions/checkout@v2
+
+      - name: Install shard dependencies
+        run: shards install
+        env:
+          SHARDS_OPTS: --ignore-crystal-version
+
+      - name: Build Project
+        run: crystal build src/spraycannon.cr --release
+
+      - name: Bulid Project 2
+        run: crystal build src/spdb.cr --release
