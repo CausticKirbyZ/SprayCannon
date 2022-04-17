@@ -44,7 +44,8 @@ class ESXI_web < Sprayer
         error_code  = "<faultstring>Cannot complete login due to an incorrect user name or password.</faultstring>" # this means no go for login 
         
         # here is the basic request 
-        page = client.post(url.path, headers: header, body: body) 
+        page = client.post("/sdk", headers: header, body: body )
+        # page = client.post(url.path, headers: header, body: body) 
         # puts  page.body
 
         #

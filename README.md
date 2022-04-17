@@ -1,18 +1,25 @@
-![Arch Linux Build](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/ArchLinuxBuild.yml/badge.svg) 
-![Debain(based) Linux Build](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/DebianLinuxBuild.yml/badge.svg)
-![Mac OS Build](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/MacOSBuild.yml/badge.svg)
+![Arch Linux](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/ArchLinuxBuild.yml/badge.svg) 
+![Debain(based) Linux](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/DebianLinuxBuild.yml/badge.svg)
+![Kali](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/KaliBuild.yml/badge.svg)
+![Mac OS](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/MacOSBuild.yml/badge.svg)
+
+
 
 # **Why**
 I got sick and tired of having to remember and manually spray a password every 30-60 min for a userlist and managing a large list with what passwords had been sprayed for what user was the worst. Also adding to a userlist added additional problems with either starting over or leaving out missed passwords for new accounts. Additionally many spraying tools only existed for certain endpoints ie just an o365 spray tool or just an exchange spray tool. I wanted a standard framework that could do any spraying i needed with all the features i wanted. So i created....
+
 
 <br>
 <img src="./mdassets/spraycannon_art.png"> 
 
 
+### Theres a [wiki](https://github.com/CausticKirbyZ/SprayCannon/wiki) now.
+
 # **SprayCannon**
 A fast multithreaded password spray tool designed to simplify and automate many password spraying problems i faced.
 ## **Features**
 * Database to keep track of what has been sprayed/valid finds (Sqlite3)
+  * This prevents previous combos from being sprayed!! So if you add a username to your list you can just rerun the same command and it will ignore previously sprayed combos
 * Supports username,password (as single inputs and files )
 * Jitter between individual authenticaion requests
 * Delay between passwords
@@ -20,11 +27,11 @@ A fast multithreaded password spray tool designed to simplify and automate many 
 * Lockout detection (on a per module basis )
 * Webhook support (autodetects Teams, Discord, Slack, and Google Chat URLS via domain name)
 * Multithreaded
-* For full list of changes and features added/removed. see the [ReleaseNotes]
+* For full list of changes and features added/removed. see the [ReleaseNotes](https://github.com/CausticKirbyZ/SprayCannon/blob/main/ReleaseNotes.md)
 
 ## **Current supported spray types**
 fully implemented means that the module works as designed. some protocols may not support mfa detection. others i have not had a chance to compare the "valid" check for one with MFA enabled ( ex. sonicall virtualoffice )
-|Type|MFA support| lockout detection | fully implemented |
+|Type|MFA support| Lockout Detection | Fully implemented |
 |----|-----------|-------------------|-------------------|
 ExchangeEAS|no  |  no               | yes                
 ExchangeOWA|no  |  no               | yes (could be a little more refined but fully working)
@@ -37,8 +44,8 @@ VPN Fortinet|no|no|kinda(use at own risk)(validataion not confirmed)
 Spiceworks|no|no|no(no mfa/lockout though)(validataion not confirmed)
 InfinateCampus|no|no|yes
 Global Protect | no|no|not fully tested 
-ESXI (root web) | no | no(default is 10 be carefull) | yes - tested with esxi 7.0
-VmWare Horizon(Domain Joined Web prompt) | no | no | yes 
+ESXI (root web) | no | no (default is 10 be carefull) | yes - tested with esxi 6.5,7.0
+VmWare Horizon (Domain Joined Web prompt) | no | no | yes 
 
 
 ```
@@ -82,16 +89,16 @@ make init       # downloads dependant libs to the local directory
 make            # compiles spraycannon and spdb 
 make install    # installs the tools
 ```
-### compile the manual way 
+### Compile the manual way 
 ```bash
 crystal build -p src/spraycannon.cr 
 crystal build -p src/spdb.cr 
 ```
-you can also use
+You can also use:
 ```bash
 crystal build -p --no-debug --release
 ```
-which will take longer but will be more optimized (not that you need it) it also wont give you help if something breaks.... your choice
+Which will take longer but will be more optimized (not that you need it) it also may not give you help if something breaks.... your choice
 
 ### **Examples:**
 ```
@@ -106,8 +113,8 @@ which will take longer but will be more optimized (not that you need it) it also
 * ~~multithread things ( templates started )~~
 * add a spraygroup feature - so that you can spray multiple back to back but then delay. this may be usefull for some lockout policies. 
 * ~~go public~~
-* add wiki
-* maybe update the way some of the modules are called (thinking ./spraycannon \<type\> [arguments] ex. spraycannon vpncisco -u users.txt -p "Password123" )
+* ~~dd wiki~~ its there. will be constantly adding to it 
+* ~~maybe update the way some of the modules are called (thinking ./spraycannon \<type\> [arguments] ex. spraycannon vpncisco -u users.txt -p "Password123" )~~ just going to stick to the -s flag. dont fix whats not broken.
 * docker file?
 * ~~make install feature~~
 * ~~pipeline something so that i can build/release on multiple platforms at a time~~

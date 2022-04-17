@@ -8,7 +8,7 @@ all:
 	help2man ./spraycannon  > spraycannon.1
 	if [ -f spraycannon.1.gz ]; then rm spraycannon.1.gz; fi 
 	gzip spraycannon.1
-	echo "DONE BUILDING (to install run 'make install' )"
+	echo "DONE BUILDING ( to install run 'make install' )"
 
 init: 
 	echo "Fetching libs..."
