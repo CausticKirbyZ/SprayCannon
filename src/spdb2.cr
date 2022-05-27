@@ -126,7 +126,7 @@ while true
             rescue  e 
                 puts "Error: #{e.message}"
             end
-        when "valid"
+        when "valid", "creds"
             puts "Valid Credentials!"
             puts "---------------------------"
             begin 
