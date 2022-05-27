@@ -13,7 +13,7 @@ require "./spray_types/*"
 # TODO LOG
 ############
 
-version = "1.0.4"
+version = "1.0.5"
 
 # Feature requests 
 # - timstamp the login, start, end - done!
@@ -62,7 +62,7 @@ options = {
 parser = OptionParser.new() do |opts|
     opts.banner = "\nCLI tool for sprayer crystal lib\n" + 
     "Sprays the target with options for lockout, mfa, jitter, delay.\n" + 
-    "    " + "*".colorize(:yellow).to_s + "Not al services can have lockout/mfa detection and it is up to elach module to implement it.\n\nExamples:\n./spraycannon -s msol -u myemail@domain.com -p password123\n./spraycannon -s adfs_forms -u usernames.txt -p passwords.txt\n./spraycannon -s msol --user-as-password --user-pass-format upffile.txt\n./spraycannon -s msol -u myemail@domain.com --user-as-password\n"
+    "    " + "*".colorize(:yellow).to_s + "Not all services can have lockout/mfa detection and it is up to elach module to implement it.\n\nExamples:\n./spraycannon -s msol -u myemail@domain.com -p password123\n./spraycannon -s adfs_forms -u usernames.txt -p passwords.txt\n./spraycannon -s msol --user-as-password --user-pass-format upffile.txt\n./spraycannon -s msol -u myemail@domain.com --user-as-password\n"
 
     
     opts.separator("Global options:")
@@ -101,11 +101,11 @@ parser = OptionParser.new() do |opts|
         end
     end 
     
-    opts.on("-d","--delay=[time]","time in seconds to delay between password attempts") do |time| 
+    opts.on("-d","--delay=[time]","Time in seconds to delay between password attempts") do |time| 
         options["delay"] = time.to_i
     end
     
-    opts.on("-j","--jitter=[time]","time in milliseconds to delay between individual account attempts. default is 1000.") do |time| 
+    opts.on("-j","--jitter=[time]","Time in milliseconds to delay between individual account attempts. default is 1000.") do |time| 
         options["jitter"] = time.to_i
     end
 
@@ -351,7 +351,7 @@ end
 
 
 if  options["user-as-password"] && options["user-password"]
-    STDERR.puts "you cant set both user-password and user-as-password at the same time. Pick ONE!"
+    STDERR.puts "You cant set both user-password and user-as-password at the same time. Pick ONE!"
 end
 
 if options["user-as-password"]

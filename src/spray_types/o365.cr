@@ -85,9 +85,15 @@ class O365 < Sprayer
         end
         
 
-        # set the valid if returns 200 or if mfa 
-        valid = true if mfa || page.status_code == 200
-        
+        # set the valid if returns 200 or if mfa also account is valid if conditional access is found 
+        valid = true if mfa || page.status_code == 200 
+        valid = true if page.body.includes? "AADSTS53003" 
+        puts "CONDITIONAL ACCESS enabled for #{username}!!!" if page.body.includes? "AADSTS53003"  # this is in the api request 
+        if page.body.includes? "ConvergedConditionalAccess" # this is in the actual web html responce of the web page 
+            puts "CONDITIONAL ACCESS enabled for #{username}!!!"
+            valid = true 
+        end
+
         # puts "\t#{valid} Username: #{username}\t\tPassword: #{password} "
         return [username,password,valid,lockout,mfa]
     end

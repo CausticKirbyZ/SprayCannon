@@ -1,6 +1,6 @@
 require "sqlite3"
 require "cryprompt"
-
+require "option_parser"
 
 db = DB.open "sqlite3://./spray.db"
 
@@ -49,6 +49,8 @@ export:
     _description: Exports the contents to a csv file 
 clear:
   _description: Clears the screen
+help: 
+  _description: Prints the help screen
 "
 
 
@@ -62,6 +64,22 @@ clear:
 
 
 # "
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -249,7 +267,6 @@ while true
         when "help"
             puts "help  usernames  passwords  valid  sprayed  export"
         end
-
     end
 
 

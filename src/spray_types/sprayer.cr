@@ -142,7 +142,7 @@ class Sprayer
                         uname = f[0].as(String)
                         pass = f[1].as(String)
                         if already_sprayed.includes? "#{uname}:#{pass}" || valid_accounts.includes? uname
-                            STDERR.puts "Skipping #{uname}:#{pass} becasue its already sprayed!!".colorize(:yellow).to_s
+                            STDERR.puts "Skipping #{uname}:#{pass} because its already sprayed!!".colorize(:yellow).to_s
                             queued_count -= 1 # remove the count for already being sprayed
                             next
                         end
@@ -246,7 +246,7 @@ class Sprayer
                     end
 
                     if already_sprayed.includes? "#{item[0]}:#{item[1]}" || valid_accounts.includes? item[0]
-                        STDERR.puts "Skipping #{item[0]}:#{item[1]} becasue its already sprayed!!".colorize(:yellow).to_s
+                        STDERR.puts "Skipping #{item[0]}:#{item[1]} because its already sprayed!!".colorize(:yellow).to_s
                         # queued_count -= 1 # remove the count for already being sprayed
                         next
                     end
@@ -277,7 +277,7 @@ class Sprayer
                     end
 
                     if already_sprayed.includes? "#{item[0]}:#{item[1]}" || valid_accounts.includes? item[0]
-                        STDERR.puts "Skipping #{item[0]}:#{item[1]} becasue its already sprayed!!".colorize(:yellow).to_s
+                        STDERR.puts "Skipping #{item[0]}:#{item[1]} because its already sprayed!!".colorize(:yellow).to_s
                         # queued_count -= 1 # remove the count for already being sprayed
                         next
                     end
@@ -307,7 +307,7 @@ class Sprayer
                         end
 
                         if already_sprayed.includes? "#{item[0]}:#{item[1]}" || valid_accounts.includes? item[0]
-                            STDERR.puts "\rSkipping #{item[0]}:#{item[1]} becasue its already sprayed!!".colorize(:yellow).to_s
+                            STDERR.puts "\rSkipping #{item[0]}:#{item[1]} because its already sprayed!!".colorize(:yellow).to_s
                             # queued_count -= 1 # remove the count for already being sprayed
                             next
                         end
@@ -342,7 +342,7 @@ class Sprayer
                     # puts @target
                     
                     if already_sprayed.includes? "#{item[0]}:#{item[1]}" || valid_accounts.includes? item[0]
-                        STDERR.puts "Skipping #{item[0]}:#{item[1]} becasue its already sprayed!!".colorize(:yellow).to_s
+                        STDERR.puts "Skipping #{item[0]}:#{item[1]} because its already sprayed!!".colorize(:yellow).to_s
                         # queued_count -= 1 # remove the count for already being sprayed
                         next
                     end
@@ -387,7 +387,7 @@ class Sprayer
             elsif @uap # user as password
                 usernames.each do |uname|
                     if already_sprayed.includes? "#{uname}:#{uname}" || valid_accounts.includes? uname
-                        STDERR.puts "Skipping #{uname}:#{uname} becasue its already sprayed!!".colorize(:yellow).to_s
+                        STDERR.puts "Skipping #{uname}:#{uname} because its already sprayed!!".colorize(:yellow).to_s
                         next
                     end
                     attempt = spray(uname, uname)
@@ -433,7 +433,7 @@ class Sprayer
                 puts "Spraying password: ".colorize(:yellow).to_s + pass
                 usernames.each do |uname|
                     if already_sprayed.includes? "#{uname}:#{pass}" || valid_accounts.includes? uname
-                        STDERR.puts "Skipping #{uname}:#{pass} becasue its already sprayed!!".colorize(:yellow).to_s
+                        STDERR.puts "Skipping #{uname}:#{pass} because its already sprayed!!".colorize(:yellow).to_s
                         next 
                     end
                     attempt = spray(uname, pass)

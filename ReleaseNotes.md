@@ -1,3 +1,19 @@
+## 1.0.5
+#### New Features
+- added a couple options to makefile for building and installing experimental features
+    - make experimental
+    - make install-experimental
+- currently this will install only the experimental version of spdb with tab completion. 
+#### Additional SprayTypes
+#### Enhanced Features
+- o365 now alerts when valid accunt conditional access is found
+#### Bug Fixes
+- o365 spray not detecting valid accounts when conditional access is applied
+- some spelling fixes 
+
+
+
+
 ## 1.0.4
 #### New Features
 - Theres a wiki now!
@@ -11,7 +27,6 @@
 #### Bug Fixes
 - esxi was set to spray to "/" not the "/sdk" endpoint which handles the actual auth request. This is now mapped to /sdk and auth works with `-t 'https://esxi.ip.or.domain'`
 
-
 ---
 
 ## 1.0.3
@@ -23,10 +38,13 @@
 
 #### Enhanced Features
 - Better WebHook support. Not just teams anymore.
-    Now supports: 
+    Now supports:
     - Teams
     - Discord
-    - Google 
+    - Google
     - Slack
 
 #### Bug Fixes
+
+
+
