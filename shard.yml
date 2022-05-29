@@ -1,5 +1,5 @@
 name: SprayCannon
-version: 0.1.0
+version: 1.0.6
 
 authors:
   - CausticKirbyZ (Mike Hedlund)
@@ -18,3 +18,5 @@ dependencies:
   cryprompt:
     github: CausticKirbyZ/cryprompt
     branch: master
+  tallboy:
+    github: epoch/tallboy

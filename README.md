@@ -13,7 +13,7 @@ I got sick and tired of having to remember and manually spray a password every 3
 <img src="./mdassets/spraycannon_art.png"> 
 
 
-### Theres a [wiki](https://github.com/CausticKirbyZ/SprayCannon/wiki) now.
+### Theres a [wiki](https://github.com/CausticKirbyZ/SprayCannon/wiki) now _(not fully built but its there)_.
 
 # **SprayCannon**
 A fast multithreaded password spray tool designed to simplify and automate many password spraying problems i faced.
@@ -28,6 +28,20 @@ A fast multithreaded password spray tool designed to simplify and automate many 
 * Webhook support (autodetects Teams, Discord, Slack, and Google Chat URLS via domain name)
 * Multithreaded
 * For full list of changes and features added/removed. see the [ReleaseNotes](https://github.com/CausticKirbyZ/SprayCannon/blob/main/ReleaseNotes.md)
+
+# **SPDB** 
+An nice interface for the backend database.
+## **Features** 
+* console application 
+* tab completion 
+* suggestions 
+* exporting info to csv file 
+* search capabilities
+
+<br>
+<img src="./mdassets/fulldemo.gif"> 
+
+**Note:** The the demo above uses the testing spraytype for demonstration purposes. This doesnt make any network connections.
 
 ## **Current supported spray types**
 fully implemented means that the module works as designed. some protocols may not support mfa detection. others i have not had a chance to compare the "valid" check for one with MFA enabled ( ex. sonicall virtualoffice )
@@ -147,10 +161,16 @@ interactive commands:
 * sprayed - shows all username/password combination that have been sprayed
 * vaid - shows all username/password combinations that are valid
 * export \<tablename\> - exports the specified tablename to a csv file in the local directory 
+* search \<search string\> 
+* valid \<search string\>
+* help 
 
-# **spdb2**
-spdb2 is the new updated version of spdb. it now features a tab completsion and help menu scrolling option while naviating. 
-features are expiramental at this point. but should work as advertized. 
+spdb now supports tabcompletion and syntax suggestion! 
+
+
+# ~~**spdb2**~~
+~~spdb2 is the new updated version of spdb. it now features a tab completsion and help menu scrolling option while naviating.~~
+~~features are expiramental at this point. but should work as advertized.~~ this is out of date now and merged to the main spdb 
 
 
 

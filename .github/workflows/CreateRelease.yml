@@ -51,9 +51,116 @@ jobs:
           asset_path: ./spdb
           asset_name: spdb-arch-linux-x64
           asset_content_type: binary/octet-stream
- 
 
-  build-debian-based:
+  build-kali:
+    runs-on: ubuntu-latest
+    container: 
+      image: kalilinux/kali-rolling
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: install curl.... why.... why is this not default in kalis docker
+        run: apt update -y && apt install gcc make cmake curl git  sqlite3 libsqlite3-dev build-essential openssl -y
+
+      - name: Install Crystal and Shards using public installer
+        run: curl -fsSL https://crystal-lang.org/install.sh | bash
+
+      - name: Install shard dependencies
+        run: shards install
+        env:
+          SHARDS_OPTS: --ignore-crystal-version
+
+      - name: Install shard dependencies
+        run: shards install
+        env:
+          SHARDS_OPTS: --ignore-crystal-version
+
+      - name: Build Project
+        run: crystal build src/spraycannon.cr --release
+
+      - name: Bulid Project 2
+        run: crystal build src/spdb.cr --release
+
+      - name: Upload spraycannon release asset - kali
+        uses: actions/upload-release-asset@v1
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./spraycannon
+          asset_name: spraycannon-kali-linux-x64
+          asset_content_type: binary/octet-stream
+
+      - name: Upload spdb release asset - kali
+        uses: actions/upload-release-asset@v1
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./spdb
+          asset_name: spdb-kali-linux-x64
+          asset_content_type: binary/octet-stream
+
+
+
+build-debain:
+    runs-on: ubuntu-latest
+    container: 
+      image: debain
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: install curl.... why.... why is this not default in kalis docker
+        run: apt update -y && apt install gcc make cmake curl git  sqlite3 libsqlite3-dev build-essential openssl -y
+
+      - name: Install Crystal and Shards using public installer
+        run: curl -fsSL https://crystal-lang.org/install.sh | bash
+
+      - name: Install shard dependencies
+        run: shards install
+        env:
+          SHARDS_OPTS: --ignore-crystal-version
+
+      - name: Install shard dependencies
+        run: shards install
+        env:
+          SHARDS_OPTS: --ignore-crystal-version
+
+      - name: Build Project
+        run: crystal build src/spraycannon.cr --release
+
+      - name: Bulid Project 2
+        run: crystal build src/spdb.cr --release
+
+      - name: Upload spraycannon release asset - debain
+        uses: actions/upload-release-asset@v1
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./spraycannon
+          asset_name: spraycannon-debian-linux-x64
+          asset_content_type: binary/octet-stream
+
+      - name: Upload spdb release asset - debain
+        uses: actions/upload-release-asset@v1
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./spdb
+          asset_name: spdb-debian-linux-x64
+          asset_content_type: binary/octet-stream
+
+
+
+
+
+
+
+  build-ubuntu-based:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -74,7 +181,7 @@ jobs:
       - name: Bulid Project 2
         run: crystal build src/spdb.cr --release
 
-      - name: Upload release asset - debian
+      - name: Upload release asset - ubuntu
         uses: actions/upload-release-asset@v1
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -82,10 +189,10 @@ jobs:
           # upload_url: ${{ steps.release.outputs.upload_url }}
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ./spraycannon
-          asset_name: spraycannon-debian-based-linux-x64
+          asset_name: spraycannon-ubuntu-linux-x64
           asset_content_type: binary/octet-stream
 
-      - name: Upload release asset - debian
+      - name: Upload release asset - ubuntu
         uses: actions/upload-release-asset@v1
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -93,7 +200,7 @@ jobs:
           # upload_url: ${{ steps.release.outputs.upload_url }}
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ./spdb
-          asset_name: spdb-debian-based-linux-x64
+          asset_name: spdb-ubuntu-linux-x64
           asset_content_type: binary/octet-stream
 
 

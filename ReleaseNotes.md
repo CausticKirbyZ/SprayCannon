@@ -1,3 +1,26 @@
+## spraycannon:1.0.6 / spdb:2.0.0
+#### New Features
+- spdb
+    - version bump to 2.0.0
+    - tab completion moved to mainline now. not experimental anymore 
+    - search features for searching the database 
+    - database stats summary 
+- spraycannon 
+    - updated database to support sparytype
+#### Additional SprayTypes
+#### Enhanced Features
+- spdb  
+    - spdb now uses tables
+    - help menu updated 
+#### Bug Fixes
+#### Other
+- added prebuilt release for Ubuntu
+- added prebuilt release for Kali
+- added prebuilt release for Debain
+
+
+
+
 ## 1.0.5
 #### New Features
 - added a couple options to makefile for building and installing experimental features

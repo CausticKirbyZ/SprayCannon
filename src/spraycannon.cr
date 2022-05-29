@@ -13,7 +13,7 @@ require "./spray_types/*"
 # TODO LOG
 ############
 
-version = "1.0.5"
+version = "1.0.6"
 
 # Feature requests 
 # - timstamp the login, start, end - done!
@@ -243,6 +243,7 @@ db.exec "create table if not exists password( passwordid integer primary key aut
 db.exec "create table if not exists passwords_sprayed(  usernameid integer not null , 
                                                         passwordid integer not null ,
                                                         date_time date,
+                                                        spraytype text, 
                                                         primary key(usernameid, passwordid) , 
                                                         foreign key (usernameid) references username(usernameid), 
                                                         foreign key (passwordid) references password(passwordid)                                                        
@@ -251,6 +252,7 @@ db.exec "create table if not exists passwords_sprayed(  usernameid integer not n
 db.exec "create table if not exists valid_passwords(    usernameid integer not null , 
                                                         passwordid integer not null ,
                                                         date_time date,
+                                                        spraytype text, 
                                                         primary key(usernameid, passwordid) , 
                                                         foreign key (usernameid) references username(usernameid), 
                                                         foreign key (passwordid) references password(passwordid)

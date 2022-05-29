@@ -1,0 +1,27 @@
+name: UbuntuLinuxBuild
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-debian-based:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: latest
+
+      - uses: actions/checkout@v2
+
+      - name: Install shard dependencies
+        run: shards install
+        env:
+          SHARDS_OPTS: --ignore-crystal-version
+
+      - name: Build Project
+        run: crystal build src/spraycannon.cr --release
+
+      - name: Bulid Project 2
+        run: crystal build src/spdb.cr --release

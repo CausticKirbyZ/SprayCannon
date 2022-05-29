@@ -503,7 +503,7 @@ class Sprayer
         begin  
             db.exec "
                     insert into passwords_sprayed
-                    select username.usernameid, password.passwordid , DATETIME('now','localtime')
+                    select username.usernameid, password.passwordid , DATETIME('now','localtime'), '#{self.class}'
                     from username, password 
                     where 
                     username.username = \"#{username}\"
@@ -530,15 +530,15 @@ class Sprayer
         begin 
             # if valid add to that table too 
                 db.exec "insert into valid_passwords
-                    select username.usernameid, password.passwordid, DATETIME('now','localtime')
+                    select username.usernameid, password.passwordid, DATETIME('now','localtime'), '#{self.class}'
                     from username, password 
                     where 
                     username.username = \"#{username}\"
                     and 
                     password.password = \"#{password}\";"
             rescue e 
-                # STDERR.puts "Valid Error: "
-                # STDERR.puts e.message
+                STDERR.puts "Valid Error: "
+                STDERR.puts e.message
             end
     end
 
