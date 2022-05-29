@@ -104,7 +104,7 @@ jobs:
 
 
 
-build-debain:
+  build-debain:
     runs-on: ubuntu-latest
     container: 
       image: debain
@@ -153,13 +153,7 @@ build-debain:
           asset_path: ./spdb
           asset_name: spdb-debian-linux-x64
           asset_content_type: binary/octet-stream
-
-
-
-
-
-
-
+          
   build-ubuntu-based:
     runs-on: ubuntu-latest
     steps:
