@@ -105,10 +105,10 @@ jobs:
 
 
 
-  build-debain:
+  build-debian:
     runs-on: ubuntu-latest
     container: 
-      image: debain
+      image: debian
 
     steps:
       - uses: actions/checkout@v2
