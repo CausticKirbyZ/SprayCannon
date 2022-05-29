@@ -30,6 +30,3 @@ jobs:
 
       - name: Build spdb
         run: crystal build src/spdb.cr -p --release
-
-      - name: Build spdb2
-        run: crystal build src/spdb2.cr -p --release
