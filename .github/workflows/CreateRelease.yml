@@ -153,7 +153,7 @@ jobs:
           asset_path: ./spdb
           asset_name: spdb-debian-linux-x64
           asset_content_type: binary/octet-stream
-          
+
   build-ubuntu-based:
     runs-on: ubuntu-latest
     steps:
@@ -196,7 +196,6 @@ jobs:
           asset_path: ./spdb
           asset_name: spdb-ubuntu-linux-x64
           asset_content_type: binary/octet-stream
-
 
   build-macos-based:
     runs-on: macos-latest
