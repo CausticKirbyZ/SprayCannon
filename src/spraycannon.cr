@@ -158,7 +158,7 @@ parser = OptionParser.new() do |opts|
     opts.on("--useragent=[agentstring]","Use a custom useragent string, or a file containing useragents(will chose randomly from them).") do |useragent|
         if File.exists?(useragent) 
             File.each_line(useragent) do |line|
-                options["useragents"].as(Array(String)) << line.strip()
+                options["useragents"].as(Array(String)) << line.strip() unless line == ""
             end
         else 
             options["useragents"].as(Array(String)) << useragent.strip()
@@ -273,8 +273,8 @@ when "fortigate_login"
     s = Fortigate_Login.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 when "o365","office365","msol"
     STDERR.puts "Currently in Beta. may not be 100% reliable!!!".colorize(:yellow)
-    s = O365.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
-    options["target"].as( Array(String) )  << "https://login.microsoft.com" 
+    s = O365.new(options["usernames"].as(Array(String)), options["passwords"].as(Array(String)))
+    options["target"].as( Array(String) )  << "https://login.microsoft.com" unless options["target"].as(Array(String)).size < 1 
     # exit 0 
 when "cisco_vpn" # need to go find a vpn to check it on and port the ruby file  (and find the ruby file )
     s = Cisco_VPN.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
