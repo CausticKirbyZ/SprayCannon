@@ -166,7 +166,7 @@ parser = OptionParser.new() do |opts|
     end 
     
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        ["msol (o365)","ExchangeEAS","ExchangeOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus","global_protect","ESXI_web", "VMWare_Horizon"].each {|t| puts t}
+        ["msol (o365)", "Okta", "ExchangeEAS","ExchangeOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus","global_protect","ESXI_web", "VMWare_Horizon"].each {|t| puts t}
         exit 0
     end 
 
@@ -272,10 +272,14 @@ when "fortigate_login"
     STDERR.puts "not confirmed to work"
     s = Fortigate_Login.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 when "o365","office365","msol"
-    STDERR.puts "Currently in Beta. may not be 100% reliable!!!".colorize(:yellow)
+    # STDERR.puts "Currently in Beta. may not be 100% reliable!!!".colorize(:yellow)
     s = O365.new(options["usernames"].as(Array(String)), options["passwords"].as(Array(String)))
     options["target"].as( Array(String) )  << "https://login.microsoft.com" unless options["target"].as(Array(String)).size > 0 
     # exit 0 
+when "google"
+    puts "Google spraying is not complete!!! as in It DOES NOT WORK (yet)!!!!"
+    # s = Google.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+    # options["target"].as( Array(String) )  << "https://accounts.google.com" unless options["target"].as(Array(String)).size > 0 
 when "cisco_vpn" # need to go find a vpn to check it on and port the ruby file  (and find the ruby file )
     s = Cisco_VPN.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     s.domain = options["domain"].as(String)
@@ -321,6 +325,8 @@ when "global_protect"
     s = GlobalProtect.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 when "esxi_web"
     s = ESXI_web.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+when "okta"
+    s = Okta.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 else 
     STDERR.puts "Not a valit sprayer type!!".colorize(:red)
     exit 1
