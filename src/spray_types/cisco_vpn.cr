@@ -39,7 +39,7 @@ class Cisco_VPN < Sprayer
         form = "tgroup=&next=&tgcookieset=&group_list=#{URI.encode_www_form(@domain)}&username=#{URI.encode_www_form(username)}&password=#{URI.encode_www_form(password)}&Login=Login" 
         
         # here is the basic 
-        page = client.post(path, headers: header, form: form)
+        page = client.post("#{"/#{url.path.strip("/")}" if url.path != "" }#{path}", headers: header, form: form)
         # p page.body
         
         # this was a bad way of doing it and lead to bad 

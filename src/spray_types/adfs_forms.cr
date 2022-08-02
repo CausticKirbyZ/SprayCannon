@@ -42,7 +42,7 @@ class ADFS_forms < Sprayer
             form = "UserName=#{URI.encode_www_form(@domain.not_nil!)}%5C#{URI.encode_www_form(username)}&Password=#{ URI.encode_www_form(password) }&AuthMethod=FormsAuthentication"
         end
         # here is the basic 
-        page = client.post(path, headers: header, form: form)
+        page = client.post("#{"/#{url.path.strip("/")}" if url.path != "" }#{path}", headers: header, form: form)
 
         if page.status_code == 302
             valid = true 

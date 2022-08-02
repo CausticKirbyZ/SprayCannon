@@ -13,7 +13,7 @@ require "./spray_types/*"
 # TODO LOG
 ############
 
-version = "1.0.8"
+version = "1.1.0"
 
 # Feature requests 
 # - timstamp the login, start, end - done!
@@ -129,10 +129,10 @@ parser = OptionParser.new() do |opts|
     opts.on("-v","--verbose","Print verbose information") do
         options["verbose"] = true 
     end
-    opts.on("--force","Forces the spray to occur despite if it has been sprayed before.") do
-        options["force"] = true 
-    end
+    
 
+
+    opts.separator("")
     opts.separator("Additional Options:")
     
     opts.on("--threads=[count]","Use worker threads to drasticly speed things up!(default is 1)") do |tcount|
@@ -142,6 +142,10 @@ parser = OptionParser.new() do |opts|
     opts.on("--nodb","does not use the database") do
         options["db"] = false
     end 
+
+    opts.on("--force","Forces the spray to occur despite if it has been sprayed before. This still logs to the database.") do
+        options["force"] = true 
+    end
     
     opts.on("--user-as-password","Sets the user and password to the same string") do
         options["user-as-password"] = true

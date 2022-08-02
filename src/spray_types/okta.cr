@@ -24,6 +24,7 @@ class Okta < Sprayer
 
         # some basic setups for web based auth 
         url = URI.parse @target 
+        pp url 
         #gotta set no verify for tls pages
         context = OpenSSL::SSL::Context::Client.new
         context.verify_mode = OpenSSL::SSL::VerifyMode::NONE
@@ -51,9 +52,8 @@ class Okta < Sprayer
         }
         
         # here is the basic request 
-        page = client.post("/api/v1/authn", headers: header, body: body.to_json) # client supporst all http verbs as client.verb -> client.get, client.delete..etc 
+        page = client.post("#{"/#{url.path.strip("/")}" if url.path != "" }/api/v1/authn", headers: header, body: body.to_json) # client supporst all http verbs as client.verb -> client.get, client.delete..etc 
 
-        
         #
         # logic for if valid login goes here replace whats here. it only serves as a guide for quick editing 
         # 

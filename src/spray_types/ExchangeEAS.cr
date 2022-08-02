@@ -35,8 +35,9 @@ class ExchageEAS < Sprayer
             exit 1
         end
 
-        url = URI.parse( "https://#{@target}/Microsoft-Server-ActiveSync" )
-
+        # url = URI.parse( "https://#{@target}/Microsoft-Server-ActiveSync" )
+        url = URI.parse @target 
+        path = "/Microsoft-Server-ActiveSync"
         
         
         # context = OpenSSL::SSL::Context::Client.insecure
@@ -52,7 +53,7 @@ class ExchageEAS < Sprayer
         page = nil
         while !page # after a while ocasionally a dns entry may go awry... not sure.... just check again and it should be fine
             begin 
-                page = client.get( "/Microsoft-Server-ActiveSync" , headers: header )
+                page = client.get( "#{"/#{url.path.strip("/")}" if url.path != "" }#{path}" , headers: header )
             rescue e
                 # STDERR.puts  e.message 
                 STDERR.puts "ERROR: oops something happend (blame dns) Retrying..."
