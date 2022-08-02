@@ -41,15 +41,19 @@ class Okta < Sprayer
         } 
 
 
-
-        # form = "username=#{username}&password=#{password}" # request form params here
-
-
-        form = "{\"password\":\"#{password}\",\"username\":\"#{username}\",\"options\":{\"warnBeforePasswordExpired\":true,\"multiOptionalFactorEnroll\":true}}" 
+        body = {
+            "password" => "#{password}",
+            "username" => "#{username}",
+            "options" => {
+                "warnBeforePasswordExpired" => true,
+                "multiOptionalFactorEnroll" => true
+            }
+        }
         
         # here is the basic request 
-        page = client.post("/api/v1/authn", headers: header, form: form) # client supporst all http verbs as client.verb -> client.get, client.delete..etc 
+        page = client.post("/api/v1/authn", headers: header, body: body.to_json) # client supporst all http verbs as client.verb -> client.get, client.delete..etc 
 
+        
         #
         # logic for if valid login goes here replace whats here. it only serves as a guide for quick editing 
         # 
