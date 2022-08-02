@@ -62,6 +62,7 @@ class InfinateCampus < Sprayer
         
         # here is the basic 
         page = client.post("/campus/verify.jsp", headers: header, form: form)
+        # page = client.post("#{url.path}", headers: header, form: form)
         # puts page.headers["Location"]
         if !page.headers["Location"].includes? "status=password-error"
             valid = true 

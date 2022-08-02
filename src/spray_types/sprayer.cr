@@ -1,6 +1,7 @@
 require "colorize"
 require "http/client"
 
+
 class User
     @username = ""
     @password = "" 
@@ -12,11 +13,11 @@ end
 class Sprayer
     property usernames : Array(String), passwords : Array(String), delay : Int32 , jitter : Int32  , target : String, uap : Bool, upf : Bool, webhook_url : String 
     property valid : Array(String)
-    # property useragents : Array(String) = ["Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/90.0"]
     property useragents : Array(String) = ["SprayCannon user agent. Password Spraying tool. Check your logs"]
-    # property user_agent : String = "SprayCannon user agent. Password Spraying tool. Check your logs"
     property targets : Array(String) = [""]
-    # property rate : Int32
+    property forced : Bool = false 
+    property strip_user_string : String = ""
+    property strip_pass_string : String = ""
 
     def initialize(username : String, password : String)
         @usernames = [] of String
@@ -141,8 +142,8 @@ class Sprayer
                         break if f.nil? # close the fiber if nil is received # signalling the completion of the spray and can close the fibers 
                         uname = f[0].as(String)
                         pass = f[1].as(String)
-                        if already_sprayed.includes? "#{uname}:#{pass}" || valid_accounts.includes? uname
-                            STDERR.puts "Skipping #{uname}:#{pass} because its already sprayed!!".colorize(:yellow).to_s
+                        if ( already_sprayed.includes?("#{uname}:#{pass}") || valid_accounts.includes?(uname) ) && !@forced # if already sprayed or valid skip unless --force is applied 
+                            STDERR.puts "Skipping #{uname}:#{pass} because its already sprayed!!".colorize(:yellow).to_s 
                             queued_count -= 1 # remove the count for already being sprayed
                             next
                         end
@@ -155,7 +156,21 @@ class Sprayer
 
                         begin # handle any errors with a spray 
                             # do the spray 
-                            res = spray(uname, pass)
+                            # res = spray(uname, pass)
+
+                            if @strip_user_string == "" && @strip_pass_string == "" # no modification 
+                                res = spray(uname, pass)
+
+                            elsif @strip_user_string != "" && @strip_pass_string == "" # username striping 
+                                res = spray(uname.strip(@strip_user_string), pass)
+
+                            elsif @strip_user_string == "" && @strip_pass_string != "" # password stripping 
+                                res = spray(uname, pass.strip(@strip_pass_string))
+
+                            elsif @strip_user_string != "" && @strip_pass_string != "" # both stripping 
+                                res = spray(uname.strip(@strip_user_string), pass.strip(@strip_pass_string))
+                            end
+
                         rescue e 
                             puts "Error: ".colorize(:yellow).to_s + "#{uname}:#{pass}".colorize(:red).to_s + " crached durring a spray. user will not be logged to the db".colorize(:yellow).to_s
                             puts e.message 
@@ -340,14 +355,26 @@ class Sprayer
                 # puts "Sending to queue_channel"
                 upflist.each do |item|
                     # puts @target
-                    
-                    if already_sprayed.includes? "#{item[0]}:#{item[1]}" || valid_accounts.includes? item[0]
+                    if ( already_sprayed.includes?("#{item[0]}:#{item[1]}") || valid_accounts.includes?(item[0]) ) && !@forced # if already sprayed or valid skip unless --force is applied 
+                    # if already_sprayed.includes? "#{item[0]}:#{item[1]}" || valid_accounts.includes? item[0]
                         STDERR.puts "Skipping #{item[0]}:#{item[1]} because its already sprayed!!".colorize(:yellow).to_s
                         # queued_count -= 1 # remove the count for already being sprayed
                         next
                     end
 
-                    attempt = spray(item[0],item[1])
+                    # attempt = spray(item[0],item[1])
+                     if @strip_user_string == "" && @strip_pass_string == "" # no modification 
+                        attempt = spray(item[0], item[1])
+                        
+                    elsif @strip_user_string != "" && @strip_pass_string == "" # username striping 
+                        attempt = spray(item[0].strip(@strip_user_string), item[1])
+
+                    elsif @strip_user_string == "" && @strip_pass_string != "" # password stripping 
+                        attempt = spray(item[0], item[1].strip(@strip_pass_string))
+
+                    elsif @strip_user_string != "" && @strip_pass_string != "" # both stripping 
+                        attempt = spray(item[0].strip(@strip_user_string), item[1].strip(@strip_pass_string))
+                    end
                     next_target()
                     next if attempt.nil?
                     @lockout = attempt[3].as(Bool|Nil)
@@ -386,11 +413,26 @@ class Sprayer
                 return 
             elsif @uap # user as password
                 usernames.each do |uname|
-                    if already_sprayed.includes? "#{uname}:#{uname}" || valid_accounts.includes? uname
+                    if ( already_sprayed.includes?("#{uname}:#{uname}") || valid_accounts.includes?(uname) ) && !@forced # if already sprayed or valid skip unless --force is applied 
+                    # if already_sprayed.includes? "#{uname}:#{uname}" || valid_accounts.includes? uname
                         STDERR.puts "Skipping #{uname}:#{uname} because its already sprayed!!".colorize(:yellow).to_s
                         next
                     end
-                    attempt = spray(uname, uname)
+                    # attempt = spray(uname, uname)
+                    
+                    if @strip_user_string == "" && @strip_pass_string == "" # no modification 
+                        attempt = spray(uname, uname)
+                        
+                    elsif @strip_user_string != "" && @strip_pass_string == "" # username striping 
+                        attempt = spray(uname.strip(@strip_user_string), uname)
+
+                    elsif @strip_user_string == "" && @strip_pass_string != "" # password stripping 
+                        attempt = spray(uname, uname.strip(@strip_pass_string))
+
+                    elsif @strip_user_string != "" && @strip_pass_string != "" # both stripping 
+                        attempt = spray(uname.strip(@strip_user_string), uname.strip(@strip_pass_string))
+                    end
+
                     next_target()
                     next if attempt.nil?
                     @lockout = attempt[3].as(Bool|Nil)
@@ -432,11 +474,26 @@ class Sprayer
             passwords.each do |pass|
                 puts "Spraying password: ".colorize(:yellow).to_s + pass
                 usernames.each do |uname|
-                    if already_sprayed.includes? "#{uname}:#{pass}" || valid_accounts.includes? uname
+                    if ( already_sprayed.includes?("#{uname}:#{pass}") || valid_accounts.includes?(uname) ) && !@forced # if already sprayed or valid skip unless --force is applied 
+                    # if already_sprayed.includes? "#{uname}:#{pass}" || valid_accounts.includes? uname
                         STDERR.puts "Skipping #{uname}:#{pass} because its already sprayed!!".colorize(:yellow).to_s
                         next 
                     end
-                    attempt = spray(uname, pass)
+
+                    # attempt = spray(uname, pass)
+                    if @strip_user_string == "" && @strip_pass_string == "" # no modification 
+                        attempt = spray(uname, pass)
+                        
+                    elsif @strip_user_string != "" && @strip_pass_string == "" # username striping 
+                        attempt = spray(uname.strip(@strip_user_string), pass)
+
+                    elsif @strip_user_string == "" && @strip_pass_string != "" # password stripping 
+                        attempt = spray(uname, pass.strip(@strip_pass_string))
+
+                    elsif @strip_user_string != "" && @strip_pass_string != "" # both stripping 
+                        attempt = spray(uname.strip(@strip_user_string), pass.strip(@strip_pass_string))
+                    end
+                    
                     next_target()
                     next if attempt.nil?
                     @lockout = attempt[3].as(Bool|Nil)
@@ -539,6 +596,7 @@ class Sprayer
             rescue e 
                 STDERR.puts "Valid Error: "
                 STDERR.puts e.message
+                STDERR.puts "Database likely already contains: #{username}:#{password}"
             end
     end
 

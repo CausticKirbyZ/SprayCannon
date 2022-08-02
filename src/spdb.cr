@@ -20,11 +20,18 @@ db = DB.open "sqlite3://./spray.db"
 
 db.exec "create table if not exists username( usernameid integer primary key autoincrement, username varchar(255) unique not null);"
 db.exec "create table if not exists password( passwordid integer primary key autoincrement, password varchar(255) unique not null);"
+# db.exec "create table if not exists passwords_sprayed(  usernameid integer not null , 
+#                                                         passwordid integer not null ,
+#                                                         date_time date,
+#                                                         spraytype text, 
+#                                                         primary key(usernameid, passwordid) , 
+#                                                         foreign key (usernameid) references username(usernameid), 
+#                                                         foreign key (passwordid) references password(passwordid) 
+#                                                         );"
 db.exec "create table if not exists passwords_sprayed(  usernameid integer not null , 
                                                         passwordid integer not null ,
                                                         date_time date,
                                                         spraytype text, 
-                                                        primary key(usernameid, passwordid) , 
                                                         foreign key (usernameid) references username(usernameid), 
                                                         foreign key (passwordid) references password(passwordid) 
                                                         );"

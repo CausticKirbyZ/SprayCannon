@@ -53,7 +53,10 @@ options = {
     "db" => true,
     "threads" => 1,
     "user-as-password" => false,
-    "user-password" => false
+    "user-password" => false,
+    "strip_user_string" => "", 
+    "strip_pass_string" => "", 
+    "force" => false 
 }
 
 
@@ -126,6 +129,9 @@ parser = OptionParser.new() do |opts|
     opts.on("-v","--verbose","Print verbose information") do
         options["verbose"] = true 
     end
+    opts.on("--force","Forces the spray to occur despite if it has been sprayed before.") do
+        options["force"] = true 
+    end
 
     opts.separator("Additional Options:")
     
@@ -153,6 +159,14 @@ parser = OptionParser.new() do |opts|
     
     opts.on("--webhook=[url]","Will send a webhook if valid credential is found!! (autodetects Teams, Discord, Slack, and Google Chat URLS) ") do |webhook|
         options["webhook"] = webhook
+    end 
+    
+    opts.on("--strip-user-string=[stiped_string]","Will strip the entered string from the end of the username. Ideally used with --user-as-password.  ex: --strip-user-string '@domain.com' = user@domain.com => user ") do |strip_string|
+        options["strip_user_string"] = strip_string
+    end 
+    
+    opts.on("--strip-pass-string=[stiped_string]","Will strip the entered string from the end of the username. Ideally used with --user-as-password.  ex: --strip-pass-string '@domain.com' = user@domain.com => user ") do |strip_string|
+        options["strip_pass_string"] = strip_string
     end 
     
     opts.on("--useragent=[agentstring]","Use a custom useragent string, or a file containing useragents(will chose randomly from them).") do |useragent|
@@ -240,11 +254,20 @@ db.exec "create table if not exists username( usernameid integer primary key aut
 
 db.exec "create table if not exists password( passwordid integer primary key autoincrement, password varchar(255) unique not null);"
 
+# db.exec "create table if not exists passwords_sprayed(  usernameid integer not null , 
+#                                                         passwordid integer not null ,
+#                                                         date_time date,
+#                                                         spraytype text, 
+#                                                         primary key(usernameid, passwordid), 
+#                                                         foreign key (usernameid) references username(usernameid), 
+#                                                         foreign key (passwordid) references password(passwordid)                                                        
+#                                                         );"
+
 db.exec "create table if not exists passwords_sprayed(  usernameid integer not null , 
                                                         passwordid integer not null ,
                                                         date_time date,
                                                         spraytype text, 
-                                                        primary key(usernameid, passwordid) , 
+                                                        
                                                         foreign key (usernameid) references username(usernameid), 
                                                         foreign key (passwordid) references password(passwordid)                                                        
                                                         );"
@@ -301,10 +324,10 @@ when "vpn_sonicwall_virtualoffice_5.x"
     s = Sonicwall_VirtualOffice_5x.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 # when "smb"
 #     s = SMBsprayer.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
-when "exchangeeas"
+when "exchangeeas", "exchange_eas"
     s = ExchageEAS.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     s.domain = options["domain"].as(String)
-when "exchangeowa"
+when "exchangeowa", "exchage_owa"
     s = ExchangeOWA.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     s.domain = options["domain"].as(String)
 when "adfs_forms"
@@ -337,6 +360,9 @@ s.delay = options["delay"].as(Int32)
 # s.target = options["target"].as(String) unless options["target"] == ""  # unless options["spraytype"].as(String).downcase == "o365"
 s.jitter = options["jitter"].as(Int32)
 s.webhook_url = options["webhook"].as(String) unless options["webhook"].nil?
+s.forced = options["force"].as(Bool)
+s.strip_user_string  = options["strip_user_string"].as(String)
+s.strip_pass_string  = options["strip_pass_string"].as(String)
 
 
 # handle if theres multiple targets/multiple proxy endpoints
