@@ -13,7 +13,7 @@ require "./spray_types/*"
 # TODO LOG
 ############
 
-version = "1.1.0"
+version = "1.1.1"
 
 # Feature requests 
 # - timstamp the login, start, end - done!
