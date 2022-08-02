@@ -12,7 +12,7 @@ I got sick and tired of having to remember and manually spray a password every 3
 <img src="./mdassets/spraycannon_art.png"> 
 
 
-### Theres a [wiki](https://github.com/CausticKirbyZ/SprayCannon/wiki) now _(not fully built but its there)_.
+### Theres a [wiki](https://github.com/CausticKirbyZ/SprayCannon/wiki) now _(mostly built now i think)_.
 
 # **SprayCannon**
 A fast multithreaded password spray tool designed to simplify and automate many password spraying problems i faced.
@@ -186,6 +186,8 @@ spdb now supports tabcompletion and syntax suggestion!
 
 # Thank you all for your inspiration and contributions to the community!!!  
 
+## Other Thanks 
+* To the individual who helped troubleshoot okta. (you know who you are)
 
 
 
@@ -194,9 +196,9 @@ Spraycannon is written in [crystal-lang]("https://crystal-lang.org"). A language
 
 ---
 **Arch** based linux distros  
-````
+```
 sudo pacman -S crystal shards 
-````
+```
 
 **Debian/RedHat** based linux distros(**Kali** too)
 ```
@@ -218,3 +220,30 @@ brew install crystal
 
 \* **Note:** I dont have a mac so i cant quite support MacOS. If a bug is found please create a bug report and i will try to fix. 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+* [ExchangeEAS] (https://github.com/CausticKirbyZ/SprayCannon/wiki/SprayType_ExchangeEAS)
+* [ExchangeOWA] (https://github.com/CausticKirbyZ/SprayCannon/wiki/SprayType_ExchangeOWA)
+* [cisco_vpn] (https://github.com/CausticKirbyZ/SprayCannon/wiki/SprayType_cisco_vpn)
+* [ADFS_forms] (https://github.com/CausticKirbyZ/SprayCannon/wiki/SprayType_ADFS_forms)
+* [vpn_sonicwall_virtualoffice] (https://github.com/CausticKirbyZ/SprayCannon/wiki/SprayType_vpn_sonicwall_virtualoffice)
+* [vpn_sonicwall_virtualoffice_5x] (https://github.com/CausticKirbyZ/SprayCannon/wiki/SprayType_vpn_sonicwall_virtualoffice_5x)
+* [vpn_sonicwall_digest] (https://github.com/CausticKirbyZ/SprayCannon/wiki/SprayType_vpn_sonicwall_digest)
+* [vpn_fortinet] (https://github.com/CausticKirbyZ/SprayCannon/wiki/SprayType_vpn_fortinet)
+* [spiceworks] (https://github.com/CausticKirbyZ/SprayCannon/wiki/SprayType_spiceworks)
+* [InfinateCampus] (https://github.com/CausticKirbyZ/SprayCannon/wiki/SprayType_InfinateCampus)
+* [global_protect] (https://github.com/CausticKirbyZ/SprayCannon/wiki/SprayType_global_protect)
+* [ESXI_web] (https://github.com/CausticKirbyZ/SprayCannon/wiki/SprayType_ESXI_web)
+* [VMWare_Horizon] (https://github.com/CausticKirbyZ/SprayCannon/wiki/SprayType_VMWare_Horizon)
