@@ -8,11 +8,13 @@ class Fortigate_Login < Sprayer
     # end
 
     # returns an array of [username, password, valid, lockout, mfa]
-    def spray(username : String, password : String) 
-        lockedout = false
-        valid = false
-        mfa = false
-
+    def spray(username : String, password : String)  : SprayStatus
+        # lockedout = false
+        # valid = false
+        # mfa = false
+        spstatus = SprayStatus.new()
+        spstatus.username = username 
+        spstatus.password = password 
         # 
         # enter your auth check here and make sure 
         #
@@ -45,8 +47,10 @@ class Fortigate_Login < Sprayer
         if page.body.to_i == 0  # successfull connect but not a login 
         elsif page.body.to_i == 2
             lockedout = true 
+            spstatus.lockedout = true 
         else 
-            valid = true # idk if this works but meh its a start 
+            # valid = true # idk if this works but meh its a start 
+            spstatus.valid_credentials = true 
         end
 
 
@@ -64,6 +68,8 @@ class Fortigate_Login < Sprayer
         #
         # end of your auth check here
         # 
-        return [username, password, valid, lockedout, mfa]
+
+        # return [username, password, valid, lockedout, mfa]
+        return spstatus
     end
 end

@@ -4,7 +4,7 @@ require "option_parser"
 require "colorize"
 require "tallboy"
 
-VERSION = "2.0.1"
+VERSION = "2.0.2"
 
 
 if ARGV.size > 0
@@ -45,6 +45,14 @@ db.exec "create table if not exists valid_passwords(    usernameid integer not n
                                                         foreign key (passwordid) references password(passwordid)                                                        
                                                         );"
 
+db.exec "create table if not exists invalid_usernames(   
+                                                            usernameid integer not null, 
+                                                            date_time date, 
+                                                            spraytype text, 
+                                                            primary key(usernameid),
+                                                            foreign key (usernameid) references username(usernameid)
+                                                        );"
+
 
 menu = YAML.parse "
 ---
@@ -56,6 +64,10 @@ passwords:
   _description: Prints out the passwords that have been sprayed
 valid:
   _description: Prints out the valid credentials found
+invalid:
+  _description: Prints out a list of invalid usernames found
+val-users:
+  _description: Prints out a list of not invalid usernames
 creds:
   _description: Alias for valid
 sprayed:
@@ -70,6 +82,10 @@ export:
     _description: Exports the contents to a csv file 
   sprayed: 
     _description: Exports the contents to a csv file 
+  invalid:
+    _description: Exports the contents to a csv file 
+  val-users:
+    _description: Exports the list of users minus the invalid users to a csv file
 clear:
   _description: Clears the screen
 help: 
@@ -124,6 +140,7 @@ while true
         # puts "You pressed ctrl+c "
         ans = nil 
     end
+    
     if ans
         break if ans.downcase.strip() == "exit"
         case ans.downcase.strip.split(" ").map(&.strip).join(" ")
@@ -231,6 +248,49 @@ while true
             end
             puts table 
 
+        when "invalid"
+            table = Tallboy.table do 
+                header do 
+                    cell "Invalid Usernames", span: 3
+                end
+                header ["Username", "Date", "SprayType" ]
+                begin
+                    db.query "select username.username, invalid_usernames.date_time, invalid_usernames.spraytype
+                    from username, invalid_usernames
+                    where 
+                    username.usernameid = invalid_usernames.usernameid;" do |rs|
+                        rs.each do
+                            row "#{rs.read(String)} | #{rs.read(String)} | #{rs.read(String)}".split("|").map(&.strip)
+                        end
+                    end
+                rescue  e
+                    puts "Error: #{e.message}"
+                end
+            end
+            puts table 
+        when "val-users"
+            puts "THIS IS NOT WORKING CORRECTLY!!!!!".colorize(:red)
+            table = Tallboy.table do 
+                header do 
+                    cell "Not Invalid Usernames", span: 2
+                end
+                header ["Username", "SprayType"]
+                begin
+                    db.query "select distinct username.username, passwords_sprayed.spraytype
+                    from username, passwords_sprayed,invalid_usernames
+                    where
+                    username.usernameid != invalid_usernames.usernameid                                                                                                                     and
+                    username.usernameid = passwords_sprayed.usernameid;" do |rs|
+                        rs.each do
+                            row "#{rs.read(String)} | #{rs.read(String)}".split("|").map(&.strip)
+                        end
+                    end
+                rescue  e
+                    puts "Error: #{e.message}"
+                end
+            end
+            puts table 
+
 
         
     
@@ -297,7 +357,7 @@ while true
                 and 
                 password.passwordid = passwords_sprayed.passwordid;" do |rs|
                     rs.each do
-                        line = "#{rs.read(String)} | #{rs.read(String)} | #{ rs.read(String)} | #{rs.read(String)}"
+                        line = "#{rs.read(String)} , #{rs.read(String)} , #{ rs.read(String)} , #{rs.read(String)}"
                         # puts line 
                         file.puts line
                         # file.puts "#{rs.read(String)},#{rs.read(String)},#{ rs.read(String) }"
@@ -316,6 +376,54 @@ while true
             file = File.new("./exported_spdb_valid.csv", "w")
             file.puts "Username,Password,Time"
             begin 
+                db.query "select username.username, invalid_usernames.date_time, invalid_usernames.spraytype
+                from username, invalid_usernames
+                where 
+                username.usernameid = invalid_usernames.usernameid;" do |rs|
+                    rs.each do
+                        line = "#{rs.read(String)} , #{ rs.read(String)} , #{rs.read(String)}"
+                        # puts line 
+                        file.puts line
+                        # file.puts "#{rs.read(String)},#{rs.read(String)},#{ rs.read(String) }"
+                    end
+                end
+            rescue  e 
+                puts "Error: #{e.message}"
+            end
+            file.close
+            puts "Data Exported"
+            puts ""
+            puts ""
+        when "export invalid"
+            puts "Exporting INVALID to exported_spdb_invalid.csv ... "
+            File.delete("./exported_spdb_invalid.csv") if File.exists? "./exported_spdb_invalid.csv"
+            file = File.new("./exported_spdb_invalid.csv", "w")
+            file.puts "Username,Time,SprayType"
+            begin 
+                db.query "select username.username, invalid_usernames.date_time, invalid_usernames.spraytype
+                    from username, invalid_usernames
+                    where 
+                    username.usernameid = invalid_usernames.usernameid;" do |rs|
+                    rs.each do
+                        line = "#{rs.read(String)} , #{ rs.read(String)} , #{rs.read(String)}"
+                        # puts line 
+                        file.puts line
+                        # file.puts "#{rs.read(String)},#{rs.read(String)},#{ rs.read(String) }"
+                    end
+                end
+            rescue  e 
+                puts "Error: #{e.message}"
+            end
+            file.close
+            puts "Data Exported"
+            puts ""
+            puts ""
+        when "export val-users"
+            puts "Exporting usernames minus invalid usernames to exported_spdb_val-users.csv ... "
+            File.delete("./exported_spdb_val-users.csv") if File.exists? "./exported_spdb_val-users.csv"
+            file = File.new("./exported_spdb_val-users.csv", "w")
+            file.puts "Username,SprayType"
+            begin 
                 db.query "select username.username, password.password , valid_passwords.date_time, valid_passwords.spraytype
                 from username, password, valid_passwords
                 where 
@@ -323,7 +431,7 @@ while true
                 and 
                 password.passwordid = valid_passwords.passwordid;" do |rs|
                     rs.each do
-                        line = "#{rs.read(String)} | #{rs.read(String)} | #{ rs.read(String)} | #{rs.read(String)}"
+                        line = "#{rs.read(String)} , #{rs.read(String)} , #{ rs.read(String)} , #{rs.read(String)}"
                         # puts line 
                         file.puts line
                         # file.puts "#{rs.read(String)},#{rs.read(String)},#{ rs.read(String) }"
@@ -400,7 +508,7 @@ while true
                 header do 
                     cell "Statistics", span: 2
                 end
-                dbtables = ["username","password","passwords_sprayed","valid_passwords"]
+                dbtables = ["username","password","passwords_sprayed","valid_passwords","invalid_usernames"]
                 dbtables.each do |dbtab| 
                     begin 
                         db.query "select COUNT(*) from #{dbtab};" do |rs|
@@ -429,13 +537,14 @@ while true
             puts "#{" " * 4}passwords              : Displays all passwords that have been sprayed at least once."
             puts "#{" " * 4}sprayed                : Displays a list of sprayed usernames and password combinations."
             puts "#{" " * 4}valid,creds            : Displays a list of valid username and password combinations."
+            puts "#{" " * 4}invalid                : Displays a list of invalid usernames determined by a spray."
             puts "#{" " * 4}export                 : Exports data out to a csv file. <export help>"
             puts "#{" " * 4}stats                  : Prints out statistics about the database."
             puts "#{" " * 4}help                   : prints the help menu " 
             puts "#{" " * 4}"
             puts "#{" " * 2}Extra options:"
             puts "#{" " * 4}search <search string> : search sprayed items for the specified string"
-            puts "#{" " * 4}valid <search string>  : Display valid items that match the search criterea. "
+            puts "#{" " * 4}valid <search string>  : Display valid items that match the search criterea."
             puts "#{" " * 4}"
             puts "#{" " * 2}Notes:"
             puts "#{" " * 4}Search Strings are case insensitive"

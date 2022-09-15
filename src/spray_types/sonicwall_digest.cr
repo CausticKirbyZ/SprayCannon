@@ -17,9 +17,12 @@ class Sonicwall_Digest < Sprayer
 
     # returns an array of [username, password, valid, lockout, mfa]
     def spray(username : String, password : String) 
-        lockedout = false
-        valid = false
-        mfa = false
+         # lockedout = false
+        # valid = false
+        # mfa = false
+        spstatus = SprayStatus.new()
+        spstatus.username = username 
+        spstatus.password = password 
 
         # 
         # enter your auth check here and make sure 
@@ -45,7 +48,10 @@ class Sonicwall_Digest < Sprayer
         # puts resp.body 
         page = XML.parse_html(resp.body)
         formitems = page.xpath_node("/html/body/form")
-        return if formitems.nil?
+        if formitems.nil?
+            STDERR.puts "Something went wrong withthe initial request!!"
+            return spstatus
+        end
         
         
         param1 =    formitems.children()[1].attributes()[2].content()
@@ -73,7 +79,8 @@ class Sonicwall_Digest < Sprayer
         resp = client.post(postpage, form: body, headers: postheader )
 
         if !resp.body.includes? "This page is redirecting! Click <A HREF=\"auth.html\">here"
-            valid = true
+            # valid = true
+            spstatus.valid_credentials = true 
         end
 
 
@@ -82,7 +89,8 @@ class Sonicwall_Digest < Sprayer
         # end of your auth check here
         # 
 
-        return [username, password, valid, lockedout, mfa]
+        # return [username, password, valid, lockedout, mfa]
+        return spstatus
     end
 
 

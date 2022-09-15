@@ -9,10 +9,10 @@ class Template < Sprayer
     # end
 
     # returns an array of [username, password, valid, lockout, mfa]
-    def spray(username : String, password : String) 
-        lockedout = false
-        valid = false
-        mfa = false
+    def spray(username : String, password : String) : SprayStatus
+        spstatus = SprayStatus.new()
+        spstatus.username = username 
+        spstatus.password = password 
 
         # 
         # YOUR CODE BELOW 
@@ -47,17 +47,18 @@ class Template < Sprayer
         # 
         # these are EXAMPLES of how to do checks 
         if page.status_code == 200 # if ok 
-            valid = true 
+            spstatus.valid_credentials = true 
         end
 
         if page.body.includes? "redircting to mfa"
-            mfa = true 
+            spstatus.mfa = true 
         end
 
         #
         # end of your CODE make sure you set valid lockedout and mfa 
         # 
         
-        return [username, password, valid, lockedout, mfa]
+        # return the SprayStatus object 
+        return spstatus
     end
 end

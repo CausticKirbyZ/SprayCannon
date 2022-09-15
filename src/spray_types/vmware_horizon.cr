@@ -7,11 +7,6 @@ require "http/client"
 #   vmware horizon password sprayer. 
 #   only works with windows domain joined accounts
 #
-#
-#
-
-
-
 
 
 
@@ -27,10 +22,13 @@ class VMWare_Horizon < Sprayer
     end
 
     # returns an array of [username, password, valid, lockout, mfa]
-    def spray(username : String, password : String) 
-        lockedout = false
-        valid = false
-        mfa = false
+    def spray(username : String, password : String)  : SprayStatus
+         # lockedout = false
+        # valid = false
+        # mfa = false
+        spstatus = SprayStatus.new()
+        spstatus.username = username 
+        spstatus.password = password 
 
         # some basic setups for web based auth 
         url = URI.parse @target 
@@ -86,7 +84,8 @@ class VMWare_Horizon < Sprayer
         # using the set-cookie header to validate if session is valid
         begin # handle if the cookie not present
             if page.cookies["com.vmware.vdi.broker.location.id"] # if cookie exists 
-                valid = true 
+                # valid = true 
+                spstatus.valid_credentials = true 
             end
         rescue # save from crashing if no cookie 
         end 
@@ -99,6 +98,7 @@ class VMWare_Horizon < Sprayer
         # end of your CODE make sure you set valid lockedout and mfa 
         # 
         
-        return [username, password, valid, lockedout, mfa]
+        # return [username, password, valid, lockedout, mfa]
+        return spstatus
     end
 end

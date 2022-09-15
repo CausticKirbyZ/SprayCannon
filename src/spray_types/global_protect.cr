@@ -9,10 +9,13 @@ class GlobalProtect < Sprayer
     # end
 
     # returns an array of [username, password, valid, lockout, mfa]
-    def spray(username : String, password : String) 
-        lockedout = false
-        valid = false
-        mfa = false
+    def spray(username : String, password : String)  : SprayStatus
+         # lockedout = false
+        # valid = false
+        # mfa = false
+        spstatus = SprayStatus.new()
+        spstatus.username = username 
+        spstatus.password = password 
 
         # 
         # YOUR CODE BELOW 
@@ -47,12 +50,14 @@ class GlobalProtect < Sprayer
         
         # this is a temp check. by defualt the status code is 512. so if not it might be valid
         if page.status_code != 512
-            valid = true 
+            # valid = true 
+            spstatus.valid_credentials = true 
         end
 
         # these should work.... if not wtf is palo doing with an "auth-failed" header on valid credentials
         if page.headers["x-private-pan-globalprotect"].downcase != "auth-failed" && page.headers["x-private-pan-globalprotect"].downcase != "auth-failed-invalid-user-input" # should always be a lowercase header value but just in case. and the second one is a final error
-            valid = true 
+            # valid = true 
+            spstatus.valid_credentials = true 
         end
 
         # if page.body.includes? "redircting to mfa"
@@ -63,6 +68,7 @@ class GlobalProtect < Sprayer
         # end of your CODE make sure you set valid lockedout and mfa 
         # 
         
-        return [username, password, valid, lockedout, mfa]
+        # return [username, password, valid, lockedout, mfa]
+        return spstatus
     end
 end

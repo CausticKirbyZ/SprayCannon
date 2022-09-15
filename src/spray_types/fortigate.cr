@@ -9,9 +9,12 @@ class VPNFortigate < Sprayer
 
     # returns an array of [username, password, valid, lockout, mfa]
     def spray(username : String, password : String) 
-        lockedout = false
-        valid = false
-        mfa = false
+         # lockedout = false
+        # valid = false
+        # mfa = false
+        spstatus = SprayStatus.new()
+        spstatus.username = username 
+        spstatus.password = password 
 
         # 
         # enter your auth check here and make sure 
@@ -49,12 +52,14 @@ class VPNFortigate < Sprayer
         end
 
         if !page.body.includes? "sslvpn_login_permission_denied"
-            lockedout = true
+            # lockedout = true # pretty sure this was supposed to say valid not locked out....
+            spstatus.valid_credentials = true 
         end
 
         #
         # end of your auth check here
         # 
-        return [username, password, valid, lockedout, mfa]
+        # return [username, password, valid, lockedout, mfa]
+        return spstatus
     end
 end

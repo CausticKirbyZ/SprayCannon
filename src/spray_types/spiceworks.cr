@@ -12,9 +12,12 @@ class Spiceworks < Sprayer
 
     # returns an array of [username, password, valid, lockout, mfa]
     def spray(username : String, password : String) 
-        lockedout = false
-        valid = false
-        mfa = false
+         # lockedout = false
+        # valid = false
+        # mfa = false
+        spstatus = SprayStatus.new()
+        spstatus.username = username 
+        spstatus.password = password 
 
         # 
         # enter your auth check here and make sure 
@@ -78,7 +81,8 @@ class Spiceworks < Sprayer
         #puts  page.headers
         if !page.body.includes? "Invalid email or password."
             # puts "Returned a 405"
-            valid = true 
+            # valid = true 
+            spstatus.valid_credentials = true 
         end
         
 
@@ -89,6 +93,7 @@ class Spiceworks < Sprayer
         # end of your auth check here
         # 
         
-        return [username, password, valid, lockedout, mfa]
+        # return [username, password, valid, lockedout, mfa]
+        return spstatus
     end
 end

@@ -26,7 +26,7 @@ init:
 
 test-spraycannon: 
 	if [ -f ./spraycannon ]; then rm ./spraycannon; fi 
-	crystal build -p src/spraycannon.cr && ./spraycannon --help
+	crystal build -p src/spraycannon.cr && ./spraycannon --version
 
 test-spdb:
 	if [ -f ./spdb ]; then rm ./spdb; fi 

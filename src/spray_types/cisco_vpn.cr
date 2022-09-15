@@ -11,10 +11,12 @@ class Cisco_VPN < Sprayer
 
     # returns an array of [username, password, valid, lockout, mfa]
     def spray(username : String, password : String) 
-        lockedout = false
-        valid = false
-        mfa = false
-
+        # lockedout = false
+        # valid = false
+        # mfa = false
+        spstatus = SprayStatus.new()
+        spstatus.username = username 
+        spstatus.password = password 
         #
         # YOUR CODE BELOW
         #
@@ -45,7 +47,8 @@ class Cisco_VPN < Sprayer
         # this was a bad way of doing it and lead to bad 
         # if page.status_code == 200 && page.body != "<html>\n<head>\n<script>\ndocument.location.replace(\"/+CSCOE+/logon.html?\"+\n\"a0=8\"+\n\"&a1=\"+\n\"&a2=\"+\n\"&a3=1\");\n</script>\n</head>\n</html>\n\n\n"
         if page.status_code == 200 && !page.body.includes? "/+CSCOE+/logon.html" # this is supplied in the failed login page as the string "document.location.replace("/+CSCOE+/logon.html?"+"
-            valid = true 
+            # valid = true 
+            spstatus.valid_credentials = true 
         end
 
 
@@ -55,6 +58,8 @@ class Cisco_VPN < Sprayer
         # end of your CODE make sure you set valid lockedout and mfa 
         # 
         
-        return [username, password, valid, lockedout, mfa]
+        # return [username, password, valid, lockedout, mfa]
+        return spstatus
+
     end
 end

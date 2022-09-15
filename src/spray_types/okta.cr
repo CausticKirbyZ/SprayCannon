@@ -11,10 +11,13 @@ class Okta < Sprayer
     # end
 
     # returns an array of [username, password, valid, lockout, mfa]
-    def spray(username : String, password : String) 
-        lockedout = false
-        valid = false
-        mfa = false
+    def spray(username : String, password : String) : SprayStatus
+        # lockedout = false
+        # valid = false
+        # mfa = false
+        spstatus = SprayStatus.new()
+        spstatus.username = username 
+        spstatus.password = password 
 
         puts "Spraying Okta!!!"
 
@@ -24,7 +27,7 @@ class Okta < Sprayer
 
         # some basic setups for web based auth 
         url = URI.parse @target 
-        pp url 
+        # pp url 
         #gotta set no verify for tls pages
         context = OpenSSL::SSL::Context::Client.new
         context.verify_mode = OpenSSL::SSL::VerifyMode::NONE
@@ -60,7 +63,8 @@ class Okta < Sprayer
         # 
         # these are EXAMPLES of how to do checks 
         if page.status_code == 200 # if ok 
-            valid = true 
+            # valid = true 
+            spstatus.valid_credentials = true 
         end
 
         # if page.body.includes? "redircting to mfa"
@@ -71,6 +75,7 @@ class Okta < Sprayer
         # end of your CODE make sure you set valid lockedout and mfa 
         # 
         
-        return [username, password, valid, lockedout, mfa]
+        # return [username, password, valid, lockedout, mfa]
+        return spstatus 
     end
 end

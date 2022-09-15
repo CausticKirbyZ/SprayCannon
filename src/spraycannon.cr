@@ -2,8 +2,8 @@ require "option_parser"
 require "colorize"
 require "sqlite3"
 
-
-require "./spray_types/sprayer"
+require "./helpers/*"
+require "./spray_types/sprayer" # this needs to be required first so the subclasses can be loaded properly 
 require "./spray_types/*"
 
 
@@ -12,8 +12,6 @@ require "./spray_types/*"
 ############
 # TODO LOG
 ############
-
-version = "1.1.1"
 
 # Feature requests 
 # - timstamp the login, start, end - done!
@@ -56,7 +54,7 @@ options = {
     "user-password" => false,
     "strip_user_string" => "", 
     "strip_pass_string" => "", 
-    "force" => false 
+    "force" => false
 }
 
 
@@ -122,7 +120,15 @@ parser = OptionParser.new() do |opts|
         exit(0)
     end
     opts.on("--version","Print current version") do
-        puts version
+        version = check_version()
+        if version == VERSION
+            puts "Everything is up to date!".colorize(:green)
+            puts "Current version: #{VERSION.colorize(:green)}"
+        else 
+            puts "Different version detected!"
+            puts "Current version: #{VERSION.colorize(:yellow)}"
+            puts "Version on public git: #{ version.colorize(:green) }"
+        end
         exit(0)
     end
 
@@ -143,7 +149,7 @@ parser = OptionParser.new() do |opts|
         options["db"] = false
     end 
 
-    opts.on("--force","Forces the spray to occur despite if it has been sprayed before. This still logs to the database.") do
+    opts.on("--force","Forces the spray to occur despite if it has been sprayed before or if it was previously marked invalid. This still logs to the database.") do
         options["force"] = true 
     end
     
@@ -209,7 +215,7 @@ else
         parser.parse
     rescue ex : OptionParser::MissingOption 
         if ex.message && ex.message.as(String).includes? "--useragent"
-            STDERR.puts "using random useragents"
+            STDERR.puts "Using random useragents"
             options["useragents"] = [
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0",
@@ -251,65 +257,81 @@ end
 
 
 if options["db"].as(Bool)
-# open db and set up tables 
-db = DB.open "sqlite3://./spray.db"
+    # open db and set up tables 
+    db = DB.open "sqlite3://./spray.db"
 
-db.exec "create table if not exists username( usernameid integer primary key autoincrement, username varchar(255) unique not null);"
+    db.exec "create table if not exists username( usernameid integer primary key autoincrement, username varchar(255) unique not null);"
 
-db.exec "create table if not exists password( passwordid integer primary key autoincrement, password varchar(255) unique not null);"
+    db.exec "create table if not exists password( passwordid integer primary key autoincrement, password varchar(255) unique not null);"
 
-# db.exec "create table if not exists passwords_sprayed(  usernameid integer not null , 
-#                                                         passwordid integer not null ,
-#                                                         date_time date,
-#                                                         spraytype text, 
-#                                                         primary key(usernameid, passwordid), 
-#                                                         foreign key (usernameid) references username(usernameid), 
-#                                                         foreign key (passwordid) references password(passwordid)                                                        
-#                                                         );"
+    # db.exec "create table if not exists passwords_sprayed(  usernameid integer not null , 
+    #                                                         passwordid integer not null ,
+    #                                                         date_time date,
+    #                                                         spraytype text, 
+    #                                                         primary key(usernameid, passwordid), 
+    #                                                         foreign key (usernameid) references username(usernameid), 
+    #                                                         foreign key (passwordid) references password(passwordid)                                                        
+    #                                                         );"
 
-db.exec "create table if not exists passwords_sprayed(  usernameid integer not null , 
-                                                        passwordid integer not null ,
-                                                        date_time date,
-                                                        spraytype text, 
-                                                        
-                                                        foreign key (usernameid) references username(usernameid), 
-                                                        foreign key (passwordid) references password(passwordid)                                                        
+    db.exec "create table if not exists passwords_sprayed(  usernameid integer not null , 
+                                                            passwordid integer not null ,
+                                                            date_time date,
+                                                            spraytype text, 
+                                                            
+                                                            foreign key (usernameid) references username(usernameid), 
+                                                            foreign key (passwordid) references password(passwordid)                                                        
+                                                            );"
+
+    db.exec "create table if not exists valid_passwords(    usernameid integer not null , 
+                                                            passwordid integer not null ,
+                                                            date_time date,
+                                                            spraytype text, 
+                                                            primary key(usernameid, passwordid) , 
+                                                            foreign key (usernameid) references username(usernameid), 
+                                                            foreign key (passwordid) references password(passwordid)
                                                         );"
 
-db.exec "create table if not exists valid_passwords(    usernameid integer not null , 
-                                                        passwordid integer not null ,
-                                                        date_time date,
-                                                        spraytype text, 
-                                                        primary key(usernameid, passwordid) , 
-                                                        foreign key (usernameid) references username(usernameid), 
-                                                        foreign key (passwordid) references password(passwordid)
-                                                     );"
+    db.exec "create table if not exists invalid_usernames(   
+                                                            usernameid integer not null, 
+                                                            date_time date, 
+                                                            spraytype text, 
+                                                            primary key(usernameid) ,
+                                                            foreign key (usernameid) references username(usernameid)
+                                                        );"
+
 end
 
 
 # s = Sprayer.new("test", "pass")
 # puts options["spraytype"]
 case options["spraytype"].as(String).downcase 
+
 when "testing" # this ones just used for testing purposes.... not really a spraytype more fuctionality test 
     s = Sprayer.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
-when "vpnfortigate"
-    STDERR.puts "not confirmed to work"
-    s = VPNFortigate.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
-when "fortigate_login"
-    STDERR.puts "not confirmed to work"
-    s = Fortigate_Login.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+
 when "o365","office365","msol"
     # STDERR.puts "Currently in Beta. may not be 100% reliable!!!".colorize(:yellow)
     s = O365.new(options["usernames"].as(Array(String)), options["passwords"].as(Array(String)))
     options["target"].as( Array(String) )  << "https://login.microsoft.com" unless options["target"].as(Array(String)).size > 0 
     # exit 0 
-when "google"
-    puts "Google spraying is not complete!!! as in It DOES NOT WORK (yet)!!!!"
-    # s = Google.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
-    # options["target"].as( Array(String) )  << "https://accounts.google.com" unless options["target"].as(Array(String)).size > 0 
+
+# when "google"
+#     puts "Google spraying is not complete!!! as in It DOES NOT WORK (yet)!!!!"
+#     # s = Google.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+#     # options["target"].as( Array(String) )  << "https://accounts.google.com" unless options["target"].as(Array(String)).size > 0 
+
+when "vpnfortigate"
+    STDERR.puts "not confirmed to work"
+    s = VPNFortigate.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+
+when "fortigate_login"
+    STDERR.puts "not confirmed to work"
+    s = Fortigate_Login.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+
 when "cisco_vpn" # need to go find a vpn to check it on and port the ruby file  (and find the ruby file )
     s = Cisco_VPN.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     s.domain = options["domain"].as(String)
+
 when "vmware_horizon" # need to go find a vpn to check it on and port the ruby file  (and find the ruby file )
     if options["domain"].as(String) == "WORKGROUP"
         STDERR.puts "you need a Domain that isnt WORKGROUP..."
@@ -317,7 +339,8 @@ when "vmware_horizon" # need to go find a vpn to check it on and port the ruby f
     end
     s = VMWare_Horizon.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     s.domain = options["domain"].as(String)
-    # exit 0 
+    
+
 when "vpn_sonicwall_digest"
     s = Sonicwall_Digest.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     
@@ -326,14 +349,15 @@ when "vpn_sonicwall_virtualoffice"
     
 when "vpn_sonicwall_virtualoffice_5.x"
     s = Sonicwall_VirtualOffice_5x.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
-# when "smb"
-#     s = SMBsprayer.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+
 when "exchangeeas", "exchange_eas"
     s = ExchageEAS.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     s.domain = options["domain"].as(String)
+
 when "exchangeowa", "exchage_owa"
     s = ExchangeOWA.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     s.domain = options["domain"].as(String)
+
 when "adfs_forms"
     s = ADFS_forms.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
     if options["domain"].as(String) == "WORKGROUP"
@@ -344,16 +368,22 @@ when "adfs_forms"
     if options["domain"].as(String) == "AS_EMAIL"
         s.domain = nil
     end
+
 when "spiceworks"
     s = Spiceworks.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+
 when "infinatecampus"
     s = InfinateCampus.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+
 when "global_protect"
     s = GlobalProtect.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+
 when "esxi_web"
     s = ESXI_web.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+
 when "okta"
     s = Okta.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+
 else 
     STDERR.puts "Not a valit sprayer type!!".colorize(:red)
     exit 1

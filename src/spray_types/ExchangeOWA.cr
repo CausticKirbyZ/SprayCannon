@@ -26,11 +26,13 @@ class ExchangeOWA < Sprayer
 
 
     # returns an array of [username, password, valid, lockout, mfa]
-    def spray(username : String, password : String) 
-        lockedout = false
-        valid = false
-        mfa = false
-
+    def spray(username : String, password : String)  : SprayStatus
+        # lockedout = false
+        # valid = false
+        # mfa = false
+        spstatus = SprayStatus.new()
+        spstatus.username = username 
+        spstatus.password = password 
 
         # 
         # YOUR CODE BELOW 
@@ -118,7 +120,8 @@ class ExchangeOWA < Sprayer
 
         begin 
             if page.cookies["cadata"]
-                valid = true 
+                # valid = true 
+                spstatus.valid_credentials = true 
             end
         rescue  # if not then the hash will error out....
         end
@@ -129,6 +132,7 @@ class ExchangeOWA < Sprayer
         # end of your CODE make sure you set valid lockedout and mfa 
         # 
         
-        return [username, password, valid, lockedout, mfa]
+        # return [username, password, valid, lockedout, mfa]
+        return spstatus
     end
 end

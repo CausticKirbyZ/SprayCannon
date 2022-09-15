@@ -12,10 +12,13 @@ class Sonicwall_VirtualOffice_5x < Sprayer
     end
 
     # returns an array of [username, password, valid, lockout, mfa]
-    def spray(username : String, password : String) 
-        lockedout = false
-        valid = false
-        mfa = false
+    def spray(username : String, password : String) : SprayStatus
+        # lockedout = false
+        # valid = false
+        # mfa = false
+        spstatus = SprayStatus.new()
+        spstatus.username = username 
+        spstatus.password = password 
 
         # 
         # enter your auth check here and make sure 
@@ -48,7 +51,8 @@ class Sonicwall_VirtualOffice_5x < Sprayer
         post = client.post("/cgibin/userLogin", form: form)
 
         # returns json but its like 4 lines
-        valid = true if !post.body.includes? "Login failed - Incorrect username/password"
+        # valid = true if !post.body.includes? "Login failed - Incorrect username/password"
+        spstatus.valid_credentials = true  if !post.body.includes? "Login failed - Incorrect username/password"
 
 
 
@@ -58,6 +62,7 @@ class Sonicwall_VirtualOffice_5x < Sprayer
         # end of your auth check here
         # 
         
-        return [username, password, valid, lockedout, mfa]
+        # return [username, password, valid, lockedout, mfa]
+        return spstatus
     end
 end

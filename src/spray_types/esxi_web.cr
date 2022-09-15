@@ -10,10 +10,12 @@ class ESXI_web < Sprayer
 
     # returns an array of [username, password, valid, lockout, mfa]
     def spray(username : String, password : String) 
-        lockedout = false
-        valid = false
-        mfa = false
-
+        # lockedout = false
+        # valid = false
+        # mfa = false
+        spstatus = SprayStatus.new()
+        spstatus.username = username 
+        spstatus.password = password 
         # 
         # YOUR CODE BELOW 
         #
@@ -54,13 +56,15 @@ class ESXI_web < Sprayer
         # 
         # login success returns 200. failure returns 500 
         if page.status_code == 200 # if ok 
-            valid = true 
+            # valid = true 
+            spstatus.valid_credentials = true 
         end
 
         #
         # end of your CODE make sure you set valid lockedout and mfa 
         # 
         
-        return [username, password, valid, lockedout, mfa]
+        # return [username, password, valid, lockedout, mfa]
+        return spstatus
     end
 end

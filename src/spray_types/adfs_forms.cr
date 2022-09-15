@@ -10,10 +10,14 @@ class ADFS_forms < Sprayer
     end
 
     # returns an array of [username, password, valid, lockout, mfa]
-    def spray(username : String, password : String) 
-        lockedout = false
-        valid = false
-        mfa = false
+    def spray(username : String, password : String) : SprayStatus 
+        # lockedout = false
+        # valid = false
+        # mfa = false
+
+        spstatus = SprayStatus.new()
+        spstatus.username = username 
+        spstatus.password = password 
 
         # 
         # YOUR CODE BELOW 
@@ -45,7 +49,8 @@ class ADFS_forms < Sprayer
         page = client.post("#{"/#{url.path.strip("/")}" if url.path != "" }#{path}", headers: header, form: form)
 
         if page.status_code == 302
-            valid = true 
+            # valid = true 
+            spstatus.valid_credentials = true 
         end
 
 
@@ -53,6 +58,7 @@ class ADFS_forms < Sprayer
         # end of your CODE make sure you set valid lockedout and mfa 
         # 
         
-        return [username, password, valid, lockedout, mfa]
+        # return [username, password, valid, lockedout, mfa]
+        return spstatus 
     end
 end
