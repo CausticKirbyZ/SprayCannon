@@ -119,9 +119,9 @@ t.autocomplete.completion = menu
 t.autocomplete.update_suggestions()
 # t.prompt = "[spdb]> "
 t.set_prompt [
-    "[".colorize(:green).to_s,
+    "[ ".colorize(:green).to_s,
     "spdb".colorize(:blue ).to_s,
-    "]".colorize(:green).to_s,
+    " ]".colorize(:green).to_s,
     "> "
 ]
 t.autoprompt = true
