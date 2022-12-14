@@ -4,7 +4,7 @@ require "option_parser"
 require "colorize"
 require "tallboy"
 
-VERSION = "2.0.2"
+VERSION = "2.0.3"
 
 
 if ARGV.size > 0
