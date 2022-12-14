@@ -274,15 +274,31 @@ while true
                 header do 
                     cell "Not Invalid Usernames", span: 2
                 end
-                header ["Username", "SprayType"]
+                header ["Username","SprayType"]
                 begin
-                    db.query "select distinct username.username, passwords_sprayed.spraytype
-                    from username, passwords_sprayed,invalid_usernames
-                    where
-                    username.usernameid != invalid_usernames.usernameid                                                                                                                     and
-                    username.usernameid = passwords_sprayed.usernameid;" do |rs|
+                    # db.query "select username.username, passwords_sprayed.spraytype
+                    # from username, passwords_sprayed, invalid_usernames
+                    # where
+                    # username.usernameid = passwords_sprayed.usernameid
+                    # and 
+                    # username.usernameid != invalid_usernames.usernameid
+                    db.query "select username, spraytype 
+                    from (
+                        select DISTINCT username.usernameid, username.username as username, invalid_usernames.date_time as iu_date_time, passwords_sprayed.spraytype as spraytype
+                        from username 
+                        left join invalid_usernames on username.usernameid = invalid_usernames.usernameid
+                        left join passwords_sprayed on username.usernameid = passwords_sprayed.usernameid
+                        where 
+                        iu_date_time is NULL
+                    );
+                    " do |rs|
                         rs.each do
-                            row "#{rs.read(String)} | #{rs.read(String)}".split("|").map(&.strip)
+                            # id = rs.read(Int32)
+                            username = rs.read(String)
+                            # date = rs.read(String|Nil)
+                            spraytype = rs.read(String)
+                            # row "#{rs.read(String)} | #{rs.read(String)}".split("|").map(&.strip)
+                            row [username, spraytype]
                         end
                     end
                 rescue  e
@@ -424,14 +440,17 @@ while true
             file = File.new("./exported_spdb_val-users.csv", "w")
             file.puts "Username,SprayType"
             begin 
-                db.query "select username.username, password.password , valid_passwords.date_time, valid_passwords.spraytype
-                from username, password, valid_passwords
-                where 
-                username.usernameid = valid_passwords.usernameid
-                and 
-                password.passwordid = valid_passwords.passwordid;" do |rs|
+                db.query "select username, spraytype 
+                from (
+                    select DISTINCT username.usernameid, username.username as username, invalid_usernames.date_time as iu_date_time, passwords_sprayed.spraytype as spraytype
+                    from username 
+                    left join invalid_usernames on username.usernameid = invalid_usernames.usernameid
+                    left join passwords_sprayed on username.usernameid = passwords_sprayed.usernameid
+                    where 
+                    iu_date_time is NULL
+                );" do |rs|
                     rs.each do
-                        line = "#{rs.read(String)} , #{rs.read(String)} , #{ rs.read(String)} , #{rs.read(String)}"
+                        line = "#{ rs.read(String)} , #{rs.read(String)}"
                         # puts line 
                         file.puts line
                         # file.puts "#{rs.read(String)},#{rs.read(String)},#{ rs.read(String) }"
