@@ -269,7 +269,7 @@ while true
             end
             puts table 
         when "val-users"
-            puts "THIS IS NOT WORKING CORRECTLY!!!!!".colorize(:red)
+            # puts "THIS IS NOT WORKING CORRECTLY!!!!!".colorize(:red)
             table = Tallboy.table do 
                 header do 
                     cell "Not Invalid Usernames", span: 2
