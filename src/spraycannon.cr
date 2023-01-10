@@ -54,7 +54,8 @@ options = {
     "user-password" => false,
     "strip_user_string" => "", 
     "strip_pass_string" => "", 
-    "force" => false
+    "force" => false,
+    "webhookcard" => ""
 }
 
 
@@ -167,8 +168,11 @@ parser = OptionParser.new() do |opts|
         end
     end 
     
-    opts.on("--webhook=[url]","Will send a webhook if valid credential is found!! (autodetects Teams, Discord, Slack, and Google Chat URLS) ") do |webhook|
+    opts.on("--webhook=[url]","Will send a webhook if valid credential is found!! (autodetects Teams, Discord, Slack, and Google Chat URLS)") do |webhook|
         options["webhook"] = webhook
+    end 
+    opts.on("--webhookcard=[string]","The 'card' template used to send to the specified webhook. For use only with custom webhooks(for now)") do |webhookcard|
+        options["webhookcard"] = webhookcard
     end 
     
     opts.on("--strip-user-string=[stiped_string]","Will strip the entered string from the end of the username. Ideally used with --user-as-password.  ex: --strip-user-string '@domain.com' = user@domain.com => user ") do |strip_string|
@@ -309,7 +313,7 @@ case options["spraytype"].as(String).downcase
 when "testing" # this ones just used for testing purposes.... not really a spraytype more fuctionality test 
     s = Sprayer.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 
-when "o365","office365","msol"
+when "o365","office365","msol","0365"
     # STDERR.puts "Currently in Beta. may not be 100% reliable!!!".colorize(:yellow)
     s = O365.new(options["usernames"].as(Array(String)), options["passwords"].as(Array(String)))
     options["target"].as( Array(String) )  << "https://login.microsoft.com" unless options["target"].as(Array(String)).size > 0 
@@ -394,6 +398,7 @@ s.delay = options["delay"].as(Int32)
 # s.target = options["target"].as(String) unless options["target"] == ""  # unless options["spraytype"].as(String).downcase == "o365"
 s.jitter = options["jitter"].as(Int32)
 s.webhook_url = options["webhook"].as(String) unless options["webhook"].nil?
+s.webhook_card = options["webhookcard"].as(String)
 s.forced = options["force"].as(Bool)
 s.strip_user_string  = options["strip_user_string"].as(String)
 s.strip_pass_string  = options["strip_pass_string"].as(String)

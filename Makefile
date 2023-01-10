@@ -3,7 +3,7 @@ SHELL := /bin/bash # Use bash syntax
 .SILENT:
 
 all:
-	if [ ! -d ./lib ]; then echo -e "\033[0;33mFetching libs...\033[0m" &&  shards install && 	echo "\033[0;32mDone!\033[0m"; fi 
+	if [ ! -d ./lib ]; then echo -e "\033[0;33mFetching libs...\033[0m" &&  shards install && 	echo -e "\033[0;32mDone!\033[0m"; fi 
 	echo "Building tools:"
 	echo -e "\033[0;33mBuilding spdb...\033[0m"
 	crystal build -p src/spdb.cr 
@@ -48,12 +48,14 @@ install:
 	echo "Tools Installed"
 	echo "If you use the fish shell( the best shell ;) ) you should run fish_update_completions to add spraycannon autocomplete now"
 
+
 uninstall: 
 	echo "Uninstalling tools..."
 	rm /usr/bin/spraycannon
 	rm /usr/bin/spdb 
 	rm /usr/share/man/man1/spraycannon.1.gz
 	echo "SprayCannon and spdb uninstalled!"
+
 
 clean: 
 	rm -rf lib/

@@ -11,6 +11,7 @@ class O365 < Sprayer
         spstatus = SprayStatus.new()
         spstatus.username = username 
         spstatus.password = password
+        spstatus.valid_credentials = false  # this shouldnt be neccesary but i had a bug where timed out web requests were being flagged as "valid"
 
         
         # url = "login.microsoft.com"
@@ -53,6 +54,7 @@ class O365 < Sprayer
                 page = client.post( "#{url.path}" , headers: header, form: bodyparams )
             rescue e
                 # STDERR.puts  e.message 
+                spstatus.valid_credentials = false 
                 STDERR.puts "ERROR: oops something happend (blame dns) Retrying... (might not be a bad idea to slow down or stop for a bit)"
                 sleep 2 
             end

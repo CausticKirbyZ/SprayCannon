@@ -74,18 +74,25 @@ Global options:
     -t, --target=[ip/hostname]       Target to spray ( could also be a fireprox address )
     -u, --username=[name]            Username or user txt file to spray from
     -p, --password=[password]        Target to spray
-    -d, --delay=[time]               time in seconds to delay between password attempts
-    -j, --jitter=[time]              time in milliseconds to delay between individual account attempts. default is 1000.
+    -d, --delay=[time]               Time in seconds to delay between password attempts
+    -j, --jitter=[time]              Time in milliseconds to delay between individual account attempts. default is 1000.
     --domain=[domain]                Sets the domain for options that require domain specification.
     -h, --help                       Print Help menu
     --version                        Print current version
     -v, --verbose                    Print verbose information
+
 Additional Options:
     --threads=[count]                Use worker threads to drasticly speed things up!(default is 1)
     --nodb                           does not use the database
+    --force                          Forces the spray to occur despite if it has been sprayed before or if it was previously marked invalid. This still logs to the database.
     --user-as-password               Sets the user and password to the same string
-    --user-pass-format=[filename]    Supplied file in 'user:password' format
-    --webhook=[url]                  Will send a webhook if valid credential is found!! (autodetects Teams, Discord, Slack, and Google Chat URLS) 
+    --user-pass-format=[filename]    Supplied file in 'user:password' format. If a password has a : in it, it wont break. everything after the first : is used as the password
+    --webhook=[url]                  Will send a webhook if valid credential is found!! (autodetects Teams, Discord, Slack, and Google Chat URLS, Custom urls now work with --webhookcard(see online wiki for documentation) )
+    --webhookcard=[string]           The 'card' template used to send to the specified webhook. For use only with custom webhooks(for now)
+    --strip-user-string=[stiped_string]
+                                     Will strip the entered string from the end of the username. Ideally used with --user-as-password.  ex: --strip-user-string '@domain.com' = user@domain.com => user
+    --strip-pass-string=[stiped_string]
+                                     Will strip the entered string from the end of the username. Ideally used with --user-as-password.  ex: --strip-pass-string '@domain.com' = user@domain.com => user
     --useragent=[agentstring]        Use a custom useragent string, or a file containing useragents(will chose randomly from them).
     --list-spraytypes                List the available spraytypes.
 ```
