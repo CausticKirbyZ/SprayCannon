@@ -1,14 +1,6 @@
 require "colorize"
 require "http/client"
 
-
-# class User
-#     @username = ""
-#     @password = "" 
-#     @lockedout = false
-#     @attempts = [] of String
-# end
-
 class SprayStatus
     property username          : String      = ""
     property password          : String      = "" 
@@ -210,13 +202,13 @@ class Sprayer
                                 res = spray(uname, pass)
 
                             elsif @strip_user_string != "" && @strip_pass_string == "" # username striping 
-                                res = spray(uname.strip(@strip_user_string), pass)
+                                res = spray(uname.rchop(@strip_user_string), pass)
 
                             elsif @strip_user_string == "" && @strip_pass_string != "" # password stripping 
-                                res = spray(uname, pass.strip(@strip_pass_string))
+                                res = spray(uname, pass.rchop(@strip_pass_string))
 
                             elsif @strip_user_string != "" && @strip_pass_string != "" # both stripping 
-                                res = spray(uname.strip(@strip_user_string), pass.strip(@strip_pass_string))
+                                res = spray(uname.rchop(@strip_user_string), pass.strip(@strip_pass_string))
                             end
 
                         rescue e 

@@ -5,3 +5,4 @@ def check_version() : String
     version = HTTP::Client.get("https://raw.githubusercontent.com/CausticKirbyZ/SprayCannon/main/src/helpers/VERSION.cr").body
     return version.split("=").last.delete("\"").strip()
 end
+
