@@ -194,7 +194,7 @@ parser = OptionParser.new() do |opts|
     end 
     
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        ["msol (o365)", "Okta", "ExchangeEAS","ExchangeOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","vpn_fortinet","spiceworks","InfinateCampus","global_protect","ESXI_web", "VMWare_Horizon"].each {|t| puts t}
+        ["msol (o365)", "Okta", "ExchangeEAS","ExchangeOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","sonicwall_sma","vpn_fortinet","spiceworks","InfinateCampus","global_protect","ESXI_web", "VMWare_Horizon"].each {|t| puts t}
         exit 0
     end 
 
@@ -220,20 +220,17 @@ else
     rescue ex : OptionParser::MissingOption 
         if ex.message && ex.message.as(String).includes? "--useragent"
             STDERR.puts "Using random useragents"
-            options["useragents"] = [
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0",
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0",
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0",
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0",
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0",
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0",
+            options["useragents"] = [        
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36",
                     "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.58 Mobile Safari/537.36",
                     "Mozilla/5.0 (Linux; Android 10; SM-A205U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.58 Mobile Safari/537.36",
                     "Mozilla/5.0 (iPad; CPU OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/100.0.4896.56 Mobile/15E148 Safari/604.1",
-                    
-                ]
+            ]
+            # now add a bunch of firefox useragents 
+            [90..120].each do |i| 
+                options["useragents"].as(Array(String)) << "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:#{i}.0) Gecko/20100101 Firefox/#{i}.0"
+            end
+                
         end
         # exit 1 
     # rescue KeyError
@@ -353,6 +350,9 @@ when "vpn_sonicwall_virtualoffice"
     
 when "vpn_sonicwall_virtualoffice_5.x"
     s = Sonicwall_VirtualOffice_5x.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+    
+when "sonicwall_sma"
+    s = Sonicwall_SMA.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 
 when "exchangeeas", "exchange_eas"
     s = ExchageEAS.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))

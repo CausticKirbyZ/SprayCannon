@@ -37,7 +37,7 @@ class ADFS_forms < Sprayer
         
 
         # some basic setups for web based auth 
-        url = URI.parse "#{@target}#{path}" 
+        url = URI.parse "#{@target}" 
         #gotta set no verify for tls pages
         context = OpenSSL::SSL::Context::Client.new
         context.verify_mode = OpenSSL::SSL::VerifyMode::NONE
@@ -52,14 +52,15 @@ class ADFS_forms < Sprayer
             "Accept-Encoding" => "gzip, deflate",
             "Content-Type" => "application/x-www-form-urlencoded",
         }
-
+        
         if @domain.nil?
             form = "UserName=#{URI.encode_www_form(username)}&Password=#{ URI.encode_www_form(password) }&AuthMethod=FormsAuthentication" 
         else 
             form = "UserName=#{URI.encode_www_form(@domain.not_nil!)}%5C#{URI.encode_www_form(username)}&Password=#{ URI.encode_www_form(password) }&AuthMethod=FormsAuthentication"
         end
         
-        # here is the basic 
+        # here is the basic auth post req
+        # the url.path.strip is for added support 
         page = client.post("#{"/#{url.path.strip("/")}" if url.path != "" }#{path}", headers: header, form: form)
 
         if page.status_code == 302
