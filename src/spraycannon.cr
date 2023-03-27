@@ -76,7 +76,7 @@ parser = OptionParser.new() do |opts|
         # options["target"] = target.strip
         if File.exists?(target) 
             File.each_line(target) do |line|
-                options["target"].as(Array(String)) << line.strip()
+                options["target"].as(Array(String)) << line.strip() unless line.size < 2 
             end
         else 
             options["target"].as(Array(String)) << target.strip() # unless password.starts_with?("#")
@@ -220,25 +220,25 @@ else
     rescue ex : OptionParser::MissingOption 
         if ex.message && ex.message.as(String).includes? "--useragent"
             STDERR.puts "Using random useragents"
-            options["useragents"] = [        
+            options["useragents"] = [
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36",
                     "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.58 Mobile Safari/537.36",
                     "Mozilla/5.0 (Linux; Android 10; SM-A205U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.58 Mobile Safari/537.36",
                     "Mozilla/5.0 (iPad; CPU OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/100.0.4896.56 Mobile/15E148 Safari/604.1",
             ]
             # now add a bunch of firefox useragents 
-            [90..120].each do |i| 
+            (90..120).each do |i| 
                 options["useragents"].as(Array(String)) << "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:#{i}.0) Gecko/20100101 Firefox/#{i}.0"
             end
                 
         end
         # exit 1 
-    # rescue KeyError
-    #     puts "You didnt supply an argument....."
-    #     exit 1
-    # rescue ex
-    #     puts ex.message 
-    #     exit 1 
+        # rescue KeyError
+        #     puts "You didnt supply an argument....."
+        #     exit 1
+        # rescue ex
+        #     puts ex.message 
+        #     exit 1 
     end
 end
 
