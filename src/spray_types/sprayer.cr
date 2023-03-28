@@ -177,11 +177,11 @@ class Sprayer
                         pass = f[1].as(String)
              
                         if (invalid_accounts.includes?(uname) && !@forced ) # also cancel if the account is previously discovered as not valid 
-                            STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because the account is flagged as not valid!!"
+                            STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{uname}:#{pass}".colorize(:yellow).to_s } because the account is flagged as not valid!!"
                             queued_count -= 1 # remove the count for already being sprayed
                             next
                         elsif ( already_sprayed.includes?("#{uname}:#{pass}") || valid_accounts.includes?(uname) ) && !@forced # if already sprayed or valid skip unless --force is applied 
-                            STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because its already sprayed!!"
+                            STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{uname}:#{pass}".colorize(:yellow).to_s } because its already sprayed!!"
                             queued_count -= 1 # remove the count for already being sprayed
                             next
                         end
@@ -312,11 +312,11 @@ class Sprayer
                     #     next
                     # end
                     if (invalid_accounts.includes?(item[0]) && !@forced ) # also cancel if the account is previously discovered as not valid 
-                        STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because the account is flagged as not valid!!"
+                        STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because the account is flagged as not valid!!"#.colorize(:yellow).to_s 
                         # queued_count -= 1 # remove the count for already being sprayed
                         next
                     elsif ( already_sprayed.includes?("#{item[0]}:#{item[1]}") || valid_accounts.includes?(item[0]) ) && !@forced # if already sprayed or valid skip unless --force is applied 
-                        STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because its already sprayed!!"
+                        STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because its already sprayed!!"#.colorize(:yellow).to_s 
                         # queued_count -= 1 # remove the count for already being sprayed
                         next
                     end
@@ -352,11 +352,11 @@ class Sprayer
                     #     next
                     # end
                     if (invalid_accounts.includes?(item[0]) && !@forced ) # also cancel if the account is previously discovered as not valid 
-                        STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because the account is flagged as not valid!!"
+                        STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because the account is flagged as not valid!!"#.colorize(:yellow).to_s 
                         # queued_count -= 1 # remove the count for already being sprayed
                         next
                     elsif ( already_sprayed.includes?("#{item[0]}:#{item[1]}") || valid_accounts.includes?(item[0]) ) && !@forced # if already sprayed or valid skip unless --force is applied 
-                        STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because its already sprayed!!"
+                        STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because its already sprayed!!"#.colorize(:yellow).to_s 
                         # queued_count -= 1 # remove the count for already being sprayed
                         next
                     end
