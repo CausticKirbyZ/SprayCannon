@@ -83,18 +83,21 @@ parser = OptionParser.new() do |opts|
         end
     end 
     
-    opts.on("-u","--username=[name]", "Username or user txt file to spray from") do |uname|
+    opts.on("-u","--username=[name]", "Comma seperated usernames or filename of usernames to spray (one per line)") do |uname|
         if File.exists?(uname) 
             File.each_line(uname) do |line|
                 options["usernames"].as(Array(String)) << line.strip() # unless line.starts_with?("#")
             end
         else 
-            options["usernames"].as(Array(String)) << uname.strip
+            # options["usernames"].as(Array(String)) << uname.strip
+            uname.split(",").each do |un|
+                options["usernames"].as(Array(String)) << un.strip()
+            end
         end
     end 
     
-    opts.on("-p","--password=[password]","Target to spray") do |password|
-        if File.exists?(password) 
+    opts.on("-p","--password=[password]","Password or file of passwords to spray. Whitespace will be trimmed off the ends") do |password|
+        if File.exists?(password)
             File.each_line(password) do |line|
                 options["passwords"].as(Array(String)) << line.strip()
             end
@@ -197,6 +200,10 @@ parser = OptionParser.new() do |opts|
         ["msol (o365)", "Okta", "ExchangeEAS","ExchangeOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","sonicwall_sma","vpn_fortinet","spiceworks","InfinateCampus","global_protect","ESXI_web", "VMWare_Horizon"].each {|t| puts t}
         exit 0
     end 
+
+    opts.on("--disable-color", "Disables color outputs entirely") do 
+        Colorize.enabled = false 
+    end
 
 
 
@@ -388,6 +395,9 @@ when "esxi_web"
 when "okta"
     s = Okta.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 
+when "mattermost"
+    s = Mattermost.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+
 else 
     STDERR.puts "Not a valit sprayer type!!".colorize(:red)
     exit 1
@@ -443,7 +453,7 @@ s.useragents = options["useragents"].as(Array(String)) if options["useragents"].
 start_time = Time.local.to_s("%Y-%m-%d %H:%M:%S")
 STDERR.puts "Starting spraying at: " + "#{Time.local.to_s("%Y-%m-%d %H:%M:%S")}".colorize(:yellow).to_s
 # STDERR.puts "Spraying...".colorize(:yellow)
-STDERR.puts "Username, Password, Valid, Lockout, MFA"
+# STDERR.puts "Username, Password, Valid, Lockout, MFA"
 
 if options["db"].as(Bool)
     s.start(options["threads"].as(Int32), db)
