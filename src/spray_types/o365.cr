@@ -11,7 +11,8 @@ class O365 < Sprayer
         spstatus = SprayStatus.new()
         spstatus.username = username 
         spstatus.password = password
-        spstatus.valid_credentials = false  # this shouldnt be neccesary but i had a bug where timed out web requests were being flagged as "valid"
+        spstatus.valid_credentials = false  
+        # this shouldnt be neccesary but i had a bug where timed out web requests were being flagged as "valid"
 
         
         # url = "login.microsoft.com"
@@ -75,7 +76,8 @@ class O365 < Sprayer
 
 
         if page.body.includes? "AADSTS50034"
-            STDERR.puts "The user account #{username} does not exist in the #{username.split("@")[1].to_s} directory."
+            # commenting the line below as the "invalid_user" is a thing. prob should add this to some verbose logging though 
+            # STDERR.puts "[#{"!".colorize :red}] - The user account #{username} does not exist in the #{username.split("@")[1].to_s} directory."
             spstatus.invalid_username = true 
         end
 
