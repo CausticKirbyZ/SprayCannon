@@ -177,11 +177,11 @@ class Sprayer
                         pass = f[1].as(String)
              
                         if (invalid_accounts.includes?(uname) && !@forced ) # also cancel if the account is previously discovered as not valid 
-                            STDERR.puts "Skipping #{uname}:#{pass} because the account is flagged as not valid!!".colorize(:yellow).to_s 
+                            STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because the account is flagged as not valid!!"
                             queued_count -= 1 # remove the count for already being sprayed
                             next
                         elsif ( already_sprayed.includes?("#{uname}:#{pass}") || valid_accounts.includes?(uname) ) && !@forced # if already sprayed or valid skip unless --force is applied 
-                            STDERR.puts "Skipping #{uname}:#{pass} because its already sprayed!!".colorize(:yellow).to_s 
+                            STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because its already sprayed!!"
                             queued_count -= 1 # remove the count for already being sprayed
                             next
                         end
@@ -256,7 +256,10 @@ class Sprayer
                     break if res.nil?
                     queued_count -= 1
                     # puts "\r#{res[0].as(String)},#{res[1].as(String)},#{"Valid".colorize(:green).to_s if res[2].as(Bool)},#{"locked".colorize(:red) if res[3].as(Bool)}, #{"mfa".colorize(:yellow) if res[4].as(Bool)}"
-                    puts "\r#{res.username}, #{res.password}, #{"Valid".colorize(:green).to_s if res.valid_credentials}, #{"locked".colorize(:red) if res.lockedout}, #{"mfa".colorize(:yellow) if res.mfa}, #{"INVALID_USER" if res.invalid_username}"
+                    # puts "\r#{" " * 50 }\r#{res.username}, #{res.password}, #{"Valid".colorize(:green).to_s if res.valid_credentials}, #{"locked".colorize(:red) if res.lockedout}, #{"mfa".colorize(:yellow) if res.mfa}, #{"INVALID_USER" if res.invalid_username}"
+
+                    puts "\r#{" " * 50 }\r[#{res.valid_credentials ? "+".colorize(:green) : "-".colorize( :red)  }]#{"[" + "MFA".colorize(:yellow).to_s + "]" if res.mfa }#{ "[" + "LOCKED!!".colorize(:red).to_s + "]" if res.lockedout}#{"[" + "INVALID_USER".colorize( :yellow).to_s + "]" if res.invalid_username} #{res.valid_credentials ? res.username.colorize.fore(:light_cyan) : res.username} : #{res.valid_credentials ? res.password.colorize.fore(:light_cyan) : res.password } "
+                    
                 end
             end
 
@@ -309,11 +312,11 @@ class Sprayer
                     #     next
                     # end
                     if (invalid_accounts.includes?(item[0]) && !@forced ) # also cancel if the account is previously discovered as not valid 
-                        STDERR.puts "Skipping #{item[0]}:#{item[1]} because the account is flagged as not valid!!".colorize(:yellow).to_s 
+                        STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because the account is flagged as not valid!!"
                         # queued_count -= 1 # remove the count for already being sprayed
                         next
                     elsif ( already_sprayed.includes?("#{item[0]}:#{item[1]}") || valid_accounts.includes?(item[0]) ) && !@forced # if already sprayed or valid skip unless --force is applied 
-                        STDERR.puts "Skipping #{item[0]}:#{item[1]} because its already sprayed!!".colorize(:yellow).to_s 
+                        STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because its already sprayed!!"
                         # queued_count -= 1 # remove the count for already being sprayed
                         next
                     end
@@ -349,11 +352,11 @@ class Sprayer
                     #     next
                     # end
                     if (invalid_accounts.includes?(item[0]) && !@forced ) # also cancel if the account is previously discovered as not valid 
-                        STDERR.puts "Skipping #{item[0]}:#{item[1]} because the account is flagged as not valid!!".colorize(:yellow).to_s 
+                        STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because the account is flagged as not valid!!"
                         # queued_count -= 1 # remove the count for already being sprayed
                         next
                     elsif ( already_sprayed.includes?("#{item[0]}:#{item[1]}") || valid_accounts.includes?(item[0]) ) && !@forced # if already sprayed or valid skip unless --force is applied 
-                        STDERR.puts "Skipping #{item[0]}:#{item[1]} because its already sprayed!!".colorize(:yellow).to_s 
+                        STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because its already sprayed!!"
                         # queued_count -= 1 # remove the count for already being sprayed
                         next
                     end
@@ -392,24 +395,24 @@ class Sprayer
                         # end
 
                         if (invalid_accounts.includes?(item[0]) && !@forced ) # also cancel if the account is previously discovered as not valid 
-                            STDERR.puts "Skipping #{item[0]}:#{item[1]} because the account is flagged as not valid!!".colorize(:yellow).to_s 
+                            STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because the account is flagged as not valid!!"# .colorize(:yellow).to_s 
                             # queued_count -= 1 # remove the count for already being sprayed
                             next
                         elsif ( already_sprayed.includes?("#{item[0]}:#{item[1]}") || valid_accounts.includes?(item[0]) ) && !@forced # if already sprayed or valid skip unless --force is applied 
-                            STDERR.puts "Skipping #{item[0]}:#{item[1]} because its already sprayed!!".colorize(:yellow).to_s 
+                            STDERR.puts "[#{"=".colorize(:yellow)}] Skipping #{"#{item[0]}:#{item[1]}".colorize(:yellow).to_s } because its already sprayed!!"# .colorize(:yellow).to_s 
                             # queued_count -= 1 # remove the count for already being sprayed
                             next
                         end
-                        print "\rItems in queue to be sprayed: #{queued_count} " 
+                        print "\rItems in queue to be sprayed: #{queued_count}   \r" 
                         queue_channel.send item 
                         queued_count += 1 
                         jitter() unless item[0] == @usernames.last || valid_accounts.includes? item[0] || already_sprayed.includes? "#{item[0]}:#{item[1]}" || invalid_accounts.includes?(item[0])
                     end
                     # update list of already sprayed items
                     if db
-                        already_sprayed  = get_dbsprayed(db).as(Array(String))
-                        valid_accounts   = get_dbvalid(db).as(Array(String))
-                        invalid_accounts = get_dbinvalid(db).as(Array(String))
+                        already_sprayed  = get_dbsprayed(db).as( Array(String) )
+                        valid_accounts   = get_dbvalid(  db).as( Array(String) )
+                        invalid_accounts = get_dbinvalid(db).as( Array(String) )
                     end
                     delay() unless pass == passwords.last
                 end
@@ -417,7 +420,7 @@ class Sprayer
 
             # sleep until queued count finishes 
             while queued_count > 0 
-                print "\rItems in queue to be sprayed: #{queued_count}  " 
+                print "\rItems in queue to be sprayed: #{queued_count}     \r" 
                 sleep 1
             end
             return 
