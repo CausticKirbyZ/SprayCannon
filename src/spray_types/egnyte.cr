@@ -49,7 +49,7 @@ class Egnyte < Sprayer
         # GET /rest/public/1.0/users/sso/#{username url encoded}
         # POST /loginDomain.do
         page = client.post(url.path + "/loginDomain.do", headers: header, form: form) # client supporst all http verbs as client.verb -> client.get, client.delete..etc 
-        pp page 
+        # pp page 
         #
         # logic for if valid login goes here replace whats here. it only serves as a guide for quick editing 
         # 
