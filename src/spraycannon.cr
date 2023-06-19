@@ -197,7 +197,7 @@ parser = OptionParser.new() do |opts|
     end 
     
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        ["msol (o365)", "Okta", "ExchangeEAS","ExchangeOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","sonicwall_sma","vpn_fortinet","spiceworks","InfinateCampus","global_protect","ESXI_web", "VMWare_Horizon","Mattermost"].each {|t| puts t}
+        ["msol (o365)", "Okta", "ExchangeEAS","ExchangeOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","sonicwall_sma","vpn_fortinet","spiceworks","InfinateCampus","egnyte","global_protect","ESXI_web", "VMWare_Horizon","Mattermost"].each {|t| puts t}
         exit 0
     end 
 
@@ -382,6 +382,9 @@ when "adfs_forms"
 
 when "spiceworks"
     s = Spiceworks.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+
+when "egnyte"
+    s = Egnyte.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 
 when "infinatecampus"
     s = InfinateCampus.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
