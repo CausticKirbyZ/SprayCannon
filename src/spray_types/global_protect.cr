@@ -43,22 +43,33 @@ class GlobalProtect < Sprayer
         
         # here is the basic request 
         page = client.post(url.path, headers: header, form: form) # client supporst all http verbs as client.verb -> client.get, client.delete..etc 
-
+    
         #
         # logic for if valid login goes here replace whats here. it only serves as a guide for quick editing 
         # 
         
         # this is a temp check. by defualt the status code is 512. so if not it might be valid
-        if page.status_code != 512
-            # valid = true 
-            spstatus.valid_credentials = true 
-        end
+        # if page.status_code != 512
+        #     # valid = true 
+        #     spstatus.valid_credentials = true 
+        # end
+
+
+
 
         # these should work.... if not wtf is palo doing with an "auth-failed" header on valid credentials
-        if page.headers["x-private-pan-globalprotect"].downcase != "auth-failed" && page.headers["x-private-pan-globalprotect"].downcase != "auth-failed-invalid-user-input" # should always be a lowercase header value but just in case. and the second one is a final error
-            # valid = true 
-            spstatus.valid_credentials = true 
-        end
+        begin 
+            if page.body.includes? "Valid client certificate is required"
+                puts "Client certificate is required to authenticate. You have been warned!".colorize( :red ) 
+            end 
+
+            if page.headers["x-private-pan-globalprotect"].downcase != "auth-failed" && page.headers["x-private-pan-globalprotect"].downcase != "auth-failed-invalid-user-input" # should always be a lowercase header value but just in case. and the second one is a final error
+                # valid = true 
+                spstatus.valid_credentials = true 
+            end 
+        rescue 
+            puts "Global protect did not return the #{ "x-private-pan-blobalprotect".colorize( :yellow ) } header. We cant validate if its valid or not. (if you know how submit a pull request or issue with the valid requirements)"
+        end 
 
         # if page.body.includes? "redircting to mfa"
         #     mfa = true 

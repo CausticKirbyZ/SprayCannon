@@ -59,7 +59,9 @@ InfinateCampus|no|no|yes
 Global Protect | no|no|not fully tested 
 ESXI (root web) | no | no (default is 10 be carefull) | yes - tested with esxi 6.5,7.0
 VmWare Horizon (Domain Joined Web prompt) | no | no | yes 
-Okta| not yet  | no  | Yes (may try to add mfa detection later)
+Okta | not yet  | no  | Yes (may try to add mfa detection later)
+Egnyte | no  | no  | not validated
+Citrix | no  | no  | not validated
 
 
 ```

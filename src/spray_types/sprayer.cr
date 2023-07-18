@@ -212,7 +212,7 @@ class Sprayer
                             end
 
                         rescue e 
-                            puts "Error: ".colorize(:yellow).to_s + "#{uname}:#{pass}".colorize(:red).to_s + " crached durring a spray. user will not be logged to the db".colorize(:yellow).to_s
+                            puts "Error: ".colorize(:yellow).to_s + "#{uname}:#{pass}".colorize(:red).to_s + " crashed durring a spray. User will not be logged to the db".colorize(:yellow).to_s
                             puts e.message 
                             queued_count -= 1 # make sure the count is decremented so it wont hang 
                             next
