@@ -2,21 +2,38 @@ SHELL := /bin/bash # Use bash syntax
 
 .SILENT:
 
-all:
-	if [ ! -d ./lib ]; then echo -e "\033[0;33mFetching libs...\033[0m" &&  shards install && 	echo -e "\033[0;32mDone!\033[0m"; fi 
-	echo "Building tools:"
-	echo -e "\033[0;33mBuilding spdb...\033[0m"
-	crystal build -p src/spdb.cr 
-	echo -e "\033[0;32mDone!\033[0m"
-	echo -e "\033[0;33mBuilding spraycannon...\033[0m"
-	crystal build -p src/spraycannon.cr 
-	echo -e "\033[0;32mDone!\033[0m"
-	echo -e "\033[0;33mBuilding supporting documents...\033[0m"
-	help2man ./spraycannon  > spraycannon.1
-	if [ -f spraycannon.1.gz ]; then rm spraycannon.1.gz; fi 
-	gzip spraycannon.1
-	echo -e "\033[0;32mDone!\033[0m"
-	echo -e "\033[0;32mDONE BUILDING ( to install run 'make install' )\033[0m"
+
+
+CRYSTAL_VERSION := $(shell crystal --version 2>/dev/null)
+SHARDS_VERSION  := $(shell shards  --version 2>/dev/null)
+
+CRYSTAL_PROJECT_LIBS := ./lib
+
+
+$(CRYSTAL_PROJECT_LIBS): | shard.yml
+	echo -e "\033[0;33mFetching dependancy shards...\033[0m"
+	shards install
+	echo -e "\033[0;32mShards Installed\033[0m"
+
+
+all: spraycannon spdb 
+	echo -e "\033[0;32mAll Projects Built!:)\033[0m"
+
+# all:
+# 	if [ ! -d ./lib ]; then echo -e "\033[0;33mFetching libs...\033[0m" &&  shards install && 	echo -e "\033[0;32mDone!\033[0m"; fi 
+# 	echo "Building tools:"
+# 	echo -e "\033[0;33mBuilding spdb...\033[0m"
+# 	crystal build -p src/spdb.cr 
+# 	echo -e "\033[0;32mDone!\033[0m"
+# 	echo -e "\033[0;33mBuilding spraycannon...\033[0m"
+# 	crystal build -p src/spraycannon.cr 
+# 	echo -e "\033[0;32mDone!\033[0m"
+# 	echo -e "\033[0;33mBuilding supporting documents...\033[0m"
+# 	help2man ./spraycannon  > spraycannon.1
+# 	if [ -f spraycannon.1.gz ]; then rm spraycannon.1.gz; fi 
+# 	gzip spraycannon.1
+# 	echo -e "\033[0;32mDone!\033[0m"
+# 	echo -e "\033[0;32mDONE BUILDING ( to install run 'make install' )\033[0m"
 
 
 init: 
@@ -24,14 +41,17 @@ init:
 	shards install
 
 
-test-spraycannon: 
+spraycannon: $(shell find ./src -name '*.cr') | $(CRYSTAL_PROJECT_LIBS)
+	echo -e "\033[0;33mBuilding spraycannon...\033[0m"
 	if [ -f ./spraycannon ]; then rm ./spraycannon; fi 
-	crystal build -p src/spraycannon.cr && ./spraycannon --version
-
-test-spdb:
+	crystal build -p src/spraycannon.cr 
+	echo -e "\033[0;32mDone!\033[0m"
+	
+spdb: $(shell find ./src -name '*.cr') | $(CRYSTAL_PROJECT_LIBS)
+	echo -e "\033[0;33mBuilding spdb...\033[0m"
 	if [ -f ./spdb ]; then rm ./spdb; fi 
-	crystal build -p src/spdb.cr && ./spdb --help
-
+	crystal build -p src/spdb.cr
+	echo -e "\033[0;32mDone!\033[0m"
 
 debug: 
 	crystal build -p src/spraycannon.cr --debug
@@ -39,7 +59,7 @@ debug:
 
 
 
-install:
+install: all 
 	echo "Installing Tools"
 	mv ./spraycannon /usr/bin/spraycannon
 	mv ./spdb /usr/bin/spdb

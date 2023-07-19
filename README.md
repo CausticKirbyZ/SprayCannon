@@ -49,6 +49,7 @@ fully implemented means that the module works as designed. some protocols may no
 ExchangeEAS|no  |  no               | yes                
 ExchangeOWA|no  |  no               | yes (could be a little more refined but fully working)
 adfs_forms |YES(msft azure mfa ) |  no               | yes
+o365_adfs_forms | not yet |  no               | not validated 
 SonicwallVirtualOffice|no  |  no    | yes (no mfa though) (validation not confirmed)
 Sonicwall(the digest one) | no | no | yes(validation not confirmed)
 O365|YES|YES|yes

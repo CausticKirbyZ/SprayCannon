@@ -197,7 +197,7 @@ parser = OptionParser.new() do |opts|
     end 
     
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        ["msol (o365)", "Okta", "ExchangeEAS","ExchangeOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","sonicwall_sma","vpn_fortinet","spiceworks","InfinateCampus","egnyte","global_protect","ESXI_web", "VMWare_Horizon","Mattermost", "Citrix"].each {|t| puts t}
+        ["msol (o365)", "msol_adfs",  "Okta", "ExchangeEAS","ExchangeOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","sonicwall_sma","vpn_fortinet","spiceworks","InfinateCampus","egnyte","global_protect","ESXI_web", "VMWare_Horizon","Mattermost", "Citrix"].each {|t| puts t}
         exit 0
     end 
 
@@ -322,6 +322,10 @@ when "o365","office365","msol","0365"
     s = O365.new(options["usernames"].as(Array(String)), options["passwords"].as(Array(String)))
     options["target"].as( Array(String) )  << "https://login.microsoft.com" unless options["target"].as(Array(String)).size > 0 
     # exit 0 
+
+when "msol_adfs", "adfs_msol"# used for aabbcc@domain-com.on.microsoft.com that ends up in an office 365 hosted adfs portal - sometimes found when google email usede with azure account and internal sync
+    s = O365_ADFS_forms.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+    options["target"].as( Array(String) )  << "https://msft.sts.microsoft.com" unless options["target"].as(Array(String)).size > 0 
 
 # when "google"
 #     puts "Google spraying is not complete!!! as in It DOES NOT WORK (yet)!!!!"
