@@ -46,7 +46,7 @@ spraycannon: $(shell find ./src -name '*.cr') | $(CRYSTAL_PROJECT_LIBS)
 	if [ -f ./spraycannon ]; then rm ./spraycannon; fi 
 	crystal build -p src/spraycannon.cr 
 	echo -e "\033[0;32mDone!\033[0m"
-	
+
 spdb: $(shell find ./src -name '*.cr') | $(CRYSTAL_PROJECT_LIBS)
 	echo -e "\033[0;33mBuilding spdb...\033[0m"
 	if [ -f ./spdb ]; then rm ./spdb; fi 
@@ -61,6 +61,8 @@ debug:
 
 install: all 
 	echo "Installing Tools"
+	help2man ./spraycannon  > spraycannon.1
+	gzip spraycannon.1
 	mv ./spraycannon /usr/bin/spraycannon
 	mv ./spdb /usr/bin/spdb
 	echo "Installing man files"
