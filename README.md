@@ -121,11 +121,13 @@ make install    # installs the tools
 ```
 ### Compile the manual way 
 ```bash
+shards install 
 crystal build -p src/spraycannon.cr 
 crystal build -p src/spdb.cr 
 ```
 You can also use:
 ```bash
+shards install 
 crystal build -p --no-debug --release src/spraycannon.cr 
 crystal build -p --no-debug --release src/spdb.cr 
 ```
@@ -227,7 +229,7 @@ curl -fsSL https://crystal-lang.org/install.sh | sudo bash
 * Use wsl (this is what i use 80% of the time and it works really well)
 * use a linux vm
 
-\* **Note:** Crystal doesnt have an official windows compiler release yet. If a bug is found please create a bug report and i will try to address it. 
+\* **Note:** ~~Crystal doesnt have an official windows compiler release yet.~~ It does now! Not sure if i want to support windows yet but if someone wants it submit an issue and ill see if i can get it working. If a bug is found please create a bug report and i will try to address it. 
 
 **MacOS**(homebrew):
 ```
