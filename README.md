@@ -72,11 +72,17 @@ Examples:
 ./spraycannon -s msol --user-pass-format upffile.txt
 ./spraycannon -s ExchageOWA -u myemail@domain.com --user-as-password --target "https://adfs.mydomain.com"
 
+Examples:
+./spraycannon -s msol -u myemail@domain.com -p password123
+./spraycannon -s adfs_forms -u usernames.txt -p passwords.txt
+./spraycannon -s msol --user-as-password --user-pass-format upffile.txt
+./spraycannon -s msol -u myemail@domain.com --user-as-password
+
 Global options:
     -s, --spray-type=[spraytype]     Set spray type. use --list-spraytypes to get current list
     -t, --target=[ip/hostname]       Target to spray ( could also be a fireprox address )
-    -u, --username=[name]            Username or user txt file to spray from
-    -p, --password=[password]        Target to spray
+    -u, --username=[name]            Comma seperated usernames or filename of usernames to spray (one per line)
+    -p, --password=[password]        Password or file of passwords to spray. Whitespace will be trimmed off the ends
     -d, --delay=[time]               Time in seconds to delay between password attempts
     -j, --jitter=[time]              Time in milliseconds to delay between individual account attempts. default is 1000.
     --domain=[domain]                Sets the domain for options that require domain specification.
@@ -90,7 +96,7 @@ Additional Options:
     --force                          Forces the spray to occur despite if it has been sprayed before or if it was previously marked invalid. This still logs to the database.
     --user-as-password               Sets the user and password to the same string
     --user-pass-format=[filename]    Supplied file in 'user:password' format. If a password has a : in it, it wont break. everything after the first : is used as the password
-    --webhook=[url]                  Will send a webhook if valid credential is found!! (autodetects Teams, Discord, Slack, and Google Chat URLS, Custom urls now work with --webhookcard(see online wiki for documentation) )
+    --webhook=[url]                  Will send a webhook if valid credential is found!! (autodetects Teams, Discord, Slack, and Google Chat URLS)
     --webhookcard=[string]           The 'card' template used to send to the specified webhook. For use only with custom webhooks(for now)
     --strip-user-string=[stiped_string]
                                      Will strip the entered string from the end of the username. Ideally used with --user-as-password.  ex: --strip-user-string '@domain.com' = user@domain.com => user
@@ -98,6 +104,7 @@ Additional Options:
                                      Will strip the entered string from the end of the username. Ideally used with --user-as-password.  ex: --strip-pass-string '@domain.com' = user@domain.com => user
     --useragent=[agentstring]        Use a custom useragent string, or a file containing useragents(will chose randomly from them).
     --list-spraytypes                List the available spraytypes.
+    --disable-color                  Disables color outputs entirely
 ```
 
 
@@ -109,8 +116,7 @@ or
 ## Compile yourself 
 either use the make file 
 ```bash
-make init       # downloads dependant libs to the local directory 
-make            # compiles spraycannon and spdb 
+make all        # compiles spraycannon and spdb 
 make install    # installs the tools
 ```
 ### Compile the manual way 
@@ -120,7 +126,8 @@ crystal build -p src/spdb.cr
 ```
 You can also use:
 ```bash
-crystal build -p --no-debug --release
+crystal build -p --no-debug --release src/spraycannon.cr 
+crystal build -p --no-debug --release src/spdb.cr 
 ```
 Which will take longer but will be more optimized (not that you need it) it also may not give you help if something breaks.... your choice
 

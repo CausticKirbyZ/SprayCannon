@@ -36,9 +36,9 @@ all: spraycannon spdb
 # 	echo -e "\033[0;32mDONE BUILDING ( to install run 'make install' )\033[0m"
 
 
-init: 
-	echo "Fetching libs..."
-	shards install
+# init: 
+# 	echo "Fetching libs..."
+# 	shards install
 
 
 spraycannon: $(shell find ./src -name '*.cr') | $(CRYSTAL_PROJECT_LIBS)
