@@ -3,8 +3,6 @@ name: KaliLinuxBuild
 on:
   push:
     branches: [ main ]
-    paths: 
-      - 'src/**'
       
 jobs:
   build-kali:
