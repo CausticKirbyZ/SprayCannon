@@ -3,6 +3,8 @@ name: KaliLinuxBuild
 on:
   push:
     branches: [ main ]
+    paths: 
+      - 'src/**'
       
 jobs:
   build-kali:
@@ -16,6 +18,8 @@ jobs:
       - name: Install kali dependancies and build tools
         run: apt update -y && apt upgrade -y && apt install gcc make cmake curl git sqlite3 libsqlite3-dev build-essential openssl zlib1g zlib1g-dev libssl-dev -y
 
+
+        # for some reason new kali has issues with the install.sh script and the git action too. run both and it seems to work though 
       - name: Install Crystal and Shards using public installer
         run: curl -fsSL https://crystal-lang.org/install.sh | bash
 
