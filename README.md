@@ -1,3 +1,4 @@
+![Static Linux](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/StaticLinuxBuild.yml/badge.svg) 
 ![Arch Linux](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/ArchLinuxBuild.yml/badge.svg) 
 ![Debain(based) Linux](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/DebianLinuxBuild.yml/badge.svg)
 ![Kali](https://github.com/CausticKirbyZ/spraycannon/actions/workflows/KaliBuild.yml/badge.svg)
