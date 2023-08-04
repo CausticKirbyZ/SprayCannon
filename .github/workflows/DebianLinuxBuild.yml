@@ -3,7 +3,9 @@ name: DebianLinuxBuild
 on:
   push:
     branches: [ main ]
-
+    paths: 
+      - 'src/**'
+      
 jobs:
   build-debian-based:
     runs-on: ubuntu-latest

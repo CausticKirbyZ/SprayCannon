@@ -3,7 +3,9 @@ name: MacOSBuild
 on:
   push:
     branches: [ main ]
-
+    paths: 
+      - 'src/**'
+      
 jobs:
   build-macos-based:
     runs-on: macos-latest

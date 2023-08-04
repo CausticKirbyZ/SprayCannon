@@ -3,7 +3,9 @@ name: KaliLinuxBuild
 on:
   push:
     branches: [ main ]
-    
+    paths: 
+      - 'src/**'
+      
 jobs:
   build-kali:
     runs-on: ubuntu-latest
