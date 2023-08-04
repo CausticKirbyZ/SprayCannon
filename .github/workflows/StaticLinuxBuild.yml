@@ -3,8 +3,6 @@ name: StaticLinuxBuild
 on:
   push:
     branches: [ main ]
-    paths: 
-      - 'src/**'
 
 jobs:
   build-static:
