@@ -16,12 +16,12 @@ jobs:
       - name: Install kali dependancies and build tools
         run: apt update -y && apt upgrade -y && apt install gcc make cmake curl git sqlite3 libsqlite3-dev build-essential openssl zlib1g zlib1g-dev  -y
 
-      # - name: Install Crystal and Shards using public installer
-      #   run: curl -fsSL https://crystal-lang.org/install.sh | bash
+      - name: Install Crystal and Shards using public installer
+        run: curl -fsSL https://crystal-lang.org/install.sh | bash
 
-      - uses: crystal-lang/install-crystal@v1
-        with:
-          crystal: latest
+      # - uses: crystal-lang/install-crystal@v1
+      #   with:
+      #     crystal: latest
 
       - name: Install shard dependencies
         run: shards install
