@@ -13,11 +13,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: isntall curl.... why.... why is this not default in kalis docker
-        run: apt update -y && apt install gcc make cmake curl git  sqlite3 libsqlite3-dev build-essential openssl -y
+      - name: Install kali dependancies and build tools
+        run: apt update -y && apt install gcc make cmake curl git sqlite3 libsqlite3-dev build-essential openssl -y
 
-      - name: Install Crystal and Shards using public installer
-        run: curl -fsSL https://crystal-lang.org/install.sh | bash
+      # - name: Install Crystal and Shards using public installer
+      #   run: curl -fsSL https://crystal-lang.org/install.sh | bash
+
+      - uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: latest
 
       - name: Install shard dependencies
         run: shards install
