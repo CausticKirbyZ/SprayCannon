@@ -43,7 +43,7 @@ class BasicAuth < Sprayer
             "Accept-Encoding" => "gzip, deflate",
         } 
 
-        client.basic_auth(username, password )
+        client.basic_auth( username, password )
 
         # form = "username=#{username}&password=#{password}" # request form params here
         
