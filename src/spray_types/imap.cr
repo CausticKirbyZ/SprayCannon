@@ -51,7 +51,10 @@ class IMAP < Sprayer
     def login_imap(username : String, password : String , host : String , port : Int32, ssl : Bool = false ) : Bool 
         socket = TCPSocket.new(host, port)
         if ssl 
-            tls = OpenSSL::SSL::Socket::Client.new(socket)
+            context = OpenSSL::SSL::Context::Client.new
+        context.verify_mode = OpenSSL::SSL::VerifyMode::NONE
+
+            tls = OpenSSL::SSL::Socket::Client.new(socket, context: context )
             socket = tls
         end 
     
