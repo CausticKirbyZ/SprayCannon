@@ -197,7 +197,31 @@ parser = OptionParser.new() do |opts|
     end 
     
     opts.on("--list-spraytypes","List the available spraytypes.") do 
-        ["msol (o365)", "msol_adfs",  "Okta", "ExchangeEAS","ExchangeOWA","cisco_vpn","ADFS_forms","vpn_sonicwall_virtualoffice","vpn_sonicwall_virtualoffice_5x","vpn_sonicwall_digest","sonicwall_sma","vpn_fortinet","spiceworks","InfinateCampus","egnyte","global_protect","ESXI_web", "VMWare_Horizon","Mattermost", "Citrix","IMAP"].each {|t| puts t}
+
+        [   "msol (o365)", 
+            "msol_adfs",  
+            "Okta", 
+            "ExchangeEAS","ExchangeOWA",
+            "cisco_vpn",
+            "ADFS_forms",
+            "vpn_sonicwall_virtualoffice",
+            "vpn_sonicwall_virtualoffice_5x",
+            "vpn_sonicwall_digest",
+            "sonicwall_sma",
+            "vpn_fortinet",
+            "spiceworks",
+            "InfinateCampus",
+            "egnyte",
+            "global_protect",
+            "ESXI_web", 
+            "VMWare_Horizon",
+            "Mattermost",
+            "Citrix",
+            "IMAP",
+            "BasicAuth"
+        ].each {|t| puts t}
+        
+        
         exit 0
     end 
 
@@ -410,6 +434,9 @@ when "citrix"
 
 when "imap"
     s = IMAP.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+
+when "basicauth", "basic_auth", "basic-auth", "basic"
+    s = BasicAuth.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 
 else 
     STDERR.puts "Not a valit sprayer type!!".colorize(:red)

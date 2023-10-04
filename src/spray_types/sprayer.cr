@@ -1,6 +1,12 @@
 require "colorize"
 require "http/client"
 
+
+
+
+annotation SprayType
+end 
+
 class SprayStatus
     property username          : String      = ""
     property password          : String      = "" 
