@@ -27,14 +27,16 @@ class IMAP < Sprayer
         context.verify_mode = OpenSSL::SSL::VerifyMode::NONE
 
         if url.port.nil?
-            url.port = 933 if url.scheme == "imaps"
+            url.port = 993 if url.scheme == "imaps"
             url.port = 143 if url.scheme == "imap"
         end
 
         if url.scheme && url.host
             if url.scheme == "imap"
+                # puts "Using port #{url.port} for imap                "
                 spstatus.valid_credentials = login_imap(username, password, url.host.not_nil!, url.port.not_nil!, ssl: false )
             elsif url.scheme == "imaps"
+                # puts "Using port #{url.port} for imaps                "
                 spstatus.valid_credentials = login_imap(username, password, url.host.not_nil!, url.port.not_nil!, ssl: true  )
             else
                 raise "Invalid target scheme for imap (use imaps or imap)"
@@ -46,24 +48,30 @@ class IMAP < Sprayer
         return spstatus
     end
 
-    CRLF = "\r\n"
-
     def login_imap(username : String, password : String , host : String , port : Int32, ssl : Bool = false ) : Bool 
+
+        # puts "logging into #{host}:#{port} in login_imap"
+        
+        # puts "Creating socket to #{host}:#{port}"
         socket = TCPSocket.new(host, port)
         if ssl 
+            # puts "Creating SSL context"
             context = OpenSSL::SSL::Context::Client.new
-        context.verify_mode = OpenSSL::SSL::VerifyMode::NONE
+            context.verify_mode = OpenSSL::SSL::VerifyMode::NONE
 
             tls = OpenSSL::SSL::Socket::Client.new(socket, context: context )
+            # puts "Setting socket to TLS mode"
             socket = tls
         end 
-    
         
+        # puts "Sending login command"
         command = "tag LOGIN #{username} #{password}"
         socket << command
-        socket << CRLF
+        socket << "\r\n"
+        # puts "Flushing socket"
         socket.flush
     
+        # puts "Reading response"
         resp = Array(String).new
         while(i = socket.gets)
             if i =~ /^tag OK/
