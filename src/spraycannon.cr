@@ -64,7 +64,7 @@ options = {
 parser = OptionParser.new() do |opts|
     opts.banner = "\nCLI tool for sprayer crystal lib\n" + 
     "Sprays the target with options for lockout, mfa, jitter, delay.\n" + 
-    "    " + "*".colorize(:yellow).to_s + "Not all services can have lockout/mfa detection and it is up to elach module to implement it.\n\nExamples:\n./spraycannon -s msol -u myemail@domain.com -p password123\n./spraycannon -s adfs_forms -u usernames.txt -p passwords.txt\n./spraycannon -s msol --user-as-password --user-pass-format upffile.txt\n./spraycannon -s msol -u myemail@domain.com --user-as-password\n"
+    "    " + "*".colorize(:yellow).to_s + "Not all services can have lockout/mfa detection and it is up to elach module to implement it.\n\nExamples:\n./spraycannon -s msol -u myemail@domain.com -p password123\n./spraycannon -s adfs_forms -u usernames.txt -p passwords.txt\n./spraycannon -s msol --user-as-password --user-pass-format upffile.txt\n./spraycannon -s msol -u myemail@domain.com --user-as-password\n./spraycannon -s imap --target imap[s]://mx.domain.com:143 -u myemail@domain.com -p password1\n"
 
     
     opts.separator("Global options:")
