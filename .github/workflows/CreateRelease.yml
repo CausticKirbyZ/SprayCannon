@@ -267,10 +267,10 @@ jobs:
           SHARDS_OPTS: --ignore-crystal-version
 
       - name: Build Project
-        run: crystal build src/spraycannon.cr --release
+        run: crystal build src/spraycannon.cr --release --progress --static 
 
       - name: Bulid Project 2
-        run: crystal build src/spdb.cr --release
+        run: crystal build src/spdb.cr --release --progress --static
 
       - name: Upload spraycannon release asset - static
         uses: actions/upload-release-asset@v1

@@ -24,7 +24,7 @@ jobs:
           SHARDS_OPTS: --ignore-crystal-version
 
       - name: Build Project
-        run: crystal build src/spraycannon.cr --release -p 
+        run: crystal build src/spraycannon.cr --release -p --static 
 
       - name: Bulid Project 2
-        run: crystal build src/spdb.cr --release -p 
+        run: crystal build src/spdb.cr --release -p --static 
