@@ -77,20 +77,24 @@ class IMAP < Sprayer
             if i =~ /^tag OK/
                 resp << i
                 break
-            elsif i =~ /^tag NO Authentication disabled/
+            elsif i =~ /Authentication (disabled|disallowed)/i
+                STDERR.puts "\n(#{username}, #{password} , #{host}) - Authentication disabled/disallowed Try Using SSL/TLS(IMAPS)"
                 raise "Use change to tls or try not using tls"
-            elsif i =~ /^tag NO Invalid credentials/
-                raise "Invalid Credentials"
-            elsif i =~ /^tag NO/
-                raise "Command error"
-            elsif i =~ /^tag BAD/
-                raise "Unknown command or arguments invalid"
+            elsif i =~ /Invalid credentials/i
+                # raise "Invalid Credentials"
+                return false
+            elsif i =~ /^tag NO/i
+                STDERR.puts "\n(#{username}, #{password} , #{host}) - Command error: RESULT: #{i}"
+                raise "Command error: RESULT: #{i}"
+            elsif i =~ /^tag BAD/i
+                STDERR.puts "\n(#{username}, #{password} , #{host}) - Unknown command or arguments invalid: #{i}\n".colorize(:red)
+                raise "Unknown command or arguments invalid: #{i}"
             else
                 resp << i
             end
         end
     
-        if resp.join(" ") =~ /LOGIN completed/
+        if resp.join(" ") =~ /LOGIN completed/i
             return true 
         end 
         return false 
