@@ -85,13 +85,26 @@ class O365 < Sprayer
         # mfa = true if page.body.includes? "AADSTS50158" # mfa duo or other ( conditionall access )
         # mfa = true if page.body.includes? "AADSTS50079" # mfa microsoft
         # mfa = true if page.body.includes? "AADSTS50076" # mfa microsoft
-        # mfa = true if page.status_code == 
-        spstatus.mfa = true if page.body.includes? "AADSTS50158" # mfa duo or other ( conditionall access )
-        spstatus.mfa = true if page.body.includes? "AADSTS50079" # mfa microsoft
+        if page.body.includes? "AADSTS50158" # mfa duo or other ( conditionall access )
+            spstatus.mfa = true 
+            STDERR.puts "Conditial access MFA likely (EX: duo )".colorize(:green)
+        end 
+
+        # spstatus.mfa = true if page.body.includes? "AADSTS50079" # mfa microsoft
+        if page.body.includes? "AADSTS50079" # mfa microsoft
+            spstatus.mfa = true 
+            STDERR.puts "MFA IS ON BUT NOT SET UP FOR THIS USER".colorize(:green)
+        end 
+
         spstatus.mfa = true if page.body.includes? "AADSTS50076" # mfa microsoft
         # mfa = true if page.status_code == 
         # lockout = true if page.body.includes? "AADSTS50053" # locked out smartlock or regular 
         spstatus.lockedout = true if page.body.includes? "AADSTS50053" # locked out smartlock or regular 
+
+        if page.body.includes? "AADSTS50055" 
+            spstatus.valid = true 
+            STDERR.puts "#{username} password is Expired".colorize(:yellow)
+        end
 
         if page.body.includes? "AADSTS50057" 
             STDERR.puts "#{username} is Disabled"
