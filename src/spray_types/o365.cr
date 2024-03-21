@@ -102,7 +102,7 @@ class O365 < Sprayer
         spstatus.lockedout = true if page.body.includes? "AADSTS50053" # locked out smartlock or regular 
 
         if page.body.includes? "AADSTS50055" 
-            spstatus.valid = true 
+            spstatus.valid_credentials = true 
             STDERR.puts "#{username} password is Expired".colorize(:yellow)
         end
 
