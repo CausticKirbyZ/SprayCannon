@@ -73,8 +73,12 @@ class BlueIris < Sprayer
             js = JSON.parse(page.body)
             if js["result"] != "fail"
                 spstatus.valid_credentials = true 
+            else 
+                if js["data"]["reason"] == "Maximum login attempts exceeded"
+                    spstatus.lockedout = true
+                end
             end
-        rescue             
+        rescue
         end 
 
 
