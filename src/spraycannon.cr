@@ -217,6 +217,7 @@ parser = OptionParser.new() do |opts|
             "VMWare_Horizon",
             "Mattermost",
             "Citrix",
+            "BlueIris",
             "IMAP",
             "BasicAuth"
         ].each {|t| puts t}
@@ -434,6 +435,9 @@ when "citrix"
 
 when "imap"
     s = IMAP.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+
+when "blueiris", "BlueIris"
+    s = BlueIris.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 
 when "basicauth", "basic_auth", "basic-auth", "basic"
     s = BasicAuth.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
