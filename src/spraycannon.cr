@@ -219,7 +219,8 @@ parser = OptionParser.new() do |opts|
             "Citrix",
             "BlueIris",
             "IMAP",
-            "BasicAuth"
+            "BasicAuth",
+            "Ubiquiti_Device",
         ].each {|t| puts t}
         
         
@@ -441,6 +442,9 @@ when "blueiris", "BlueIris"
 
 when "basicauth", "basic_auth", "basic-auth", "basic"
     s = BasicAuth.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
+
+when "ubiquiti_device", "ubiquiti_dev"
+    s = Ubiquiti_Device.new(options["usernames"].as(Array(String)),options["passwords"].as(Array(String)))
 
 else 
     STDERR.puts "Not a valit sprayer type!!".colorize(:red)
